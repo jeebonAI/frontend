@@ -1,3 +1,10 @@
+# DEFUNCT
+
+this is NOT working!
+the web version works with some tweaks but the android version doesnt work! 
+getting a lot of compatibility issues. might need to revert to
+trying flutter again.
+
 # Development
 
 Your new bare-bones project includes minimal organization with a single `main.rs` file and a few assets.
@@ -24,7 +31,8 @@ npx tailwindcss -i ./input.css -o ./assets/tailwind.css --watch
 Run the following command in the root of your project to start developing with the default platform:
 
 ```bash
-dx serve --platform web
+dx serve --platform web --port 3200
+dx serve --platform android --port 3200
 ```
 
 To run for a different platform, use the `--platform platform` flag. E.g.
