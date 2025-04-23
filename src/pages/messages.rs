@@ -1,11 +1,12 @@
 use dioxus::prelude::*;
+use crate::components::UserAvatar;
 
 #[component]
 pub fn Messages() -> Element {
     rsx! {
         div { class: "page-container",
             h2 { class: "page-title", "Messages" }
-            
+
             // Messages interface
             div { class: "card bg-base-100 shadow-xl",
                 div { class: "card-body p-0",
@@ -24,15 +25,13 @@ pub fn Messages() -> Element {
                                     }
                                 }
                             }
-                            
+
                             // Contact list
                             div { class: "space-y-2",
                                 // Contact 1 - active
                                 div { class: "flex items-center gap-3 p-2 rounded-lg bg-primary bg-opacity-10 cursor-pointer",
-                                    div { class: "avatar online",
-                                        div { class: "w-10 rounded-full",
-                                            img { src: "https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" }
-                                        }
+                                    UserAvatar {
+                                        online: true
                                     }
                                     div { class: "flex-1 min-w-0",
                                         p { class: "font-medium truncate", "Sarah Johnson" }
@@ -40,26 +39,22 @@ pub fn Messages() -> Element {
                                     }
                                     div { class: "badge badge-sm badge-primary", "3" }
                                 }
-                                
+
                                 // Contact 2
                                 div { class: "flex items-center gap-3 p-2 rounded-lg hover:bg-base-300 cursor-pointer",
-                                    div { class: "avatar offline",
-                                        div { class: "w-10 rounded-full",
-                                            img { src: "https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" }
-                                        }
+                                    UserAvatar {
+                                        online: false
                                     }
                                     div { class: "flex-1 min-w-0",
                                         p { class: "font-medium truncate", "Michael Chen" }
                                         p { class: "text-xs opacity-70 truncate", "I'll send you the files when I get home" }
                                     }
                                 }
-                                
+
                                 // Contact 3
                                 div { class: "flex items-center gap-3 p-2 rounded-lg hover:bg-base-300 cursor-pointer",
-                                    div { class: "avatar online",
-                                        div { class: "w-10 rounded-full",
-                                            img { src: "https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" }
-                                        }
+                                    UserAvatar {
+                                        online: true
                                     }
                                     div { class: "flex-1 min-w-0",
                                         p { class: "font-medium truncate", "Alex Rodriguez" }
@@ -69,16 +64,14 @@ pub fn Messages() -> Element {
                                 }
                             }
                         }
-                        
+
                         // Chat area
                         div { class: "flex flex-col md:col-span-3",
                             // Chat header
                             div { class: "p-4 border-b border-base-300 flex items-center justify-between",
                                 div { class: "flex items-center gap-3",
-                                    div { class: "avatar online",
-                                        div { class: "w-10 rounded-full",
-                                            img { src: "https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" }
-                                        }
+                                    UserAvatar {
+                                        online: true
                                     }
                                     div {
                                         p { class: "font-medium", "Sarah Johnson" }
@@ -103,14 +96,14 @@ pub fn Messages() -> Element {
                                     }
                                 }
                             }
-                            
+
                             // Messages
                             div { class: "flex-1 p-4 overflow-y-auto space-y-4",
                                 // Received message
                                 div { class: "chat chat-start",
-                                    div { class: "chat-image avatar",
-                                        div { class: "w-10 rounded-full",
-                                            img { src: "https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" }
+                                    div { class: "chat-image",
+                                        UserAvatar {
+                                            online: true
                                         }
                                     }
                                     div { class: "chat-header",
@@ -120,12 +113,12 @@ pub fn Messages() -> Element {
                                     div { class: "chat-bubble", "Hi there! How are you doing today?" }
                                     div { class: "chat-footer opacity-50", "Delivered" }
                                 }
-                                
+
                                 // Sent message
                                 div { class: "chat chat-end",
-                                    div { class: "chat-image avatar",
-                                        div { class: "w-10 rounded-full",
-                                            img { src: "https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" }
+                                    div { class: "chat-image",
+                                        UserAvatar {
+                                            online: true
                                         }
                                     }
                                     div { class: "chat-header",
@@ -135,12 +128,12 @@ pub fn Messages() -> Element {
                                     div { class: "chat-bubble chat-bubble-primary", "I'm doing well, thanks for asking! How about you?" }
                                     div { class: "chat-footer opacity-50", "Seen" }
                                 }
-                                
+
                                 // Received message
                                 div { class: "chat chat-start",
-                                    div { class: "chat-image avatar",
-                                        div { class: "w-10 rounded-full",
-                                            img { src: "https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" }
+                                    div { class: "chat-image",
+                                        UserAvatar {
+                                            online: true
                                         }
                                     }
                                     div { class: "chat-header",
@@ -150,12 +143,12 @@ pub fn Messages() -> Element {
                                     div { class: "chat-bubble", "I'm great! Just wondering if you'd like to meet up tomorrow to discuss the project?" }
                                     div { class: "chat-footer opacity-50", "Delivered" }
                                 }
-                                
+
                                 // Sent message
                                 div { class: "chat chat-end",
-                                    div { class: "chat-image avatar",
-                                        div { class: "w-10 rounded-full",
-                                            img { src: "https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" }
+                                    div { class: "chat-image",
+                                        UserAvatar {
+                                            online: true
                                         }
                                     }
                                     div { class: "chat-header",
@@ -166,7 +159,7 @@ pub fn Messages() -> Element {
                                     div { class: "chat-footer opacity-50", "Seen" }
                                 }
                             }
-                            
+
                             // Message input
                             div { class: "p-4 border-t border-base-300",
                                 div { class: "flex items-center gap-2",
@@ -187,7 +180,7 @@ pub fn Messages() -> Element {
                     }
                 }
             }
-            
+
             div { class: "mt-6 text-center",
                 span { class: "badge badge-warning gap-2", "Demo Only" }
             }

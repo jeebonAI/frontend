@@ -3,6 +3,7 @@ use dioxus::prelude::*;
 // Import modules
 mod pages;
 mod layouts;
+mod components;
 
 // Import components from modules
 use layouts::main_layout::MainLayout;

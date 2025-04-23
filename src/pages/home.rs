@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use crate::components::UserAvatar;
 
 #[component]
 pub fn Home() -> Element {
@@ -25,14 +26,14 @@ pub fn Home() -> Element {
                 div { class: "card-body",
                     h2 { class: "card-title", "Interactive Demo" }
                     p { "Click the button below to increment the counter:" }
-                    
+
                     div { class: "flex items-center gap-4 my-4",
                         button {
                             class: "btn btn-primary",
                             onclick: move |_| count += 1,
                             "Increment"
                         }
-                        
+
                         // Counter display with badge
                         div { class: "badge badge-lg badge-primary badge-outline", "Count: {count}" }
                     }
@@ -42,7 +43,7 @@ pub fn Home() -> Element {
             // Features section with cards
             div { class: "mb-8",
                 h2 { class: "text-2xl font-bold mb-4", "Key Features" }
-                
+
                 div { class: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4",
                     // Feature 1
                     div { class: "card bg-base-100 shadow-md hover:shadow-xl transition-all duration-300",
@@ -56,7 +57,7 @@ pub fn Home() -> Element {
                             p { "Complete user profiles with authentication and personalization options." }
                         }
                     }
-                    
+
                     // Feature 2
                     div { class: "card bg-base-100 shadow-md hover:shadow-xl transition-all duration-300",
                         div { class: "card-body",
@@ -69,7 +70,7 @@ pub fn Home() -> Element {
                             p { "Real-time messaging with support for text, images, and other media types." }
                         }
                     }
-                    
+
                     // Feature 3
                     div { class: "card bg-base-100 shadow-md hover:shadow-xl transition-all duration-300",
                         div { class: "card-body",
@@ -82,7 +83,7 @@ pub fn Home() -> Element {
                             p { "Audio and video calls with excellent quality and reliability." }
                         }
                     }
-                    
+
                     // Feature 4
                     div { class: "card bg-base-100 shadow-md hover:shadow-xl transition-all duration-300",
                         div { class: "card-body",
@@ -95,7 +96,7 @@ pub fn Home() -> Element {
                             p { "Create and manage social circles for group communication and sharing." }
                         }
                     }
-                    
+
                     // Feature 5
                     div { class: "card bg-base-100 shadow-md hover:shadow-xl transition-all duration-300",
                         div { class: "card-body",
@@ -108,7 +109,7 @@ pub fn Home() -> Element {
                             p { "Organize information and relationships in hierarchical tree structures." }
                         }
                     }
-                    
+
                     // Feature 6
                     div { class: "card bg-base-100 shadow-md hover:shadow-xl transition-all duration-300",
                         div { class: "card-body",
@@ -123,7 +124,7 @@ pub fn Home() -> Element {
                     }
                 }
             }
-            
+
             // Stats section
             div { class: "stats shadow w-full",
                 div { class: "stat",
@@ -136,7 +137,7 @@ pub fn Home() -> Element {
                     div { class: "stat-value text-primary", "25.6K" }
                     div { class: "stat-desc", "21% more than last month" }
                 }
-                
+
                 div { class: "stat",
                     div { class: "stat-figure text-secondary",
                         svg { class: "inline-block w-8 h-8 stroke-current", xmlns: "http://www.w3.org/2000/svg", fill: "none", view_box: "0 0 24 24",
@@ -147,13 +148,13 @@ pub fn Home() -> Element {
                     div { class: "stat-value text-secondary", "2.6M" }
                     div { class: "stat-desc", "14% more than last month" }
                 }
-                
+
                 div { class: "stat",
                     div { class: "stat-figure text-secondary",
-                        div { class: "avatar online",
-                            div { class: "w-16 rounded-full",
-                                img { src: "https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" }
-                            }
+                        UserAvatar {
+                            size_class: "w-16 h-16",
+                            color_class: "bg-secondary text-secondary-content",
+                            online: true
                         }
                     }
                     div { class: "stat-value", "86%" }

@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use crate::components::{UserAvatar, GroupAvatar};
 
 #[component]
 pub fn Circles() -> Element {
@@ -7,13 +8,13 @@ pub fn Circles() -> Element {
             // Header with tabs
             div { class: "flex justify-between items-center mb-6",
                 h2 { class: "page-title", "Circles" }
-                
+
                 div { class: "tabs tabs-boxed",
                     a { class: "tab tab-active", "My Circles" }
                     a { class: "tab", "Discover" }
                     a { class: "tab", "Invites" }
                 }
-                
+
                 button { class: "btn btn-primary",
                     svg { class: "w-5 h-5 mr-2", xmlns: "http://www.w3.org/2000/svg", fill: "none", view_box: "0 0 24 24", stroke: "currentColor",
                         path { stroke_linecap: "round", stroke_linejoin: "round", stroke_width: "2", d: "M12 6v6m0 0v6m0-6h6m-6 0H6" }
@@ -21,13 +22,16 @@ pub fn Circles() -> Element {
                     "Create Circle"
                 }
             }
-            
+
             // Circles grid
             div { class: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
                 // Circle 1
                 div { class: "card bg-base-100 shadow-xl",
-                    figure { class: "px-10 pt-10",
-                        img { class: "rounded-xl", src: "https://daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.jpg", alt: "Family Circle" }
+                    figure { class: "px-10 pt-10 flex justify-center",
+                        GroupAvatar {
+                            size_class: "w-32 h-32",
+                            color_class: "bg-primary text-primary-content"
+                        }
                     }
                     div { class: "card-body",
                         h3 { class: "card-title",
@@ -36,19 +40,25 @@ pub fn Circles() -> Element {
                         }
                         p { "Keep in touch with your family members and share important updates." }
                         div { class: "flex -space-x-4 mt-4",
-                            div { class: "avatar",
-                                div { class: "w-8 h-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2",
-                                    img { src: "https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" }
+                            div { class: "-mr-2",
+                                UserAvatar {
+                                    size_class: "w-8 h-8",
+                                    color_class: "ring ring-primary ring-offset-base-100 ring-offset-2",
+                                    online: true
                                 }
                             }
-                            div { class: "avatar",
-                                div { class: "w-8 h-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2",
-                                    img { src: "https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" }
+                            div { class: "-mr-2",
+                                UserAvatar {
+                                    size_class: "w-8 h-8",
+                                    color_class: "bg-secondary text-secondary-content ring ring-primary ring-offset-base-100 ring-offset-2",
+                                    online: false
                                 }
                             }
-                            div { class: "avatar",
-                                div { class: "w-8 h-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2",
-                                    img { src: "https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" }
+                            div { class: "-mr-2",
+                                UserAvatar {
+                                    size_class: "w-8 h-8",
+                                    color_class: "bg-accent text-accent-content ring ring-primary ring-offset-base-100 ring-offset-2",
+                                    online: true
                                 }
                             }
                             div { class: "avatar placeholder",
@@ -63,11 +73,14 @@ pub fn Circles() -> Element {
                         }
                     }
                 }
-                
+
                 // Circle 2
                 div { class: "card bg-base-100 shadow-xl",
-                    figure { class: "px-10 pt-10",
-                        img { class: "rounded-xl", src: "https://daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.jpg", alt: "Work Circle" }
+                    figure { class: "px-10 pt-10 flex justify-center",
+                        GroupAvatar {
+                            size_class: "w-32 h-32",
+                            color_class: "bg-secondary text-secondary-content"
+                        }
                     }
                     div { class: "card-body",
                         h3 { class: "card-title",
@@ -76,14 +89,18 @@ pub fn Circles() -> Element {
                         }
                         p { "Collaborate with your work team on projects and tasks." }
                         div { class: "flex -space-x-4 mt-4",
-                            div { class: "avatar",
-                                div { class: "w-8 h-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2",
-                                    img { src: "https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" }
+                            div { class: "-mr-2",
+                                UserAvatar {
+                                    size_class: "w-8 h-8",
+                                    color_class: "ring ring-primary ring-offset-base-100 ring-offset-2",
+                                    online: true
                                 }
                             }
-                            div { class: "avatar",
-                                div { class: "w-8 h-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2",
-                                    img { src: "https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" }
+                            div { class: "-mr-2",
+                                UserAvatar {
+                                    size_class: "w-8 h-8",
+                                    color_class: "bg-secondary text-secondary-content ring ring-primary ring-offset-base-100 ring-offset-2",
+                                    online: false
                                 }
                             }
                             div { class: "avatar placeholder",
@@ -98,11 +115,14 @@ pub fn Circles() -> Element {
                         }
                     }
                 }
-                
+
                 // Circle 3
                 div { class: "card bg-base-100 shadow-xl",
-                    figure { class: "px-10 pt-10",
-                        img { class: "rounded-xl", src: "https://daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.jpg", alt: "Friends Circle" }
+                    figure { class: "px-10 pt-10 flex justify-center",
+                        GroupAvatar {
+                            size_class: "w-32 h-32",
+                            color_class: "bg-accent text-accent-content"
+                        }
                     }
                     div { class: "card-body",
                         h3 { class: "card-title",
@@ -111,19 +131,25 @@ pub fn Circles() -> Element {
                         }
                         p { "Stay connected with your friends and plan activities together." }
                         div { class: "flex -space-x-4 mt-4",
-                            div { class: "avatar",
-                                div { class: "w-8 h-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2",
-                                    img { src: "https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" }
+                            div { class: "-mr-2",
+                                UserAvatar {
+                                    size_class: "w-8 h-8",
+                                    color_class: "ring ring-primary ring-offset-base-100 ring-offset-2",
+                                    online: true
                                 }
                             }
-                            div { class: "avatar",
-                                div { class: "w-8 h-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2",
-                                    img { src: "https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" }
+                            div { class: "-mr-2",
+                                UserAvatar {
+                                    size_class: "w-8 h-8",
+                                    color_class: "bg-secondary text-secondary-content ring ring-primary ring-offset-base-100 ring-offset-2",
+                                    online: true
                                 }
                             }
-                            div { class: "avatar",
-                                div { class: "w-8 h-8 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2",
-                                    img { src: "https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" }
+                            div { class: "-mr-2",
+                                UserAvatar {
+                                    size_class: "w-8 h-8",
+                                    color_class: "bg-accent text-accent-content ring ring-primary ring-offset-base-100 ring-offset-2",
+                                    online: false
                                 }
                             }
                             div { class: "avatar placeholder",
@@ -138,7 +164,7 @@ pub fn Circles() -> Element {
                         }
                     }
                 }
-                
+
                 // Create new circle card
                 div { class: "card bg-base-100 shadow-xl border-2 border-dashed border-base-300",
                     div { class: "card-body flex items-center justify-center text-center h-full",
@@ -155,7 +181,7 @@ pub fn Circles() -> Element {
                     }
                 }
             }
-            
+
             div { class: "mt-6 text-center",
                 span { class: "badge badge-warning gap-2", "Demo Only" }
             }
