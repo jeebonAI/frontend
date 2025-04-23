@@ -6,9 +6,7 @@
 title = "frontend-dioxus"
 
 # Content Security Policy
-content_security_policy = "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
-
-# include `assets` in web platform
+content_security_policy = "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src fonts.gstatic.com; img-src 'self' data:; connect-src fonts.googleapis.com fonts.gstatic.com;" # include `assets` in web platform
 [web.resource]
 
 # Additional CSS style files
