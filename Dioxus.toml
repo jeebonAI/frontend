@@ -7,18 +7,10 @@ title = "Djibon PACT"
 # Content Security Policy
 # content_security_policy = "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src fonts.gstatic.com; img-src 'self' data:; connect-src fonts.googleapis.com fonts.gstatic.com;"
 
-[web.resource]
-# Additional CSS style files
-style = []
-
-# Additional JavaScript files
+[web.resources]
+style = ["/assets/tailwind.css"]
 script = []
 
-[web.resource.dev]
-# Javascript code file
-# serve: [dev-server] only
-script = []
-
-[web.dev]
+[web.watcher]
 # The port to serve on
 port = 4200

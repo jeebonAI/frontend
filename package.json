@@ -8,6 +8,23 @@
     "tailwind:build": "tailwindcss -i ./input.css -o ./assets/tailwind.css --minify"
   },
   "devDependencies": {
-    "tailwindcss": "^3.3.5"
+    "daisyui": "^5.0.28",
+    "tailwindcss": "^3.4.17"
+  },
+  "main": "tailwind.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wizardsupreme/djibon-frontend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wizardsupreme/djibon-frontend/issues"
+  },
+  "homepage": "https://github.com/wizardsupreme/djibon-frontend#readme",
+  "dependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.3"
   }
 }
