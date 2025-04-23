@@ -11,6 +11,7 @@ dioxus = { version = "0.6.3", features = ["router", "fullstack", "web"] }
 wasm-logger = "0.2.0"
 log = "0.4.27"
 wasm-bindgen = "0.2.100"
+web-sys = { version = "0.3.68", features = ["Window", "Document", "Element", "HtmlElement"] }
 
 [features]
 default = ["web"]

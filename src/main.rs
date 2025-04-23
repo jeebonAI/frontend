@@ -6,7 +6,7 @@ mod layouts;
 mod components;
 
 // Import components from modules
-use layouts::main_layout::MainLayout;
+use layouts::MobileLayout;
 use pages::home::Home;
 use pages::profile::Profile;
 use pages::messages::Messages;
@@ -22,7 +22,7 @@ const FAVICON: Asset = asset!("/assets/favicon.ico");
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
 enum Route {
-    #[layout(MainLayout)]
+    #[layout(MobileLayout)]
     #[route("/")]
     Home {},
     #[route("/profile")]

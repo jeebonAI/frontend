@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Circle background -->
+  <circle cx="256" cy="256" r="230" fill="#6C5CE7" stroke="#FFFFFF" stroke-width="26"/>
+  
+  <!-- Letter D -->
+  <path d="M154 128H230C273.518 128 308 162.482 308 206V306C308 349.518 273.518 384 230 384H154V128Z" fill="#FFFFFF"/>
+  
+  <!-- Connection lines -->
+  <path d="M334 180H384C398.359 180 410 191.641 410 206V206C410 220.359 398.359 232 384 232H334V180Z" fill="#FFFFFF"/>
+  <path d="M334 280H384C398.359 280 410 291.641 410 306V306C410 320.359 398.359 332 384 332H334V280Z" fill="#FFFFFF"/>
+  
+  <!-- Dots -->
+  <circle cx="334" cy="206" r="26" fill="#00CEC9"/>
+  <circle cx="334" cy="306" r="26" fill="#00CEC9"/>
+</svg>

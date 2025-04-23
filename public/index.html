@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html data-theme="dark">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4a6da7">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>DJibon - Personal Assistance and Communication Tool</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <!-- App CSS -->
+    <link rel="stylesheet" href="/assets/main.css">
+
+    <!-- DaisyUI and Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.9.4/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4a6da7',
+                        secondary: '#6c5ce7',
+                        accent: '#00cec9',
+                    }
+                }
+            },
+            daisyui: {
+                themes: [
+                    {
+                        name: "light",
+                        primary: "#4a6da7",
+                        secondary: "#6c5ce7",
+                        accent: "#00cec9",
+                        "base-100": "#ffffff",
+                    },
+                    {
+                        name: "dark",
+                        primary: "#6c5ce7",
+                        secondary: "#4a6da7",
+                        accent: "#00cec9",
+                        "base-100": "#1f2937",
+                    },
+                ],
+            },
+        }
+    </script>
+
+    <!-- App manifest for PWA -->
+    <link rel="manifest" href="/manifest.json">
+</head>
+<body>
+    <div id="main"></div>
+</body>
+</html>
