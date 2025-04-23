@@ -15,7 +15,8 @@ use pages::trees::Trees;
 use pages::settings::Settings;
 
 // Define assets
-const TAILWIND_CSS: Asset = asset!("/assets/tailwind.css");
+const BOOTSTRAP_CSS: Asset = asset!("/assets/bootstrap/bootstrap.min.css");
+const BOOTSTRAP_ICONS: Asset = asset!("/assets/bootstrap/bootstrap-icons.css");
 const MAIN_CSS: Asset = asset!("/assets/main.css");
 const FAVICON: Asset = asset!("/assets/favicon.ico");
 
@@ -50,7 +51,8 @@ fn main() {
 fn App() -> Element {
     rsx! {
         // Include stylesheets in the head
-        document::Link { rel: "stylesheet", href: TAILWIND_CSS }
+        document::Link { rel: "stylesheet", href: BOOTSTRAP_CSS }
+        document::Link { rel: "stylesheet", href: BOOTSTRAP_ICONS }
         document::Link { rel: "stylesheet", href: MAIN_CSS }
         document::Link { rel: "icon", href: FAVICON }
         Router::<Route> {}

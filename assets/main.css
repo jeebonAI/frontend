@@ -8,38 +8,50 @@ body {
     background-color: #f5f7fa;
     color: #333;
     line-height: 1.6;
+    padding-bottom: 60px; /* Space for bottom nav */
 }
 
-/* App container */
-.app-container {
+/* Mobile container */
+.mobile-container {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    max-width: 100%;
+    position: relative;
+}
+
+@media (min-width: 576px) {
+    .mobile-container {
+        max-width: 480px;
+        margin: 0 auto;
+        border-left: 1px solid #dee2e6;
+        border-right: 1px solid #dee2e6;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
 }
 
 /* Header */
 .app-header {
     background-color: #4a6fa5;
     color: white;
-    padding: 1rem 2rem;
+    padding: 0.75rem 1rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.app-header h1 {
-    margin: 0;
-    font-size: 2rem;
-}
-
-.app-header p {
-    margin: 0.5rem 0 0;
-    font-size: 1rem;
-    opacity: 0.9;
+.app-logo {
+    height: 32px;
+    width: auto;
 }
 
 /* Main content area */
 .main-content {
-    display: flex;
     flex: 1;
+    padding: 1rem;
+    padding-bottom: 70px; /* Space for bottom nav */
+    overflow-y: auto;
 }
 
 /* Sidebar */
@@ -164,6 +176,69 @@ body {
     border-radius: 4px;
     font-weight: bold;
     margin-top: 1rem;
+}
+
+/* Bottom Navigation Bar - styled like the screenshot */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background-color: #fff;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+@media (min-width: 576px) {
+    .bottom-nav {
+        max-width: 480px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+.bottom-nav .nav-item {
+    flex: 1;
+    height: 100%;
+}
+
+.bottom-nav .nav-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 0.7rem;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.bottom-nav .nav-link i {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.bottom-nav .nav-link.active {
+    color: #4a6fa5;
+}
+
+/* Dark mode toggle */
+.dark-mode-toggle {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Responsive adjustments */
