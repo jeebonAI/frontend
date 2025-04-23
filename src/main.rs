@@ -23,11 +23,10 @@ const FAVICON: Asset = asset!("/assets/favicon.ico");
 
 fn main() {
     // Initialize the logger for better error messages
-    // Using wasm_logger instead of dioxus_logger for web compatibility
-    wasm_logger::init(wasm_logger::Config::default());
+    dioxus::logger::init(dioxus::logger::tracing::Level::INFO).expect("Failed to initialize logger");
 
-    // Launch the app
-    dioxus::launch(App);
+    // Launch the app with mobile configuration
+    dioxus::mobile::launch(App);
 }
 
 #[component]

@@ -1,4 +1,7 @@
 [application]
+name = "DJibon"
+default_platform = "android"
+out_dir = "dist"
 
 [web.app]
 
@@ -25,4 +28,14 @@ script = []
 
 [web.dev]
 # The port to serve on
-port = 3200
+port = 3300
+
+[android]
+app_name = "DJibon"
+package_name = "com.djibon.app"
+version_code = 1
+version_name = "1.0.0"
+minimum_sdk_version = 21
+target_sdk_version = 33
+icon = "assets/favicon.ico"
+activity_name = "MainActivity"
