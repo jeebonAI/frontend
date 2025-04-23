@@ -1,0 +1,28 @@
+[application]
+
+[web.app]
+
+# HTML title tag content
+title = "frontend-dioxus"
+
+# Content Security Policy
+content_security_policy = "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
+
+# include `assets` in web platform
+[web.resource]
+
+# Additional CSS style files
+style = []
+
+# Additional JavaScript files
+script = []
+
+[web.resource.dev]
+
+# Javascript code file
+# serve: [dev-server] only
+script = []
+
+[web.dev]
+# The port to serve on
+port = 3200
