@@ -6,6 +6,7 @@ use crate::components::messages::Messages;
 use crate::components::circles::Circles;
 use crate::components::trees::Trees;
 use crate::components::settings::Settings;
+use crate::components::system_info::SystemInfo;
 
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]
@@ -23,4 +24,6 @@ pub enum Route {
     Trees {},
     #[route("/settings")]
     Settings {},
+    #[route("/system-info")]
+    SystemInfo {},
 }
