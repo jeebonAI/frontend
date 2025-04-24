@@ -19,6 +19,9 @@ pub fn Tree() -> Element {
                         try {
                             create(getData());
                             console.log("Family chart initialized");
+                            
+                            // Apply custom styles AFTER chart is initialized
+                            applyCustomStyles();
                         } catch (error) {
                             console.error('Error initializing family chart:', error);
                             const container = document.getElementById('FamilyChart');
@@ -30,6 +33,30 @@ pub fn Tree() -> Element {
                 });
             });
         })();
+
+        function applyCustomStyles() {
+            // Add custom CSS to fix styling issues
+            const customStyle = document.createElement('style');
+            customStyle.textContent = `
+                /* Different colors for male and female cards */
+                rect.card-male card.male {
+                    fill: #d4e6f9;  /* Light blue for males */
+                }
+                rect.card-female card.female {
+                    fill: #f9d4d4;  /* Light pink for females */
+                }
+            `;
+            document.head.appendChild(customStyle);
+            
+            // Also directly apply styles to existing elements
+            document.querySelectorAll('rect.card-male').forEach(el => {
+                el.style.fill = '#d4e6f9';
+            });
+            
+            document.querySelectorAll('rect.card-female').forEach(el => {
+                el.style.fill = '#f9d4d4';
+            });
+        }
 
         function loadScript(url, callback) {
             const script = document.createElement('script');
