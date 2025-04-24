@@ -6,10 +6,12 @@ content_security_policy = "default-src 'self'; script-src 'self' 'unsafe-eval'; 
 [web.resources]
 style = ["/assets/bootstrap.min.css"]
 script = ["/assets/bootstrap.bundle.min.js"]
+# Add font files as resources
+font = ["/assets/bootstrap-icons.woff", "/assets/bootstrap-icons.woff2"]
 
 [web.watcher]
 port = 4200
 
 # Add this to specify the assets directory
 [web.assets]
-assets_dir = "../../assets"
+assets_dir = "assets"
