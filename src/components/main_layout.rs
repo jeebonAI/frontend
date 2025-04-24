@@ -127,17 +127,7 @@ pub fn MainLayout() -> Element {
                         // Navigation menu - make it scrollable if needed
                         div { class: "nav-container overflow-auto flex-grow-1 p-3",
                             ul { class: "nav nav-pills flex-column",
-                                li { class: "nav-item",
-                                    Link {
-                                        to: Route::Home {},
-                                        class: "nav-link link-dark",
-                                        active_class: "active",
-                                        "data-bs-dismiss": "offcanvas",
-                                        "data-bs-target": "#sidebarMenu",
-                                        i { class: "bi bi-house-door me-2" }
-                                        "Home"
-                                    }
-                                }
+                                // Home link removed
                                 li { class: "nav-item",
                                     Link {
                                         to: Route::Profile {},
@@ -277,15 +267,7 @@ pub fn MainLayout() -> Element {
             nav { class: "navbar fixed-bottom navbar-light bg-light", 
                 div { class: "container-fluid",
                     div { class: "row w-100 text-center",
-                        div { class: "col",
-                            Link { 
-                                to: Route::Home {}, 
-                                class: "nav-link", 
-                                active_class: "active fw-bold text-primary",
-                                i { class: "bi bi-house d-block" }
-                                "Home"
-                            }
-                        }
+                        // Home link removed
                         div { class: "col",
                             Link { 
                                 to: Route::Profile {}, 
