@@ -3,119 +3,148 @@ use dioxus::prelude::*;
 #[component]
 pub fn Tree() -> Element {
     let family_tree_js = r###"
-        function loadScripts(urls, callback) {
-            let loaded = 0;
-            urls.forEach(url => {
-                const script = document.createElement('script');
-                script.type = 'text/javascript';
-                script.src = url;
-                script.onload = () => {
-                    loaded++;
-                    if (loaded === urls.length) {
-                        callback();
-                    }
-                };
-                document.head.appendChild(script);
-            });
-        }
-
-        // Load required libraries
-        loadScripts([
-            'https://d3js.org/d3.v7.min.js',
-            'https://unpkg.com/family-chart@latest/dist/family-chart.min.js'
-        ], function() {
-            try {
-                const container = document.getElementById('family-chart-container');
-                
-                // Sample family data
-                const data = [
-                    { id: 1, gender: 'male', parents: [], children: [3, 4], spouses: [2], name: 'John Doe' },
-                    { id: 2, gender: 'female', parents: [], children: [3, 4], spouses: [1], name: 'Jane Smith' },
-                    { id: 3, gender: 'female', parents: [1, 2], children: [], spouses: [], name: 'Alice Doe' },
-                    { id: 4, gender: 'male', parents: [1, 2], children: [], spouses: [], name: 'Bob Doe' }
-                ];
-                
-                // Create chart using the correct constructor and initialization pattern
-                // Based on examples from https://github.com/donatso/family-chart/tree/master/examples
-                const chart = new FamilyChart({
-                    container_id: 'family-chart-container',
-                    data: data,
-                    svgHeight: 600,
-                    svgWidth: container.clientWidth,
-                    nodeWidth: 120,
-                    nodeHeight: 70,
-                    nodePaddingX: 10,
-                    nodePaddingY: 10,
-                    nodeBorderRadius: 5,
-                    backgroundColor: '#fff',
-                    connectionsLineStyle: 'straight',
-                    orientation: 'vertical',
-                    debug: false,
-                    onNodeClick: (d) => {
-                        console.log('Node clicked:', d);
-                    },
-                    nodeRenderer: function(d, i, nodes) {
-                        const node = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-                        
-                        // Rectangle
-                        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-                        rect.setAttribute('width', '120');
-                        rect.setAttribute('height', '70');
-                        rect.setAttribute('rx', '5');
-                        rect.setAttribute('ry', '5');
-                        rect.setAttribute('fill', d.gender === 'male' ? '#a8d1f0' : '#f0c1d8');
-                        rect.setAttribute('stroke', '#333');
-                        rect.setAttribute('stroke-width', '2');
-                        
-                        // Text
-                        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                        text.setAttribute('x', '60');
-                        text.setAttribute('y', '40');
-                        text.setAttribute('text-anchor', 'middle');
-                        text.setAttribute('font-family', 'Arial, sans-serif');
-                        text.setAttribute('font-size', '14px');
-                        text.setAttribute('fill', '#333');
-                        text.textContent = d.name;
-                        
-                        node.appendChild(rect);
-                        node.appendChild(text);
-                        
-                        return node;
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add CSS for family-chart
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'https://unpkg.com/family-chart@0.0.0/dist/styles/family-chart.css';
+            document.head.appendChild(link);
+            
+            // Load D3 first, then family-chart
+            loadScript('https://unpkg.com/d3@6', function() {
+                loadScript('https://unpkg.com/family-chart@0.0.0', function() {
+                    try {
+                        create(getData());
+                    } catch (error) {
+                        console.error('Error initializing family chart:', error);
+                        const container = document.getElementById('FamilyChart');
+                        if (container) {
+                            container.innerHTML = '<div class="alert alert-danger">Error initializing family chart: ' + error.message + '</div>';
+                        }
                     }
                 });
-                
-                // Add legend
-                const legend = document.createElement('div');
-                legend.style.position = 'absolute';
-                legend.style.bottom = '10px';
-                legend.style.right = '10px';
-                legend.style.backgroundColor = 'rgba(255,255,255,0.9)';
-                legend.style.padding = '10px';
-                legend.style.border = '1px solid #ddd';
-                legend.style.borderRadius = '5px';
-                legend.style.fontSize = '12px';
-                
-                legend.innerHTML = `
-                    <div style="font-weight: bold; margin-bottom: 5px;">Legend</div>
-                    <div style="display: flex; align-items: center; margin-bottom: 3px;">
-                        <div style="width: 15px; height: 15px; background-color: #a8d1f0; margin-right: 5px;"></div>
-                        <span>Male</span>
-                    </div>
-                    <div style="display: flex; align-items: center; margin-bottom: 3px;">
-                        <div style="width: 15px; height: 15px; background-color: #f0c1d8; margin-right: 5px;"></div>
-                        <span>Female</span>
-                    </div>
-                `;
-                
-                container.appendChild(legend);
-            } catch (error) {
-                console.error('Error initializing family chart:', error);
-                const container = document.getElementById('family-chart-container');
-                if (container) {
-                    container.innerHTML = '<div class="alert alert-danger">Error initializing family chart: ' + error.message + '</div>';
-                }
-            }
+            });
         });
+
+        function loadScript(url, callback) {
+            const script = document.createElement('script');
+            script.type = url.includes('family-chart') ? 'module' : 'text/javascript';
+            script.src = url;
+            script.onload = callback;
+            document.head.appendChild(script);
+        }
+
+        function create(data) {
+            const cont = document.querySelector("#FamilyChart");
+            const store = f3.createStore({
+                data,
+                node_separation: 250,
+                level_separation: 150
+            });
+            const svg = f3.createSvg(cont);
+            const Card = f3.elements.Card({
+                store,
+                svg,
+                card_dim: {w:220, h:70, text_x:75, text_y:15, img_w:60, img_h:60, img_x:5, img_y:5},
+                card_display: [d => `${d.data["first name"]} ${d.data["last name"]}`],
+                mini_tree: true,
+                link_break: false
+            });
+
+            store.setOnUpdate(props => f3.view(store.getTree(), svg, Card, props || {}));
+            store.updateTree({initial: true});
+        }
+
+        function getData() {
+            return [
+                {
+                    "id": "0",
+                    "rels": {
+                        "spouses": ["1"],
+                        "children": ["2", "3"]
+                    },
+                    "data": {
+                        "first name": "John",
+                        "last name": "Doe",
+                        "birthday": "1970",
+                        "avatar": "https://static8.depositphotos.com/1009634/988/v/950/depositphotos_9883921-stock-illustration-no-user-profile-picture.jpg",
+                        "gender": "M"
+                    }
+                },
+                {
+                    "id": "1",
+                    "data": {
+                        "gender": "F",
+                        "first name": "Jane",
+                        "last name": "Smith",
+                        "birthday": "1972",
+                        "avatar": ""
+                    },
+                    "rels": {
+                        "spouses": ["0"],
+                        "children": ["2", "3"]
+                    }
+                },
+                {
+                    "id": "2",
+                    "data": {
+                        "gender": "M",
+                        "first name": "Bob",
+                        "last name": "Doe",
+                        "birthday": "1995",
+                        "avatar": ""
+                    },
+                    "rels": {
+                        "father": "0",
+                        "mother": "1",
+                        "spouses": ["4"],
+                        "children": ["5"]
+                    }
+                },
+                {
+                    "id": "3",
+                    "data": {
+                        "gender": "F",
+                        "first name": "Alice",
+                        "last name": "Doe",
+                        "birthday": "1997",
+                        "avatar": ""
+                    },
+                    "rels": {
+                        "father": "0",
+                        "mother": "1"
+                    }
+                },
+                {
+                    "id": "4",
+                    "data": {
+                        "gender": "F",
+                        "first name": "Carol",
+                        "last name": "Johnson",
+                        "birthday": "1996",
+                        "avatar": ""
+                    },
+                    "rels": {
+                        "spouses": ["2"],
+                        "children": ["5"]
+                    }
+                },
+                {
+                    "id": "5",
+                    "data": {
+                        "gender": "M",
+                        "first name": "David",
+                        "last name": "Doe",
+                        "birthday": "2020",
+                        "avatar": ""
+                    },
+                    "rels": {
+                        "father": "2",
+                        "mother": "4"
+                    }
+                }
+            ];
+        }
     "###;
 
     rsx! {
@@ -133,8 +162,9 @@ pub fn Tree() -> Element {
                 div {
                     class: "card-body",
                     div {
-                        id: "family-chart-container",
-                        style: "width: 100%; height: 600px; border: 1px solid #ddd; position: relative;"
+                        id: "FamilyChart",
+                        class: "f3",
+                        style: "width: 100%; height: 600px; background-color: rgb(33,33,33); color: #fff;"
                     }
                 }
             }
