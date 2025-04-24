@@ -8,12 +8,12 @@ pub fn Tree() -> Element {
             // Add CSS for family-chart
             const link = document.createElement('link');
             link.rel = 'stylesheet';
-            link.href = 'https://unpkg.com/family-chart@0.0.0/dist/styles/family-chart.css';
+            link.href = 'https://unpkg.com/family-chart@0.2.1/dist/styles/family-chart.css';
             document.head.appendChild(link);
             
             // Load D3 first, then family-chart
             loadScript('https://unpkg.com/d3@6', function() {
-                loadScript('https://unpkg.com/family-chart@0.0.0', function() {
+                loadScript('https://unpkg.com/family-chart@0.2.1', function() {
                     // Small delay to ensure DOM is ready
                     setTimeout(() => {
                         try {
