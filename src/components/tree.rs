@@ -19,71 +19,186 @@ pub fn Tree() -> Element {
             });
         }
 
-        // Load required libraries
+        // Load required libraries for dTree
         loadScripts([
-            'https://d3js.org/d3.v7.min.js',
-            'https://unpkg.com/family-chart@latest/dist/family-chart.min.js'
+            'https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js',
+            'https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js',
+            'https://cdn.jsdelivr.net/npm/d3-dtree@2.4.1/dist/dTree.min.js'
         ], function() {
             try {
-                const container = document.getElementById('family-chart-container');
-                
-                // Sample family data
+                // Sample family data in dTree format
                 const data = [
-                    { id: 1, gender: 'male', parents: [], children: [3, 4], spouses: [2], name: 'John Doe' },
-                    { id: 2, gender: 'female', parents: [], children: [3, 4], spouses: [1], name: 'Jane Smith' },
-                    { id: 3, gender: 'female', parents: [1, 2], children: [], spouses: [], name: 'Alice Doe' },
-                    { id: 4, gender: 'male', parents: [1, 2], children: [], spouses: [], name: 'Bob Doe' }
+                    {
+                        name: "John Doe",
+                        class: "male",
+                        textClass: "emphasis",
+                        marriage: {
+                            spouse: {
+                                name: "Jane Smith",
+                                class: "female"
+                            },
+                            children: [
+                                {
+                                    name: "Alice Doe",
+                                    class: "female"
+                                },
+                                {
+                                    name: "Bob Doe",
+                                    class: "male",
+                                    marriage: {
+                                        spouse: {
+                                            name: "Carol Johnson",
+                                            class: "female"
+                                        },
+                                        children: [
+                                            {
+                                                name: "David Doe",
+                                                class: "male"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    }
                 ];
-                
-                // Create chart using the correct constructor and initialization pattern
-                // Based on examples from https://github.com/donatso/family-chart/tree/master/examples
-                const chart = new FamilyChart({
-                    container_id: 'family-chart-container',
+
+                // Configure the tree
+                const config = {
                     data: data,
-                    svgHeight: 600,
-                    svgWidth: container.clientWidth,
+                    target: "#family-chart-container",
+                    debug: true,
+                    height: 550,
+                    width: document.getElementById('family-chart-container').offsetWidth,
+                    callbacks: {
+                        nodeClick: function(name, extra, id) {
+                            console.log("Node clicked:", name, extra, id);
+                        }
+                    },
                     nodeWidth: 120,
                     nodeHeight: 70,
-                    nodePaddingX: 10,
-                    nodePaddingY: 10,
-                    nodeBorderRadius: 5,
-                    backgroundColor: '#fff',
-                    connectionsLineStyle: 'straight',
-                    orientation: 'vertical',
-                    debug: false,
-                    onNodeClick: (d) => {
-                        console.log('Node clicked:', d);
-                    },
-                    nodeRenderer: function(d, i, nodes) {
-                        const node = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-                        
-                        // Rectangle
-                        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-                        rect.setAttribute('width', '120');
-                        rect.setAttribute('height', '70');
-                        rect.setAttribute('rx', '5');
-                        rect.setAttribute('ry', '5');
-                        rect.setAttribute('fill', d.gender === 'male' ? '#a8d1f0' : '#f0c1d8');
-                        rect.setAttribute('stroke', '#333');
-                        rect.setAttribute('stroke-width', '2');
-                        
-                        // Text
-                        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                        text.setAttribute('x', '60');
-                        text.setAttribute('y', '40');
-                        text.setAttribute('text-anchor', 'middle');
-                        text.setAttribute('font-family', 'Arial, sans-serif');
-                        text.setAttribute('font-size', '14px');
-                        text.setAttribute('fill', '#333');
-                        text.textContent = d.name;
-                        
-                        node.appendChild(rect);
-                        node.appendChild(text);
-                        
-                        return node;
+                    styles: {
+                        node: 'node',
+                        linage: 'linage',
+                        marriage: 'marriage',
+                        text: 'nodeText'
                     }
-                });
+                };
+
+                // Draw the tree using the new initialization format
+                dTree.init(config);
                 
+                console.log("dTree initialization complete");
+                
+                // Check if SVG was created
+                const svg = document.querySelector('#family-chart-container svg');
+                if (!svg) {
+                    console.error("No SVG created by dTree");
+                    
+                    // Force create SVG and draw a simple tree as fallback
+                    const container = document.getElementById('family-chart-container');
+                    const width = container.offsetWidth;
+                    const height = 550;
+                    
+                    const svg = d3.select('#family-chart-container')
+                        .append('svg')
+                        .attr('width', width)
+                        .attr('height', height);
+                        
+                    // Create a simple tree layout
+                    const treeData = d3.hierarchy({
+                        name: "John Doe",
+                        children: [
+                            { name: "Alice Doe" },
+                            { 
+                                name: "Bob Doe",
+                                children: [{ name: "David Doe" }]
+                            }
+                        ]
+                    });
+                    
+                    const treeLayout = d3.tree().size([width - 100, height - 100]);
+                    treeLayout(treeData);
+                    
+                    // Add links
+                    svg.append('g')
+                        .attr('transform', 'translate(50,50)')
+                        .selectAll('path')
+                        .data(treeData.links())
+                        .enter()
+                        .append('path')
+                        .attr('d', d3.linkVertical()
+                            .x(d => d.x)
+                            .y(d => d.y))
+                        .attr('fill', 'none')
+                        .attr('stroke', '#333')
+                        .attr('stroke-width', 2);
+                    
+                    // Add nodes
+                    svg.append('g')
+                        .attr('transform', 'translate(50,50)')
+                        .selectAll('circle')
+                        .data(treeData.descendants())
+                        .enter()
+                        .append('circle')
+                        .attr('cx', d => d.x)
+                        .attr('cy', d => d.y)
+                        .attr('r', 20)
+                        .attr('fill', '#a8d1f0')
+                        .attr('stroke', '#333')
+                        .attr('stroke-width', 2);
+                    
+                    // Add labels
+                    svg.append('g')
+                        .attr('transform', 'translate(50,50)')
+                        .selectAll('text')
+                        .data(treeData.descendants())
+                        .enter()
+                        .append('text')
+                        .attr('x', d => d.x)
+                        .attr('y', d => d.y + 35)
+                        .attr('text-anchor', 'middle')
+                        .text(d => d.data.name)
+                        .attr('font-family', 'Arial')
+                        .attr('font-size', '12px');
+                        
+                    console.log("Fallback tree created");
+                }
+
+                // Add custom CSS for styling
+                const style = document.createElement('style');
+                style.textContent = `
+                    .node.male { 
+                        fill: #a8d1f0; 
+                        stroke: #333;
+                        stroke-width: 2px;
+                    }
+                    .node.female { 
+                        fill: #f0c1d8; 
+                        stroke: #333;
+                        stroke-width: 2px;
+                    }
+                    .nodeText {
+                        font-family: Arial, sans-serif;
+                        font-size: 14px;
+                        fill: #333;
+                    }
+                    .emphasis {
+                        font-weight: bold;
+                    }
+                    .linage {
+                        fill: none;
+                        stroke: #333;
+                        stroke-width: 2px;
+                    }
+                    .marriage {
+                        fill: none;
+                        stroke: #333;
+                        stroke-width: 2px;
+                    }
+                `;
+                document.head.appendChild(style);
+
                 // Add legend
                 const legend = document.createElement('div');
                 legend.style.position = 'absolute';
@@ -107,12 +222,12 @@ pub fn Tree() -> Element {
                     </div>
                 `;
                 
-                container.appendChild(legend);
+                document.getElementById('family-chart-container').appendChild(legend);
             } catch (error) {
-                console.error('Error initializing family chart:', error);
+                console.error('Error initializing family tree:', error);
                 const container = document.getElementById('family-chart-container');
                 if (container) {
-                    container.innerHTML = '<div class="alert alert-danger">Error initializing family chart: ' + error.message + '</div>';
+                    container.innerHTML = '<div class="alert alert-danger">Error initializing family tree: ' + error.message + '</div>';
                 }
             }
         });
