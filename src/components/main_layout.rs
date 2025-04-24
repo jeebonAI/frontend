@@ -141,13 +141,13 @@ pub fn MainLayout() -> Element {
                                 }
                                 li { class: "nav-item",
                                     Link {
-                                        to: Route::Messages {},
+                                        to: Route::Comms {},
                                         class: "nav-link link-dark",
                                         active_class: "active",
                                         "data-bs-dismiss": "offcanvas",
                                         "data-bs-target": "#sidebarMenu",
                                         i { class: "bi bi-chat-dots me-2" }
-                                        "Messages"
+                                        "Comms"
                                     }
                                 }
                                 li { class: "nav-item",
@@ -255,10 +255,8 @@ pub fn MainLayout() -> Element {
                         Outlet::<Route> {}
                     }
                     
-                    // Footer
-                    footer { class: "mt-auto text-center p-3",
-                        p { class: "mb-0 text-muted", "DJibon - Prototype Version" }
-                    }
+                    // Footer - removing the text
+                    footer { class: "mt-auto text-center p-3" }
                 }
             }
 
@@ -279,11 +277,11 @@ pub fn MainLayout() -> Element {
                         }
                         div { class: "col",
                             Link { 
-                                to: Route::Messages {}, 
+                                to: Route::Comms {}, 
                                 class: "nav-link", 
                                 active_class: "active fw-bold text-primary",
                                 i { class: "bi bi-chat d-block" }
-                                "Messages"
+                                "Comms"
                             }
                         }
                         div { class: "col",
