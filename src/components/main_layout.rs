@@ -148,6 +148,8 @@ pub fn MainLayout() -> Element {
                                         Link {
                                             to: Route::Settings {},
                                             class: "dropdown-item",
+                                            "data-bs-dismiss": "offcanvas",
+                                            "data-bs-target": "#sidebarMenu",
                                             "Settings"
                                         }
                                     }
@@ -155,6 +157,8 @@ pub fn MainLayout() -> Element {
                                         Link {
                                             to: Route::Profile {},
                                             class: "dropdown-item",
+                                            "data-bs-dismiss": "offcanvas",
+                                            "data-bs-target": "#sidebarMenu",
                                             "Profile"
                                         }
                                     }
@@ -162,6 +166,8 @@ pub fn MainLayout() -> Element {
                                         Link {
                                             to: Route::SystemInfo {},
                                             class: "dropdown-item",
+                                            "data-bs-dismiss": "offcanvas",
+                                            "data-bs-target": "#sidebarMenu",
                                             "System Info"
                                         }
                                     }
@@ -170,6 +176,8 @@ pub fn MainLayout() -> Element {
                                         a { 
                                             class: "dropdown-item",
                                             href: "#",
+                                            "data-bs-dismiss": "offcanvas",
+                                            "data-bs-target": "#sidebarMenu",
                                             onclick: move |_| {
                                                 log::info!("User logged out");
                                                 // Add actual logout logic here when implemented
