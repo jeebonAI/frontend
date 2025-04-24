@@ -5,7 +5,7 @@ content_security_policy = "default-src 'self'; script-src 'self' 'unsafe-eval'; 
 
 [web.resources]
 style = ["/assets/bootstrap.min.css"]
-script = []
+script = ["/assets/bootstrap.bundle.min.js"]
 
 [web.watcher]
 port = 4200
