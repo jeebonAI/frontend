@@ -9,7 +9,31 @@ pub fn MainLayout() -> Element {
             // Top navbar with toggle button (visible on smaller screens)
             nav { class: "navbar navbar-expand-lg navbar-light bg-light d-lg-none border-bottom",
                 div { class: "container-fluid",
-                    a { class: "navbar-brand", href: "#", "DJibon" }
+                    a { class: "navbar-brand", href: "#", 
+                        svg {
+                            width: "30",
+                            height: "30",
+                            view_box: "0 0 24 24",
+                            fill: "currentColor",
+                            class: "me-2",
+                            
+                            // Improved tree of life logo
+                            path {
+                                d: "M12 2c0 0-9 6.5-9 13c0 4.4 4 7 9 7s9-2.6 9-7C21 8.5 12 2 12 2zm0 18c-3.9 0-7-1.7-7-5c0-4.9 7-10.5 7-10.5s7 5.6 7 10.5C19 18.3 15.9 20 12 20z"
+                            }
+                            // Inner details of the tree
+                            path {
+                                d: "M12 6.5c0 0-5 3.5-5 7.5c0 2.5 2.2 4 5 4s5-1.5 5-4C17 10 12 6.5 12 6.5zm0 9.5c-1.9 0-3-0.9-3-2c0-2.2 3-4.8 3-4.8s3 2.6 3 4.8C15 15.1 13.9 16 12 16z"
+                            }
+                            // Center circle
+                            circle {
+                                cx: "12",
+                                cy: "13",
+                                r: "1.5"
+                            }
+                        }
+                        "DJibon"
+                    }
                     button {
                         class: "navbar-toggler",
                         r#type: "button",
@@ -34,7 +58,29 @@ pub fn MainLayout() -> Element {
                     
                     // Offcanvas header (only visible when in offcanvas mode)
                     div { class: "offcanvas-header d-lg-none",
-                        h5 { class: "offcanvas-title", "DJibon Menu" }
+                        div { class: "d-flex align-items-center",
+                            svg {
+                                width: "30",
+                                height: "30",
+                                view_box: "0 0 24 24",
+                                fill: "currentColor",
+                                class: "me-2",
+                                
+                                // Tree of life logo
+                                path {
+                                    d: "M12 2c0 0-9 6.5-9 13c0 4.4 4 7 9 7s9-2.6 9-7C21 8.5 12 2 12 2zm0 18c-3.9 0-7-1.7-7-5c0-4.9 7-10.5 7-10.5s7 5.6 7 10.5C19 18.3 15.9 20 12 20z"
+                                }
+                                path {
+                                    d: "M12 6.5c0 0-5 3.5-5 7.5c0 2.5 2.2 4 5 4s5-1.5 5-4C17 10 12 6.5 12 6.5zm0 9.5c-1.9 0-3-0.9-3-2c0-2.2 3-4.8 3-4.8s3 2.6 3 4.8C15 15.1 13.9 16 12 16z"
+                                }
+                                circle {
+                                    cx: "12",
+                                    cy: "13",
+                                    r: "1.5"
+                                }
+                            }
+                            h5 { class: "offcanvas-title mb-0", "DJibon" }
+                        }
                         button {
                             r#type: "button",
                             class: "btn-close",
@@ -51,6 +97,28 @@ pub fn MainLayout() -> Element {
                             a { 
                                 class: "d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none",
                                 href: "#",
+                                svg {
+                                    width: "36",
+                                    height: "36",
+                                    view_box: "0 0 24 24",
+                                    fill: "currentColor",
+                                    class: "me-2",
+                                    
+                                    // Improved tree of life logo
+                                    path {
+                                        d: "M12 2c0 0-9 6.5-9 13c0 4.4 4 7 9 7s9-2.6 9-7C21 8.5 12 2 12 2zm0 18c-3.9 0-7-1.7-7-5c0-4.9 7-10.5 7-10.5s7 5.6 7 10.5C19 18.3 15.9 20 12 20z"
+                                    }
+                                    // Inner details of the tree
+                                    path {
+                                        d: "M12 6.5c0 0-5 3.5-5 7.5c0 2.5 2.2 4 5 4s5-1.5 5-4C17 10 12 6.5 12 6.5zm0 9.5c-1.9 0-3-0.9-3-2c0-2.2 3-4.8 3-4.8s3 2.6 3 4.8C15 15.1 13.9 16 12 16z"
+                                    }
+                                    // Center circle
+                                    circle {
+                                        cx: "12",
+                                        cy: "13",
+                                        r: "1.5"
+                                    }
+                                }
                                 span { class: "fs-4", "DJibon" }
                             }
                             hr {}
