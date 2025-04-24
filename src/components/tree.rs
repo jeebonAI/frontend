@@ -49,12 +49,17 @@ pub fn Tree() -> Element {
             // Clear any existing content
             cont.innerHTML = '';
             
+            // Set background color for the container
+            cont.style.backgroundColor = "#f0f2f5";
+            
             const store = f3.createStore({
                 data,
                 node_separation: 250,
                 level_separation: 150
             });
+            
             const svg = f3.createSvg(cont);
+            
             const Card = f3.elements.Card({
                 store,
                 svg,
@@ -69,15 +74,33 @@ pub fn Tree() -> Element {
                 link_break: false
             });
 
-            store.setOnUpdate(props => f3.view(store.getTree(), svg, Card, props || {}));
+            store.setOnUpdate(props => {
+                f3.view(store.getTree(), svg, Card, props || {});
+                
+                // After rendering, fix specific issues
+                setTimeout(() => {
+                    // Fix link visibility
+                    document.querySelectorAll('.link, .marriage-link').forEach(link => {
+                        link.style.stroke = '#6c757d';
+                        link.style.strokeWidth = '2px';
+                        link.style.opacity = '1';
+                    });
+                    
+                    // Remove text overflow masks
+                    document.querySelectorAll('.text-overflow-mask').forEach(mask => {
+                        mask.style.display = 'none';
+                    });
+                }, 100);
+            });
+            
             store.updateTree({initial: true});
         }
 
         // Generate SVG placeholder for missing images
         function generateAvatarSvg(name, gender) {
             const colors = {
-                M: "#4285F4", // Blue for male
-                F: "#EA4335", // Red for female
+                M: "#d4e6f9", // Blue for male
+                F: "#f9d4d4", // Red for female
                 O: "#34A853"  // Green for other
             };
             const color = colors[gender] || "#FBBC05"; // Yellow default
