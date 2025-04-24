@@ -163,7 +163,7 @@ pub fn MainLayout() -> Element {
                                 }
                                 li { class: "nav-item",
                                     Link {
-                                        to: Route::Trees {},
+                                        to: Route::Tree {}, // Changed from Route::Trees to Route::Tree
                                         class: "nav-link link-dark",
                                         active_class: "active",
                                         "data-bs-dismiss": "offcanvas",
@@ -295,7 +295,7 @@ pub fn MainLayout() -> Element {
                         }
                         div { class: "col",
                             Link { 
-                                to: Route::Trees {}, 
+                                to: Route::Tree {}, // Changed from Route::Trees to Route::Tree
                                 class: "nav-link", 
                                 active_class: "active fw-bold text-primary",
                                 i { class: "bi bi-diagram-3 d-block" }
