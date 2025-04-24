@@ -1,24 +1,15 @@
 [application]
-
-[web.app]
-# HTML title tag content
+name = "djibon-web"
 title = "Djibon PACT"
+content_security_policy = "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
 
-# Content Security Policy
-# content_security_policy = "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src fonts.gstatic.com; img-src 'self' data:; connect-src fonts.googleapis.com fonts.gstatic.com;"
-
-[web.resource]
-# Additional CSS style files
-style = []
-
-# Additional JavaScript files
+[web.resources]
+style = ["/assets/bootstrap.min.css"]
 script = []
 
-[web.resource.dev]
-# Javascript code file
-# serve: [dev-server] only
-script = []
-
-[web.dev]
-# The port to serve on
+[web.watcher]
 port = 4200
+
+# Add this to specify the assets directory
+[web.assets]
+assets_dir = "../../assets"
