@@ -2,225 +2,119 @@ use dioxus::prelude::*;
 
 #[component]
 pub fn Tree() -> Element {
-    let cytoscape_js = r###"
-        function loadScript(url, callback) {
-            const script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.src = url;
-            script.onload = callback;
-            document.head.appendChild(script);
+    let family_tree_js = r###"
+        function loadScripts(urls, callback) {
+            let loaded = 0;
+            urls.forEach(url => {
+                const script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.src = url;
+                script.onload = () => {
+                    loaded++;
+                    if (loaded === urls.length) {
+                        callback();
+                    }
+                };
+                document.head.appendChild(script);
+            });
         }
 
-        loadScript('https://cdnjs.cloudflare.com/ajax/libs/graphlib/2.1.8/graphlib.min.js', function() {
-            loadScript('https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.26.0/cytoscape.min.js', function() {
-                loadScript('https://cdn.jsdelivr.net/npm/dagre@0.8.5/dist/dagre.min.js', function() {
-                    loadScript('https://cdn.jsdelivr.net/npm/cytoscape-dagre@2.5.0/cytoscape-dagre.min.js', function() {
+        // Load required libraries
+        loadScripts([
+            'https://d3js.org/d3.v7.min.js',
+            'https://unpkg.com/family-chart@latest/dist/family-chart.min.js'
+        ], function() {
+            try {
+                const container = document.getElementById('family-chart-container');
+                
+                // Sample family data
+                const data = [
+                    { id: 1, gender: 'male', parents: [], children: [3, 4], spouses: [2], name: 'John Doe' },
+                    { id: 2, gender: 'female', parents: [], children: [3, 4], spouses: [1], name: 'Jane Smith' },
+                    { id: 3, gender: 'female', parents: [1, 2], children: [], spouses: [], name: 'Alice Doe' },
+                    { id: 4, gender: 'male', parents: [1, 2], children: [], spouses: [], name: 'Bob Doe' }
+                ];
+                
+                // Create chart using the correct constructor and initialization pattern
+                // Based on examples from https://github.com/donatso/family-chart/tree/master/examples
+                const chart = new FamilyChart({
+                    container_id: 'family-chart-container',
+                    data: data,
+                    svgHeight: 600,
+                    svgWidth: container.clientWidth,
+                    nodeWidth: 120,
+                    nodeHeight: 70,
+                    nodePaddingX: 10,
+                    nodePaddingY: 10,
+                    nodeBorderRadius: 5,
+                    backgroundColor: '#fff',
+                    connectionsLineStyle: 'straight',
+                    orientation: 'vertical',
+                    debug: false,
+                    onNodeClick: (d) => {
+                        console.log('Node clicked:', d);
+                    },
+                    nodeRenderer: function(d, i, nodes) {
+                        const node = document.createElementNS('http://www.w3.org/2000/svg', 'g');
                         
-                        // Initialize the graph
-                        const cy = cytoscape({
-                            container: document.getElementById('cyto-container'),
-                            elements: [
-                                // People nodes
-                                { data: { id: 'p1', name: 'John Doe', gender: 'male', generation: 1 } },
-                                { data: { id: 'p2', name: 'Jane Smith', gender: 'female', generation: 1 } },
-                                { data: { id: 'p3', name: 'Mary Brown', gender: 'female', generation: 1 } },
-                                { data: { id: 'c1', name: 'Alice Doe', gender: 'female', generation: 2 } },
-                                { data: { id: 'c2', name: 'Bob Doe', gender: 'male', generation: 2 } },
-                                
-                                // Relationship nodes (invisible)
-                                { data: { id: 'r1', type: 'marriage', generation: 1 } },
-                                { data: { id: 'r2', type: 'parent-child', generation: 1.5 } },
-                                { data: { id: 'r3', type: 'parent-child', generation: 1.5 } },
-                                
-                                // Marriage edges
-                                { data: { id: 'e1', source: 'p1', target: 'r1', type: 'spouse' } },
-                                { data: { id: 'e2', source: 'p2', target: 'r1', type: 'spouse' } },
-                                
-                                // Parent-child edges
-                                { data: { id: 'e3', source: 'r1', target: 'r2', type: 'parent-child' } },
-                                { data: { id: 'e4', source: 'r2', target: 'c1', type: 'child' } },
-                                { data: { id: 'e5', source: 'r1', target: 'r3', type: 'parent-child' } },
-                                { data: { id: 'e6', source: 'r3', target: 'c2', type: 'child' } },
-                                
-                                // Step-parent relationship
-                                { data: { id: 'e7', source: 'p3', target: 'c2', type: 'step' } }
-                            ],
-                            style: [
-                                {
-                                    selector: 'node[gender]',
-                                    style: {
-                                        'label': 'data(name)',
-                                        'text-valign': 'bottom',
-                                        'text-margin-y': 10,
-                                        'width': 30,
-                                        'height': 30,
-                                        'background-color': function(ele) {
-                                            return ele.data('gender') === 'male' ? '#007bff' : '#ff69b4';
-                                        },
-                                        'font-size': 14,
-                                        'font-weight': 'bold',
-                                        'text-wrap': 'wrap',
-                                        'border-width': 2,
-                                        'border-color': '#333'
-                                    }
-                                },
-                                {
-                                    selector: 'node[type]',
-                                    style: {
-                                        'width': 10,
-                                        'height': 10,
-                                        'background-color': '#aaa',
-                                        'opacity': 0
-                                    }
-                                },
-                                {
-                                    selector: 'edge[type="spouse"]',
-                                    style: { 
-                                        'line-style': 'solid',
-                                        'width': 3,
-                                        'line-color': '#888',
-                                        'curve-style': 'straight'
-                                    }
-                                },
-                                {
-                                    selector: 'edge[type="parent-child"]',
-                                    style: { 
-                                        'line-style': 'solid',
-                                        'width': 3,
-                                        'line-color': '#888',
-                                        'curve-style': 'straight'
-                                    }
-                                },
-                                {
-                                    selector: 'edge[type="child"]',
-                                    style: { 
-                                        'line-style': 'solid',
-                                        'width': 3,
-                                        'line-color': '#888',
-                                        'curve-style': 'straight',
-                                        'target-arrow-shape': 'triangle',
-                                        'target-arrow-color': '#888'
-                                    }
-                                },
-                                {
-                                    selector: 'edge[type="step"]',
-                                    style: { 
-                                        'line-style': 'dotted',
-                                        'width': 2,
-                                        'line-color': '#888',
-                                        'curve-style': 'bezier',
-                                        'target-arrow-shape': 'triangle',
-                                        'target-arrow-color': '#888',
-                                        'line-dash-pattern': [6, 3]
-                                    }
-                                }
-                            ],
-                            layout: {
-                                name: 'dagre',
-                                rankDir: 'TB',
-                                rankSep: 100,
-                                nodeSep: 50,
-                                ranker: 'network-simplex',
-                                align: 'UL',
-                                // Use generations to enforce proper hierarchy
-                                rankFn: function(node) {
-                                    return node.data('generation');
-                                }
-                            },
-                            zoom: 1,
-                            minZoom: 0.5,
-                            maxZoom: 2,
-                            wheelSensitivity: 0.2
-                        });
-
-                        // Add tooltips to show relationship types
-                        cy.on('mouseover', 'edge', function(e) {
-                            const edge = e.target;
-                            const type = edge.data('type');
-                            
-                            // Create tooltip
-                            let tooltip = document.getElementById('cy-tooltip');
-                            if (!tooltip) {
-                                tooltip = document.createElement('div');
-                                tooltip.id = 'cy-tooltip';
-                                tooltip.style.position = 'absolute';
-                                tooltip.style.backgroundColor = 'rgba(0,0,0,0.75)';
-                                tooltip.style.color = 'white';
-                                tooltip.style.padding = '5px 10px';
-                                tooltip.style.borderRadius = '3px';
-                                tooltip.style.fontSize = '12px';
-                                tooltip.style.pointerEvents = 'none';
-                                tooltip.style.zIndex = '999';
-                                document.body.appendChild(tooltip);
-                            }
-                            
-                            // Set tooltip content based on relationship type
-                            let relationshipText = '';
-                            switch(type) {
-                                case 'spouse': relationshipText = 'Spouse'; break;
-                                case 'biological': relationshipText = 'Biological Parent'; break;
-                                case 'step': relationshipText = 'Step Parent'; break;
-                                case 'child': relationshipText = 'Child'; break;
-                                default: relationshipText = type.charAt(0).toUpperCase() + type.slice(1);
-                            }
-                            
-                            tooltip.textContent = relationshipText;
-                            
-                            // Position tooltip near mouse
-                            const renderedPosition = edge.renderedMidpoint();
-                            const containerRect = cy.container().getBoundingClientRect();
-                            
-                            tooltip.style.left = (containerRect.left + renderedPosition.x) + 'px';
-                            tooltip.style.top = (containerRect.top + renderedPosition.y - 30) + 'px';
-                            tooltip.style.display = 'block';
-                        });
+                        // Rectangle
+                        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                        rect.setAttribute('width', '120');
+                        rect.setAttribute('height', '70');
+                        rect.setAttribute('rx', '5');
+                        rect.setAttribute('ry', '5');
+                        rect.setAttribute('fill', d.gender === 'male' ? '#a8d1f0' : '#f0c1d8');
+                        rect.setAttribute('stroke', '#333');
+                        rect.setAttribute('stroke-width', '2');
                         
-                        cy.on('mouseout', 'edge', function() {
-                            const tooltip = document.getElementById('cy-tooltip');
-                            if (tooltip) {
-                                tooltip.style.display = 'none';
-                            }
-                        });
-
-                        // Add legend
-                        const legend = document.createElement('div');
-                        legend.style.position = 'absolute';
-                        legend.style.bottom = '10px';
-                        legend.style.right = '10px';
-                        legend.style.backgroundColor = 'rgba(255,255,255,0.9)';
-                        legend.style.padding = '10px';
-                        legend.style.border = '1px solid #ddd';
-                        legend.style.borderRadius = '5px';
-                        legend.style.fontSize = '12px';
+                        // Text
+                        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                        text.setAttribute('x', '60');
+                        text.setAttribute('y', '40');
+                        text.setAttribute('text-anchor', 'middle');
+                        text.setAttribute('font-family', 'Arial, sans-serif');
+                        text.setAttribute('font-size', '14px');
+                        text.setAttribute('fill', '#333');
+                        text.textContent = d.name;
                         
-                        legend.innerHTML = `
-                            <div style="font-weight: bold; margin-bottom: 5px;">Legend</div>
-                            <div style="display: flex; align-items: center; margin-bottom: 3px;">
-                                <div style="width: 15px; height: 15px; border-radius: 50%; background-color: #007bff; margin-right: 5px;"></div>
-                                <span>Male</span>
-                            </div>
-                            <div style="display: flex; align-items: center; margin-bottom: 3px;">
-                                <div style="width: 15px; height: 15px; border-radius: 50%; background-color: #ff69b4; margin-right: 5px;"></div>
-                                <span>Female</span>
-                            </div>
-                            <div style="display: flex; align-items: center; margin-bottom: 3px;">
-                                <div style="width: 30px; height: 2px; background-color: #888; margin-right: 5px;"></div>
-                                <span>Marriage</span>
-                            </div>
-                            <div style="display: flex; align-items: center; margin-bottom: 3px;">
-                                <div style="width: 30px; height: 2px; border-top: 2px solid #888; margin-right: 5px;"></div>
-                                <span>Parent-Child</span>
-                            </div>
-                            <div style="display: flex; align-items: center;">
-                                <div style="width: 30px; height: 0; border-top: 2px dotted #888; margin-right: 5px;"></div>
-                                <span>Step-Parent</span>
-                            </div>
-                        `;
+                        node.appendChild(rect);
+                        node.appendChild(text);
                         
-                        document.getElementById('cyto-container').appendChild(legend);
-                    });
+                        return node;
+                    }
                 });
-            });
+                
+                // Add legend
+                const legend = document.createElement('div');
+                legend.style.position = 'absolute';
+                legend.style.bottom = '10px';
+                legend.style.right = '10px';
+                legend.style.backgroundColor = 'rgba(255,255,255,0.9)';
+                legend.style.padding = '10px';
+                legend.style.border = '1px solid #ddd';
+                legend.style.borderRadius = '5px';
+                legend.style.fontSize = '12px';
+                
+                legend.innerHTML = `
+                    <div style="font-weight: bold; margin-bottom: 5px;">Legend</div>
+                    <div style="display: flex; align-items: center; margin-bottom: 3px;">
+                        <div style="width: 15px; height: 15px; background-color: #a8d1f0; margin-right: 5px;"></div>
+                        <span>Male</span>
+                    </div>
+                    <div style="display: flex; align-items: center; margin-bottom: 3px;">
+                        <div style="width: 15px; height: 15px; background-color: #f0c1d8; margin-right: 5px;"></div>
+                        <span>Female</span>
+                    </div>
+                `;
+                
+                container.appendChild(legend);
+            } catch (error) {
+                console.error('Error initializing family chart:', error);
+                const container = document.getElementById('family-chart-container');
+                if (container) {
+                    container.innerHTML = '<div class="alert alert-danger">Error initializing family chart: ' + error.message + '</div>';
+                }
+            }
         });
     "###;
 
@@ -239,14 +133,14 @@ pub fn Tree() -> Element {
                 div {
                     class: "card-body",
                     div {
-                        id: "cyto-container",
+                        id: "family-chart-container",
                         style: "width: 100%; height: 600px; border: 1px solid #ddd; position: relative;"
                     }
                 }
             }
-            // Add script tag with the cytoscape JavaScript
+            // Add script tag with the family tree JavaScript
             script {
-                dangerous_inner_html: cytoscape_js
+                dangerous_inner_html: family_tree_js
             }
         }
     }
