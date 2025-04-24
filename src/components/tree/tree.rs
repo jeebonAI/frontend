@@ -144,8 +144,11 @@ pub fn Tree() -> Element {
                             }
                         }
                         
-                        // Connection lines
-                        div { class: "tree-connections" }
+                        // Connection lines from parents to central person
+                        div { class: "tree-connections",
+                            div { class: "vertical-line" }
+                            div { class: "horizontal-line parents-line" }
+                        }
                         
                         // Central person level
                         div { class: "tree-level central-level",
@@ -158,8 +161,11 @@ pub fn Tree() -> Element {
                             }
                         }
                         
-                        // Connection lines
-                        div { class: "tree-connections" }
+                        // Connection lines from central person to children
+                        div { class: "tree-connections",
+                            div { class: "vertical-line" }
+                            div { class: "horizontal-line children-line" }
+                        }
                         
                         // Children level
                         div { class: "tree-level children-level",
@@ -194,6 +200,7 @@ pub fn Tree() -> Element {
                             width: 100%;
                             gap: 20px;
                             margin: 10px 0;
+                            position: relative;
                         }}
                         .tree-node {{
                             padding: 10px;
@@ -202,16 +209,32 @@ pub fn Tree() -> Element {
                             border: 1px solid #dee2e6;
                             min-width: 120px;
                             text-align: center;
+                            z-index: 2;
                         }}
                         .central-node {{
                             background-color: #e7f5ff;
                             border-color: #74c0fc;
                         }}
                         .tree-connections {{
-                            height: 30px;
+                            position: relative;
+                            height: 40px;
+                            width: 100%;
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                        }}
+                        .vertical-line {{
+                            height: 100%;
                             width: 2px;
                             background-color: #adb5bd;
-                            margin: 0 auto;
+                        }}
+                        .horizontal-line {{
+                            position: absolute;
+                            height: 2px;
+                            background-color: #adb5bd;
+                            width: 80%;
+                            top: 50%;
+                            left: 10%;
                         }}
                         .parents-level, .children-level {{
                             justify-content: space-around;
