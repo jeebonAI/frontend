@@ -1,0 +1,15 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "target/dx/frontend-dioxus/release/web/public/**",
+            "use": "@vercel/static"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "target/dx/frontend-dioxus/release/web/public/$1"
+        }
+    ]
+}
