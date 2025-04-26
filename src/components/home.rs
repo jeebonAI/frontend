@@ -1,36 +1,73 @@
 use dioxus::prelude::*;
+use crate::Route;
 
 #[component]
 pub fn Home() -> Element {
-    let mut count = use_signal(|| 0);
-
     rsx! {
-        div { class: "home-page",
-            h2 { "Welcome to DJibon" }
-            p { class: "intro",
-                "This is a prototype of the DJibon Personal Assistance and Communication Tool. "
-                "It demonstrates the basic structure and navigation of the application."
-            }
-            div { class: "demo-card",
-                h3 { "Interactive Demo" }
-                p { "Click the button below to increment the counter:" }
-                div { class: "counter",
-                    button {
-                        onclick: move |_| count += 1,
-                        "Increment"
+        div { class: "container mt-2",
+            div { class: "row row-cols-2 g-3",
+                // Profile Box
+                div { class: "col",
+                    Link {
+                        to: Route::Profile {},
+                        div {
+                            class: "card text-center h-100",
+                            div {
+                                class: "card-body d-flex flex-column justify-content-center align-items-center",
+                                style: "min-height: 150px;",
+                                i { class: "bi bi-person fs-1 mb-2" }
+                                span { "Profile" }
+                            }
+                        }
                     }
-                    p { "Count: {count}" }
                 }
-            }
-            div { class: "features-list",
-                h3 { "Key Features:" }
-                ul {
-                    li { "User profiles and authentication" }
-                    li { "Real-time messaging" }
-                    li { "Audio/video calls" }
-                    li { "Circles for group communication" }
-                    li { "Trees for hierarchical organization" }
-                    li { "Works online and offline" }
+
+                // Communications Box
+                div { class: "col",
+                    Link {
+                        to: Route::Comms {},
+                        div {
+                            class: "card text-center h-100",
+                            div {
+                                class: "card-body d-flex flex-column justify-content-center align-items-center",
+                                style: "min-height: 150px;",
+                                i { class: "bi bi-chat-dots fs-1 mb-2" }
+                                span { "Comms" }
+                            }
+                        }
+                    }
+                }
+
+                // Circles Box
+                div { class: "col",
+                    Link {
+                        to: Route::Circles {},
+                        div {
+                            class: "card text-center h-100",
+                            div {
+                                class: "card-body d-flex flex-column justify-content-center align-items-center",
+                                style: "min-height: 150px;",
+                                i { class: "bi bi-people fs-1 mb-2" }
+                                span { "Circles" }
+                            }
+                        }
+                    }
+                }
+
+                // Trees Box
+                div { class: "col",
+                    Link {
+                        to: Route::Tree {},
+                        div {
+                            class: "card text-center h-100",
+                            div {
+                                class: "card-body d-flex flex-column justify-content-center align-items-center",
+                                style: "min-height: 150px;",
+                                i { class: "bi bi-diagram-3 fs-1 mb-2" }
+                                span { "Trees" }
+                            }
+                        }
+                    }
                 }
             }
         }

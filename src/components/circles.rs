@@ -146,25 +146,25 @@ pub fn Circles() -> Element {
         div { class: "circles-page p-3",
             // Top section with tabs and plus icon
             div { class: "d-flex justify-content-between align-items-center mb-4",
-                // Tabs as icons with better styling
+                // Tabs as icons with tooltips
                 div { class: "nav nav-tabs border-0 flex-row",
                     button { 
                         class: if *active_tab.read() == "personal" { "nav-link active text-primary" } else { "nav-link text-secondary" },
                         onclick: move |_| active_tab.set("personal"),
+                        title: "Personal", // Tooltip for Personal tab
                         i { class: "bi bi-person", style: "font-size: 1.2rem;" }
-                        span { class: "ms-2 d-none d-md-inline", "Personal" }
                     }
                     button { 
                         class: if *active_tab.read() == "private" { "nav-link active text-primary" } else { "nav-link text-secondary" },
                         onclick: move |_| active_tab.set("private"),
+                        title: "Private", // Tooltip for Private tab
                         i { class: "bi bi-lock", style: "font-size: 1.2rem;" }
-                        span { class: "ms-2 d-none d-md-inline", "Private" }
                     }
                     button { 
                         class: if *active_tab.read() == "public" { "nav-link active text-primary" } else { "nav-link text-secondary" },
                         onclick: move |_| active_tab.set("public"),
+                        title: "Public", // Tooltip for Public tab
                         i { class: "bi bi-globe", style: "font-size: 1.2rem;" }
-                        span { class: "ms-2 d-none d-md-inline", "Public" }
                     }
                 }
                 

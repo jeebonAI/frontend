@@ -1,11 +1,12 @@
 [package]
-name = "dioxus-test"
+name = "frontend-dioxus"
 version = "0.1.0"
-edition = "2021"
+authors = ["wizard supreme <smn7818@gmail.com>"]
+edition = "2024"
 
 [dependencies]
 dioxus = { version = "0.6.3", features = ["web", "router", "signals"] }
-log = "0.4.20"
+log = "0.4.27"
 wasm-logger = "0.2.0"
 
 [profile]

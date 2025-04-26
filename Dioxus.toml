@@ -1,32 +1,10 @@
 [application]
 name = "djibon-web"
-title = "Djibon PACT"
-content_security_policy = "default-src 'self'; script-src 'self' 'unsafe-eval' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data:; connect-src 'self';"
-
-[web.watcher]
-port = 4200
-
-[web.assets]
-assets_dir = "assets"
+title = "Djibon"
 
 [web.app]
-include_service_worker = false
-hydrate = true
-ssr = false
 index_on_404 = true
 template = "index.html"
 
-# Configure hydration for production environments
-[web.app.features]
-hydration = true
-
-# Configure how assets are handled
-[web.app.asset_handling]
-base64_assets = false
-
-# Fix asset paths by using the correct section name
-[web.resource.dev]
-base_path = "/"
-
-[web.resource.release]
-base_path = "/"
+[web.assets]
+assets_dir = "public"
