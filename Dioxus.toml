@@ -3,10 +3,6 @@ name = "djibon-web"
 title = "Djibon PACT"
 content_security_policy = "default-src 'self'; script-src 'self' 'unsafe-eval' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data:; connect-src 'self';"
 
-[web.resources]
-style = ["/assets/bootstrap.min.css"]
-script = ["/assets/bootstrap.bundle.min.js"]
-
 [web.watcher]
 port = 4200
 

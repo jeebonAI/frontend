@@ -6,8 +6,5 @@ title = "Dioxus Test"
 index_on_404 = true
 template = "index.html"
 
-[web.resource]
-style = ["./public/style.css"]
-
-[web.resource.dev]
-style = ["./public/style.css"]
+[web.assets]
+assets_dir = "public"

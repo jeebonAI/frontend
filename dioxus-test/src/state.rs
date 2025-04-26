@@ -32,11 +32,6 @@ pub fn use_app_state() -> Signal<AppState> {
     use_context_provider(|| Signal::new(AppState::new()))
 }
 
-// Function to increment the counter
-pub fn increment_counter(mut state: Signal<AppState>) {
-    state.write().counter += 1;
-}
-
 // Function to toggle the theme
 pub fn toggle_theme(mut state: Signal<AppState>) {
     let mut app_state = state.write();

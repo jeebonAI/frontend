@@ -69,9 +69,11 @@ pub fn NavBar() -> Element {
 
         // Sidebar offcanvas menu
         div {
-            class: "offcanvas offcanvas-start",
+            class: "offcanvas offcanvas-start w-auto",
+            style: "width: 80%; max-width: 280px;",
             "data-bs-theme": theme_attr,
             "data-bs-backdrop": "true",
+
             "data-bs-scroll": "false",
             id: "sidebarMenu",
             tabindex: "-1",
@@ -192,7 +194,12 @@ pub fn NavBar() -> Element {
                             class: "d-flex align-items-center text-primary text-decoration-none dropdown-toggle",
                             href: "#",
                             "data-bs-toggle": "dropdown",
+                            "data-bs-auto-close": "true",
                             "aria-expanded": "false",
+                            onclick: move |evt| {
+                                // Prevent the event from bubbling up to the offcanvas
+                                evt.stop_propagation();
+                            },
                             // Placeholder avatar using Bootstrap Icons
                             i {
                                 class: "bi bi-person-circle fs-4 me-2 text-primary"
@@ -204,7 +211,7 @@ pub fn NavBar() -> Element {
                                 Link {
                                     to: Route::Settings {},
                                     class: "dropdown-item",
-                                    "data-bs-dismiss": "offcanvas",
+
                                     "Settings"
                                 }
                             }
@@ -212,7 +219,7 @@ pub fn NavBar() -> Element {
                                 Link {
                                     to: Route::Profile {},
                                     class: "dropdown-item",
-                                    "data-bs-dismiss": "offcanvas",
+
                                     "Profile"
                                 }
                             }
@@ -220,7 +227,7 @@ pub fn NavBar() -> Element {
                                 Link {
                                     to: Route::SystemInfo {},
                                     class: "dropdown-item",
-                                    "data-bs-dismiss": "offcanvas",
+
                                     "System Info"
                                 }
                             }
@@ -229,7 +236,7 @@ pub fn NavBar() -> Element {
                                 a {
                                     class: "dropdown-item",
                                     href: "#",
-                                    "data-bs-dismiss": "offcanvas",
+
                                     "Sign out"
                                 }
                             }

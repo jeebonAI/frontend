@@ -14,18 +14,14 @@ html, body {
 
 /* Reduce top spacing */
 .container.mt-4 {
-    margin-top: 0.5rem !important;
+    margin-top: 0 !important;
 }
 
 /* Reduce navbar height */
 .navbar {
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-}
-
-/* Main content area should have proper spacing */
-.container, .container-fluid {
-    padding-bottom: 80px; /* Space for the bottom navbar */
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    min-height: auto;
 }
 
 /* Style the bottom navigation */
@@ -49,10 +45,6 @@ html, body {
 }
 
 /* Style the offcanvas sidebar */
-.offcanvas {
-    width: 60%;
-    max-width: 280px;
-}
 
 /* Make the offcanvas body scrollable with fixed header and footer */
 .offcanvas-body {

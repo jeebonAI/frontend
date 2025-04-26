@@ -5,6 +5,7 @@ mod state;
 
 use components::{NavBar, BottomNav, ErrorBoundary, Home, Profile, Comms, Circles, Tree, Settings, SystemInfo};
 use state::{use_app_state, Theme};
+use crate::document::Stylesheet;
 
 // Define our routes
 #[derive(Clone, Debug, PartialEq, Routable)]
@@ -43,8 +44,9 @@ const BOOTSTRAP_CSS: &str = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/c
 const BOOTSTRAP_JS: &str = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js";
 const BOOTSTRAP_ICONS: &str = "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css";
 
+// const STYLE: Asset = asset!("/public/style.css");
 // Include the CSS file directly as a string to avoid MIME type issues
-static STYLE: &str = include_str!("../public/style.css");
+// static STYLE: &str = include_str!("./public/style.css");
 
 // Application with routing
 fn main() {
@@ -143,12 +145,13 @@ fn MainLayout() -> Element {
 fn App() -> Element {
     rsx! {
         // Include Bootstrap CSS and JS
+        Stylesheet { href: asset!("./public/style.css") }
         document::Link { rel: "stylesheet", href: BOOTSTRAP_CSS }
         document::Link { rel: "stylesheet", href: BOOTSTRAP_ICONS }
         document::Script { src: BOOTSTRAP_JS }
 
         // Include our custom CSS inline to avoid MIME type issues
-        document::Style { { STYLE } }
+       // document::Style { { STYLE } }
 
         // Error boundary to catch and display errors
         ErrorBoundary {

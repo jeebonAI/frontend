@@ -5,36 +5,21 @@ use crate::state::{use_app_state, Theme, toggle_theme};
 pub fn Settings() -> Element {
     // Get the app state
     let state = use_app_state();
-    
+
     // Check if the theme is dark
     let is_dark = matches!(state.read().theme, Theme::Dark);
-    
+
     // Create an event handler for the theme toggle
     let handle_toggle = move |_| {
         toggle_theme(state);
     };
-    
+
     rsx! {
         div { class: "container mt-4",
             h1 { "Settings" }
-            
-            div { class: "row",
-                div { class: "col-md-3 mb-4",
-                    // Settings navigation
-                    div { class: "list-group",
-                        a { class: "list-group-item list-group-item-action active", href: "#", "General" }
-                        a { class: "list-group-item list-group-item-action", href: "#", "Account" }
-                        a { class: "list-group-item list-group-item-action", href: "#", "Privacy" }
-                        a { class: "list-group-item list-group-item-action", href: "#", "Notifications" }
-                        a { class: "list-group-item list-group-item-action", href: "#", "Security" }
-                    }
-                }
-                
-                div { class: "col-md-9",
-                    // General settings
-                    div { class: "card",
-                        div { class: "card-header", "General Settings" }
-                        div { class: "card-body",
+
+            div { class: "card mt-3",
+                div { class: "card-body",
                             // Theme settings
                             div { class: "mb-4",
                                 h5 { "Appearance" }
@@ -54,7 +39,7 @@ pub fn Settings() -> Element {
                                 }
                                 p { class: "text-muted small", "Switch between light and dark themes." }
                             }
-                            
+
                             // Language settings
                             div { class: "mb-4",
                                 h5 { "Language" }
@@ -66,7 +51,7 @@ pub fn Settings() -> Element {
                                 }
                                 p { class: "text-muted small", "Select your preferred language for the application interface." }
                             }
-                            
+
                             // Time zone settings
                             div { class: "mb-4",
                                 h5 { "Time Zone" }
@@ -78,7 +63,7 @@ pub fn Settings() -> Element {
                                 }
                                 p { class: "text-muted small", "Select your time zone for accurate time displays." }
                             }
-                            
+
                             // Accessibility settings
                             div {
                                 h5 { "Accessibility" }
@@ -122,8 +107,6 @@ pub fn Settings() -> Element {
                             }
                         }
                     }
-                }
-            }
         }
     }
 }
