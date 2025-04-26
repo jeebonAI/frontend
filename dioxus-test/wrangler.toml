@@ -8,3 +8,10 @@ command = "dx build --release"
 # Pages specific configuration
 [site]
 output_dir = "target/dx/dioxus-test/release/web/public"
+
+# Add pages_build_output_dir for Pages deployment
+pages_build_output_dir = "target/dx/dioxus-test/release/web/public"
+
+# Configure MIME types
+[site.mimeTypes]
+".css" = "text/css"

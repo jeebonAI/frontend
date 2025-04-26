@@ -3,8 +3,8 @@ use dioxus::prelude::*;
 mod components;
 mod state;
 
-use components::{NavBar, BottomNav, ErrorBoundary};
-use state::{use_app_state, Theme, increment_counter, toggle_theme};
+use components::{NavBar, BottomNav, ErrorBoundary, Home, Profile, Comms, Circles, Tree, Settings, SystemInfo};
+use state::{use_app_state, Theme};
 
 // Define our routes
 #[derive(Clone, Debug, PartialEq, Routable)]
@@ -13,11 +13,23 @@ enum Route {
     #[route("/")]
     Home {},
 
-    #[route("/about")]
-    About {},
+    #[route("/profile")]
+    Profile {},
+
+    #[route("/comms")]
+    Comms {},
+
+    #[route("/circles")]
+    Circles {},
+
+    #[route("/trees")]
+    Tree {},
 
     #[route("/settings")]
     Settings {},
+
+    #[route("/system-info")]
+    SystemInfo {},
 
     #[route("/error-test")]
     ErrorTest {},
@@ -31,7 +43,7 @@ const BOOTSTRAP_CSS: &str = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/c
 const BOOTSTRAP_JS: &str = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js";
 const BOOTSTRAP_ICONS: &str = "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css";
 
-// Include the CSS file
+// Include the CSS file directly as a string to avoid MIME type issues
 static STYLE: &str = include_str!("../public/style.css");
 
 // Application with routing
@@ -41,91 +53,6 @@ fn main() {
 
     // Launch the application
     dioxus::launch(App);
-}
-
-// Home page component
-#[component]
-fn Home() -> Element {
-    // Get the app state
-    let state = use_app_state();
-
-    // Read the counter value
-    let counter = state.read().counter;
-
-    // Create an event handler for the increment button
-    let increment = move |_| {
-        increment_counter(state);
-    };
-
-    rsx! {
-        div { class: "container mt-5",
-            h1 { "Home Page" }
-            p { "This is the home page of our test application." }
-            div { class: "mt-4",
-                p { "Counter: {counter}" }
-                button {
-                    class: "btn btn-primary",
-                    onclick: increment,
-                    "Increment"
-                }
-            }
-            div { class: "mt-3",
-                Link { to: Route::About {}, class: "btn btn-outline-primary me-2", "Go to About" }
-                Link { to: Route::Settings {}, class: "btn btn-outline-secondary", "Go to Settings" }
-            }
-        }
-    }
-}
-
-// About page component
-#[component]
-fn About() -> Element {
-    rsx! {
-        div { class: "container mt-5",
-            h1 { "About Page" }
-            p { "This is the about page of our test application." }
-            Link { to: Route::Home {}, class: "btn btn-primary", "Go to Home" }
-        }
-    }
-}
-
-// Settings page component
-#[component]
-fn Settings() -> Element {
-    // Get the app state
-    let state = use_app_state();
-
-    // Check if the theme is dark
-    let is_dark = matches!(state.read().theme, Theme::Dark);
-
-    // Create an event handler for the theme toggle
-    let handle_toggle = move |_| {
-        toggle_theme(state);
-    };
-
-    rsx! {
-        div { class: "container mt-5",
-            h1 { "Settings" }
-            div { class: "form-check form-switch mt-3",
-                input {
-                    class: "form-check-input",
-                    r#type: "checkbox",
-                    id: "darkModeSwitch",
-                    checked: is_dark,
-                    onclick: handle_toggle
-                }
-                label {
-                    class: "form-check-label",
-                    r#for: "darkModeSwitch",
-                    "Dark Mode"
-                }
-            }
-            div { class: "mt-4",
-                Link { to: Route::Home {}, class: "btn btn-primary me-2", "Go to Home" }
-                Link { to: Route::ErrorTest {}, class: "btn btn-danger", "Test Error Handling" }
-            }
-        }
-    }
 }
 
 // Error test page component
@@ -220,7 +147,7 @@ fn App() -> Element {
         document::Link { rel: "stylesheet", href: BOOTSTRAP_ICONS }
         document::Script { src: BOOTSTRAP_JS }
 
-        // Include our custom CSS
+        // Include our custom CSS inline to avoid MIME type issues
         document::Style { { STYLE } }
 
         // Error boundary to catch and display errors

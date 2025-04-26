@@ -71,6 +71,8 @@ pub fn NavBar() -> Element {
         div {
             class: "offcanvas offcanvas-start",
             "data-bs-theme": theme_attr,
+            "data-bs-backdrop": "true",
+            "data-bs-scroll": "false",
             id: "sidebarMenu",
             tabindex: "-1",
             "aria-labelledby": "sidebarMenuLabel",
@@ -113,70 +115,70 @@ pub fn NavBar() -> Element {
                 // Navigation menu - make it scrollable if needed
                 div { class: "nav-container overflow-auto flex-grow-1 p-3",
                     ul {
-                        class: "nav nav-pills flex-column",
+                        class: "nav flex-column",
                         li {
-                            class: "nav-item",
+                            class: "nav-item mb-2",
                             Link {
                                 to: Route::Home {},
-                                class: "nav-link",
-                                active_class: "active",
+                                class: "nav-link text-primary d-flex align-items-center",
+                                active_class: "bg-primary text-white",
                                 "data-bs-dismiss": "offcanvas",
-                                i { class: "bi bi-house-door me-2" }
+                                i { class: "bi bi-house-door me-2 text-primary" }
                                 "Home"
                             }
                         }
                         li {
-                            class: "nav-item",
+                            class: "nav-item mb-2",
                             Link {
-                                to: Route::About {},
-                                class: "nav-link",
-                                active_class: "active",
+                                to: Route::Profile {},
+                                class: "nav-link text-primary d-flex align-items-center",
+                                active_class: "bg-primary text-white",
                                 "data-bs-dismiss": "offcanvas",
-                                i { class: "bi bi-person me-2" }
+                                i { class: "bi bi-person me-2 text-primary" }
                                 "Profile"
                             }
                         }
                         li {
-                            class: "nav-item",
+                            class: "nav-item mb-2",
                             Link {
-                                to: Route::Settings {},
-                                class: "nav-link",
-                                active_class: "active",
+                                to: Route::Comms {},
+                                class: "nav-link text-primary d-flex align-items-center",
+                                active_class: "bg-primary text-white",
                                 "data-bs-dismiss": "offcanvas",
-                                i { class: "bi bi-chat-dots me-2" }
+                                i { class: "bi bi-chat-dots me-2 text-primary" }
                                 "Comms"
                             }
                         }
                         li {
-                            class: "nav-item",
+                            class: "nav-item mb-2",
                             Link {
-                                to: Route::ErrorTest {},
-                                class: "nav-link",
-                                active_class: "active",
+                                to: Route::Circles {},
+                                class: "nav-link text-primary d-flex align-items-center",
+                                active_class: "bg-primary text-white",
                                 "data-bs-dismiss": "offcanvas",
-                                i { class: "bi bi-people me-2" }
+                                i { class: "bi bi-people me-2 text-primary" }
                                 "Circles"
                             }
                         }
                         li {
-                            class: "nav-item",
+                            class: "nav-item mb-2",
                             Link {
-                                to: Route::Home {},
-                                class: "nav-link",
-                                active_class: "active",
+                                to: Route::Tree {},
+                                class: "nav-link text-primary d-flex align-items-center",
+                                active_class: "bg-primary text-white",
                                 "data-bs-dismiss": "offcanvas",
-                                i { class: "bi bi-diagram-3 me-2" }
+                                i { class: "bi bi-diagram-3 me-2 text-primary" }
                                 "Trees"
                             }
                         }
                         li {
-                            class: "nav-item",
+                            class: "nav-item mb-2",
                             Link {
                                 to: Route::Settings {},
-                                class: "nav-link",
-                                active_class: "active",
+                                class: "nav-link text-primary d-flex align-items-center",
+                                active_class: "bg-primary text-white",
                                 "data-bs-dismiss": "offcanvas",
-                                i { class: "bi bi-gear me-2" }
+                                i { class: "bi bi-gear me-2 text-primary" }
                                 "Settings"
                             }
                         }
@@ -187,13 +189,13 @@ pub fn NavBar() -> Element {
                 div { class: "border-top p-3 mt-auto",
                     div { class: "dropdown",
                         a {
-                            class: "d-flex align-items-center text-decoration-none dropdown-toggle",
+                            class: "d-flex align-items-center text-primary text-decoration-none dropdown-toggle",
                             href: "#",
                             "data-bs-toggle": "dropdown",
                             "aria-expanded": "false",
                             // Placeholder avatar using Bootstrap Icons
                             i {
-                                class: "bi bi-person-circle fs-4 me-2"
+                                class: "bi bi-person-circle fs-4 me-2 text-primary"
                             }
                             "User"
                         }
@@ -208,7 +210,7 @@ pub fn NavBar() -> Element {
                             }
                             li {
                                 Link {
-                                    to: Route::About {},
+                                    to: Route::Profile {},
                                     class: "dropdown-item",
                                     "data-bs-dismiss": "offcanvas",
                                     "Profile"
@@ -216,7 +218,7 @@ pub fn NavBar() -> Element {
                             }
                             li {
                                 Link {
-                                    to: Route::ErrorTest {},
+                                    to: Route::SystemInfo {},
                                     class: "dropdown-item",
                                     "data-bs-dismiss": "offcanvas",
                                     "System Info"
