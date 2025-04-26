@@ -24,7 +24,7 @@ pub fn NavBar() -> Element {
     rsx! {
         // Top navbar with toggle button
         nav {
-            class: "navbar navbar-expand-lg border-bottom py-2",
+            class: "navbar navbar-expand-lg border-bottom py-2 shadow-sm",
             "data-bs-theme": theme_attr,
             div {
                 class: "container-fluid",
@@ -79,7 +79,7 @@ pub fn NavBar() -> Element {
             "aria-labelledby": "sidebarMenuLabel",
 
             // Offcanvas header
-            div { class: "offcanvas-header",
+            div { class: "offcanvas-header shadow-sm",
                 div { class: "d-flex align-items-center",
                     svg {
                         width: "30",
@@ -105,9 +105,10 @@ pub fn NavBar() -> Element {
                 }
                 button {
                     r#type: "button",
-                    class: "btn-close",
+                    class: "btn",
                     "data-bs-dismiss": "offcanvas",
-                    "aria-label": "Close"
+                    "aria-label": "Close",
+                    i { class: "bi bi-chevron-left fs-4" }
                 }
             }
 
@@ -187,7 +188,7 @@ pub fn NavBar() -> Element {
                 }
 
                 // User profile at bottom - Fixed position
-                div { class: "border-top p-3 mt-auto",
+                div { class: "border-top p-3 mt-auto shadow-sm",
                     div { class: "dropdown",
                         a {
                             class: "d-flex align-items-center text-primary text-decoration-none dropdown-toggle",
@@ -195,11 +196,11 @@ pub fn NavBar() -> Element {
                             "data-bs-toggle": "dropdown",
                             "data-bs-auto-close": "true",
                             "aria-expanded": "false",
-                            // Placeholder avatar using Bootstrap Icons
+                            // Version number instead of user
                             i {
-                                class: "bi bi-person-circle fs-4 me-2 text-primary"
+                                class: "bi bi-info-circle fs-4 me-2 text-primary"
                             }
-                            "User"
+                            { format!("v{}", state.read().version) }
                         }
                         ul { class: "dropdown-menu text-small shadow",
                             li {

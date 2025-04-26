@@ -1,1 +1,6 @@
 /* Custom styles for the application */
+
+/* Show edit buttons on hover */
+.position-relative:hover .d-none {
+  display: inline-block !important;
+}

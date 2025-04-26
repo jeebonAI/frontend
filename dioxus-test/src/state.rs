@@ -16,6 +16,7 @@ impl Default for Theme {
 pub struct AppState {
     pub counter: i32,
     pub theme: Theme,
+    pub version: String,
 }
 
 impl AppState {
@@ -23,6 +24,7 @@ impl AppState {
         Self {
             counter: 0,
             theme: Theme::Light,
+            version: env!("CARGO_PKG_VERSION").to_string(),
         }
     }
 }

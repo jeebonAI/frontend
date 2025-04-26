@@ -1,46 +1,71 @@
 use dioxus::prelude::*;
+use crate::Route;
 
 #[component]
 pub fn Home() -> Element {
     rsx! {
         div { class: "container mt-2",
-            div { class: "row",
-                div { class: "col-md-6 mb-4",
-                    div { class: "card h-100",
-                        div { class: "card-body",
-                            h5 { class: "card-title", "Trees" }
-                            p { class: "card-text", "Explore and create knowledge trees to organize information." }
-                            a { class: "btn btn-primary", href: "/trees", "Explore Trees" }
+            div { class: "row row-cols-2 g-3",
+                // Profile Box
+                div { class: "col",
+                    Link {
+                        to: Route::Profile {},
+                        div {
+                            class: "card text-center h-100",
+                            div {
+                                class: "card-body d-flex flex-column justify-content-center align-items-center",
+                                style: "min-height: 150px;",
+                                i { class: "bi bi-person fs-1 mb-2" }
+                                span { "Profile" }
+                            }
                         }
                     }
                 }
-                div { class: "col-md-6 mb-4",
-                    div { class: "card h-100",
-                        div { class: "card-body",
-                            h5 { class: "card-title", "Circles" }
-                            p { class: "card-text", "Join circles to connect with like-minded individuals." }
-                            a { class: "btn btn-primary", href: "/circles", "Explore Circles" }
-                        }
-                    }
-                }
-            }
 
-            div { class: "row",
-                div { class: "col-md-6 mb-4",
-                    div { class: "card h-100",
-                        div { class: "card-body",
-                            h5 { class: "card-title", "Communications" }
-                            p { class: "card-text", "Connect and communicate with others in your network." }
-                            a { class: "btn btn-primary", href: "/comms", "Open Communications" }
+                // Communications Box
+                div { class: "col",
+                    Link {
+                        to: Route::Comms {},
+                        div {
+                            class: "card text-center h-100",
+                            div {
+                                class: "card-body d-flex flex-column justify-content-center align-items-center",
+                                style: "min-height: 150px;",
+                                i { class: "bi bi-chat-dots fs-1 mb-2" }
+                                span { "Comms" }
+                            }
                         }
                     }
                 }
-                div { class: "col-md-6 mb-4",
-                    div { class: "card h-100",
-                        div { class: "card-body",
-                            h5 { class: "card-title", "Profile" }
-                            p { class: "card-text", "View and update your profile information." }
-                            a { class: "btn btn-primary", href: "/profile", "View Profile" }
+
+                // Circles Box
+                div { class: "col",
+                    Link {
+                        to: Route::Circles {},
+                        div {
+                            class: "card text-center h-100",
+                            div {
+                                class: "card-body d-flex flex-column justify-content-center align-items-center",
+                                style: "min-height: 150px;",
+                                i { class: "bi bi-people fs-1 mb-2" }
+                                span { "Circles" }
+                            }
+                        }
+                    }
+                }
+
+                // Trees Box
+                div { class: "col",
+                    Link {
+                        to: Route::Tree {},
+                        div {
+                            class: "card text-center h-100",
+                            div {
+                                class: "card-body d-flex flex-column justify-content-center align-items-center",
+                                style: "min-height: 150px;",
+                                i { class: "bi bi-diagram-3 fs-1 mb-2" }
+                                span { "Trees" }
+                            }
                         }
                     }
                 }

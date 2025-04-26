@@ -1,175 +1,206 @@
 use dioxus::prelude::*;
 
 #[component]
-pub fn Comms() -> Element {
-    // State for active chat
-    let mut active_chat = use_signal(|| 0);
-
-    // Sample chat data
-    let chats = vec![
-        ("Alice", "Hey, how are you?", "10:30 AM", 2),
-        ("Bob", "Did you see the new update?", "Yesterday", 0),
-        ("Charlie", "Meeting at 3pm", "Yesterday", 0),
-        ("Decentralized Tech", "New member joined", "2 days ago", 5),
-        ("Web3 Group", "Check out this article", "3 days ago", 1),
-    ];
-
+fn MessagePreview(name: String, message: String, msg_time: String, unread: bool, avatar: String) -> Element {
     rsx! {
-        div { class: "container-fluid mt-2",
-            div { class: "row",
-                // Chat list sidebar
-                div { class: "col-md-4 col-lg-3 mb-4",
-                    div { class: "card",
-                        div { class: "card-header d-flex justify-content-between align-items-center",
-                            h5 { class: "mb-0", "Chats" }
-                            button { class: "btn btn-sm btn-primary",
-                                i { class: "bi bi-pencil-square" }
-                            }
-                        }
-
-                        div { class: "list-group list-group-flush",
-                            // Search box
-                            div { class: "p-2",
-                                div { class: "input-group",
-                                    span { class: "input-group-text",
-                                        i { class: "bi bi-search" }
-                                    }
-                                    input {
-                                        class: "form-control",
-                                        placeholder: "Search chats...",
-                                        r#type: "text"
-                                    }
-                                }
-                            }
-
-                            // Chat list
-                            {chats.iter().enumerate().map(|(index, (name, message, time, unread))| {
-                                let is_active = *active_chat.read() == index;
-                                let chat_class = if is_active {
-                                    "list-group-item list-group-item-action active"
-                                } else {
-                                    "list-group-item list-group-item-action"
-                                };
-
-                                rsx! {
-                                    a {
-                                        class: chat_class,
-                                        href: "#",
-                                        onclick: move |_| active_chat.set(index),
-
-                                        div { class: "d-flex w-100 justify-content-between align-items-center",
-                                            h6 { class: "mb-1", "{name}" }
-                                            small {
-                                                if *unread > 0 {
-                                                    span { class: "badge bg-primary rounded-pill me-2", "{unread}" }
-                                                }
-                                                "{time}"
-                                            }
-                                        }
-                                        p { class: "mb-1 text-truncate", "{message}" }
-                                    }
-                                }
-                            })}
-                        }
+        div { class: "message-preview",
+            img { class: "avatar", src: avatar, style: "width: 50px; height: 50px; border-radius: 50%; object-fit: cover;" }
+            div { class: "message-content",
+                div { class: "message-header",
+                    span { class: "name", {name} }
+                    span { class: "time", {msg_time} }
+                }
+                div { class: "message-text",
+                    p { 
+                        class: if unread { "preview unread" } else { "preview" },
+                        {message}
+                    }
+                    if unread {
+                        span { class: "unread-badge" }
                     }
                 }
+            }
+            
+            // Add inline styles for the message preview layout
+            style {
+                "
+                .message-preview {{
+                    display: flex;
+                    padding: 10px;
+                    border-bottom: 1px solid #eee;
+                    align-items: center;
+                }}
+                .message-content {{
+                    margin-left: 15px;
+                    flex: 1;
+                }}
+                .message-header {{
+                    display: flex;
+                    justify-content: space-between;
+                }}
+                .name {{
+                    font-weight: bold;
+                }}
+                .time {{
+                    color: #777;
+                    font-size: 0.8rem;
+                }}
+                .preview {{
+                    margin: 0;
+                    color: #555;
+                    font-size: 0.9rem;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    max-width: 250px;
+                }}
+                .unread {{
+                    font-weight: bold;
+                    color: #000;
+                }}
+                .unread-badge {{
+                    display: inline-block;
+                    width: 8px;
+                    height: 8px;
+                    background-color: #0d6efd;
+                    border-radius: 50%;
+                    margin-left: 5px;
+                }}
+                "
+            }
+        }
+    }
+}
 
-                // Chat content
-                div { class: "col-md-8 col-lg-9",
-                    div { class: "card",
-                        // Chat header
-                        div { class: "card-header bg-light",
-                            div { class: "d-flex align-items-center",
-                                div {
-                                    class: "rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2",
-                                    style: "width: 40px; height: 40px;",
-                                    i { class: "bi bi-person" }
-                                }
-                                div {
-                                    h5 { class: "mb-0",
-                                        if *active_chat.read() < chats.len() {
-                                            "{chats[*active_chat.read()].0}"
-                                        } else {
-                                            "Select a chat"
-                                        }
-                                    }
-                                    small { class: "text-muted", "Online" }
-                                }
-                            }
-                        }
+#[component]
+fn MessagesTab() -> Element {
+    rsx! {
+        div { class: "messages-tab",
+            MessagePreview {
+                name: "Sarah Johnson",
+                message: "Hey, how's the project coming along?",
+                msg_time: "10:30 AM",
+                unread: true,
+                avatar: "https://i.pravatar.cc/150?img=1"
+            }
+            MessagePreview {
+                name: "David Lee",
+                message: "I've sent you the files you requested",
+                msg_time: "Yesterday",
+                unread: false,
+                avatar: "https://i.pravatar.cc/150?img=2"
+            }
+            MessagePreview {
+                name: "Tech Team",
+                message: "Meeting scheduled for tomorrow at 2 PM",
+                msg_time: "Yesterday",
+                unread: false,
+                avatar: "https://i.pravatar.cc/150?img=3"
+            }
+            MessagePreview {
+                name: "Alex Wong",
+                message: "Thanks for your help!",
+                msg_time: "Monday",
+                unread: false,
+                avatar: "https://i.pravatar.cc/150?img=4"
+            }
+        }
+    }
+}
 
-                        // Chat messages
-                        div { class: "card-body bg-light",
-                            style: "height: 400px; overflow-y: auto;",
+#[component]
+fn AudioCallsTab() -> Element {
+    rsx! {
+        div { class: "calls-tab",
+            // Placeholder for audio call history
+            div { class: "text-center py-5 text-muted",
+                i { class: "bi bi-telephone-x display-1" }
+                p { class: "mt-3", "No recent audio calls" }
+                p { "Your audio call history will appear here" }
+            }
+        }
+    }
+}
 
-                            if *active_chat.read() < chats.len() {
-                                // Sample messages
-                                div { class: "d-flex flex-column",
-                                    // Received message
-                                    div { class: "d-flex mb-3",
-                                        div {
-                                            class: "rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2",
-                                            style: "width: 32px; height: 32px; flex-shrink: 0;",
-                                            i { class: "bi bi-person" }
-                                        }
-                                        div {
-                                            div { class: "bg-white rounded p-2 px-3 mb-1",
-                                                "{chats[*active_chat.read()].1}"
-                                            }
-                                            small { class: "text-muted", "{chats[*active_chat.read()].2}" }
-                                        }
-                                    }
+#[component]
+fn VideoCallsTab() -> Element {
+    rsx! {
+        div { class: "calls-tab",
+            // Placeholder for video call history
+            div { class: "text-center py-5 text-muted",
+                i { class: "bi bi-camera-video-off display-1" }
+                p { class: "mt-3", "No recent video calls" }
+                p { "Your video call history will appear here" }
+            }
+        }
+    }
+}
 
-                                    // Sent message
-                                    div { class: "d-flex flex-row-reverse mb-3",
-                                        div {
-                                            div { class: "bg-primary text-white rounded p-2 px-3 mb-1",
-                                                "Thanks for letting me know!"
-                                            }
-                                            small { class: "text-muted", "10:32 AM" }
-                                        }
-                                    }
-
-                                    // Another received message
-                                    div { class: "d-flex mb-3",
-                                        div {
-                                            class: "rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2",
-                                            style: "width: 32px; height: 32px; flex-shrink: 0;",
-                                            i { class: "bi bi-person" }
-                                        }
-                                        div {
-                                            div { class: "bg-white rounded p-2 px-3 mb-1",
-                                                "No problem! Let me know if you need anything else."
-                                            }
-                                            small { class: "text-muted", "10:33 AM" }
-                                        }
-                                    }
-                                }
-                            } else {
-                                div { class: "d-flex justify-content-center align-items-center h-100",
-                                    p { class: "text-muted", "Select a chat to start messaging" }
-                                }
-                            }
-                        }
-
-                        // Chat input
-                        div { class: "card-footer",
-                            div { class: "input-group",
-                                button { class: "btn btn-outline-secondary",
-                                    i { class: "bi bi-paperclip" }
-                                }
-                                input {
-                                    class: "form-control",
-                                    placeholder: "Type a message...",
-                                    r#type: "text"
-                                }
-                                button { class: "btn btn-primary",
-                                    i { class: "bi bi-send" }
-                                }
-                            }
-                        }
+// Add this component to export Comms for the router
+#[component]
+pub fn Comms() -> Element {
+    let mut active_tab = use_signal(|| "messages");
+    
+    rsx! {
+        div { class: "comms-page p-3",
+            // Top section with tabs and plus icon
+            div { class: "d-flex justify-content-between align-items-center mb-4",
+                // Tabs as icons with better styling
+                div { class: "nav nav-tabs border-0 flex-row",
+                    button { 
+                        class: if *active_tab.read() == "messages" { "nav-link active text-primary" } else { "nav-link text-secondary" },
+                        onclick: move |_| active_tab.set("messages"),
+                        i { class: "bi bi-chat-dots", style: "font-size: 1.2rem;" }
+                    }
+                    button { 
+                        class: if *active_tab.read() == "audio" { "nav-link active text-primary" } else { "nav-link text-secondary" },
+                        onclick: move |_| active_tab.set("audio"),
+                        i { class: "bi bi-telephone", style: "font-size: 1.2rem;" }
+                    }
+                    button { 
+                        class: if *active_tab.read() == "video" { "nav-link active text-primary" } else { "nav-link text-secondary" },
+                        onclick: move |_| active_tab.set("video"),
+                        i { class: "bi bi-camera-video", style: "font-size: 1.2rem;" }
                     }
                 }
+                
+                // Plus icon button
+                button {
+                    class: "btn btn-primary rounded-circle",
+                    style: "width: 40px; height: 40px; padding: 0;",
+                    onclick: move |_| {
+                        match *active_tab.read() {
+                            "messages" => log::info!("New message button clicked"),
+                            "audio" => log::info!("New audio call button clicked"),
+                            "video" => log::info!("New video call button clicked"),
+                            _ => {}
+                        }
+                    },
+                    i { class: "bi bi-plus", style: "font-size: 1.5rem;" }
+                }
+            }
+            
+            // Tab content
+            if *active_tab.read() == "messages" {
+                MessagesTab {}
+            } else if *active_tab.read() == "audio" {
+                AudioCallsTab {}
+            } else {
+                VideoCallsTab {}
+            }
+            
+            style {
+                "
+                .nav-tabs .nav-link {{
+                    border: none;
+                    padding: 0.5rem 1rem;
+                    margin-right: 0.5rem;
+                }}
+                .nav-tabs .nav-link.active {{
+                    background-color: transparent;
+                    border-bottom: 2px solid #0d6efd;
+                }}
+                "
             }
         }
     }
