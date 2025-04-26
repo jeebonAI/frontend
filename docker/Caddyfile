@@ -1,0 +1,10 @@
+import mime "github.com/caddy-dns/mime"
+
+:80 {
+  root * /usr/share/caddy
+  file_server
+  header /wasm/* Content-Type application/wasm
+  header /* Cache-Control "public, max-age=3600"
+  header /sw.js Cache-Control "no-cache"
+  try_files {path} /index.html
+}

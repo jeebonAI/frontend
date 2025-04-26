@@ -1,0 +1,38 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '**'
+      - '!.github/workflows/frontend-build-push.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      
+      - name: Install wasm-bindgen-cli
+        run: |
+          WASM_BINDGEN_VERSION=$(grep -oP 'wasm-bindgen = "\K[^"]+' Cargo.toml)
+          cargo install -f wasm-bindgen-cli --version $WASM_BINDGEN_VERSION --locked
+      
+      - name: Install Dioxus CLI
+        run: cargo install dioxus-cli@0.6.0 --locked
+      
+      - name: Build Dioxus app
+        run: dx build --release
+      
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          command: pages publish dist --project-name=djibon-web

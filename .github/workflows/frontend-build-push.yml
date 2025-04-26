@@ -1,0 +1,173 @@
+name: Build and Push Frontend Docker Image
+
+on:
+  push:
+    branches: [ dev ]
+    paths:
+      - 'frontend-dioxus/**'
+      - '.github/workflows/frontend-build-push.yml'
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      short_sha: ${{ steps.get_sha.outputs.short_sha }}
+      version: ${{ steps.get_version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Get short SHA
+        id: get_sha
+        run: echo "short_sha=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
+      
+      - name: Get version from Cargo.toml
+        id: get_version
+        run: |
+          VERSION=$(grep '^version =' frontend-dioxus/Cargo.toml | head -1 | cut -d '"' -f 2)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Using version: $VERSION"
+
+  build-amd64:
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: |
+            image=moby/buildkit:latest
+            network=host
+      
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-frontend-${{ hashFiles('frontend-dioxus/Cargo.lock', 'frontend-dioxus/Cargo.toml', 'frontend-dioxus/src/**/*.rs') }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-frontend-
+      
+      - name: Build and push (amd64)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend-dioxus
+          file: ./frontend-dioxus/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ghcr.io/wizardsupreme/djibon-frontend:amd64-${{ needs.prepare.outputs.short_sha }}
+            ghcr.io/wizardsupreme/djibon-frontend:amd64-latest
+            ghcr.io/wizardsupreme/djibon-frontend:amd64-v${{ needs.prepare.outputs.version }}
+          provenance: false
+          sbom: false
+          cache-from: |
+            type=local,src=/tmp/.buildx-cache
+            type=registry,ref=ghcr.io/wizardsupreme/djibon-frontend:amd64-buildcache
+          cache-to: |
+            type=local,dest=/tmp/.buildx-cache-new,mode=max
+            type=registry,ref=ghcr.io/wizardsupreme/djibon-frontend:amd64-buildcache,mode=max
+      
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+      
+      - name: Verify image exists
+        run: |
+          docker pull ghcr.io/wizardsupreme/djibon-frontend:amd64-${{ needs.prepare.outputs.short_sha }}
+          echo "Image successfully pulled from registry"
+
+  build-arm64:
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: |
+            image=moby/buildkit:latest
+            network=host
+      
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache-arm
+          key: ${{ runner.os }}-buildx-frontend-arm-${{ hashFiles('frontend-dioxus/Cargo.lock', 'frontend-dioxus/Cargo.toml', 'frontend-dioxus/src/**/*.rs') }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-frontend-arm-
+      
+      - name: Build and push (arm64)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend-dioxus
+          file: ./frontend-dioxus/Dockerfile
+          platforms: linux/arm64
+          push: true
+          tags: |
+            ghcr.io/wizardsupreme/djibon-frontend:arm64-${{ needs.prepare.outputs.short_sha }}
+            ghcr.io/wizardsupreme/djibon-frontend:arm64-latest
+            ghcr.io/wizardsupreme/djibon-frontend:arm64-v${{ needs.prepare.outputs.version }}
+          provenance: false
+          sbom: false
+          cache-from: |
+            type=local,src=/tmp/.buildx-cache-arm
+            type=registry,ref=ghcr.io/wizardsupreme/djibon-frontend:arm64-buildcache
+          cache-to: |
+            type=local,dest=/tmp/.buildx-cache-arm-new,mode=max
+            type=registry,ref=ghcr.io/wizardsupreme/djibon-frontend:arm64-buildcache,mode=max
+      
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache-arm
+          mv /tmp/.buildx-cache-arm-new /tmp/.buildx-cache-arm
+      
+      - name: Verify image exists
+        run: |
+          docker pull ghcr.io/wizardsupreme/djibon-frontend:arm64-${{ needs.prepare.outputs.short_sha }}
+          echo "Image successfully pulled from registry"
+
+  create-manifest:
+    needs: [prepare, build-amd64, build-arm64]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Create and push manifest
+        run: |
+          # Create multi-arch manifest
+          docker buildx imagetools create \
+            --tag ghcr.io/wizardsupreme/djibon-frontend:${{ needs.prepare.outputs.short_sha }} \
+            ghcr.io/wizardsupreme/djibon-frontend:amd64-${{ needs.prepare.outputs.short_sha }} \
+            ghcr.io/wizardsupreme/djibon-frontend:arm64-${{ needs.prepare.outputs.short_sha }}
+          
+          docker buildx imagetools create \
+            --tag ghcr.io/wizardsupreme/djibon-frontend:latest \
+            ghcr.io/wizardsupreme/djibon-frontend:amd64-latest \
+            ghcr.io/wizardsupreme/djibon-frontend:arm64-latest
+            
+          docker buildx imagetools create \
+            --tag ghcr.io/wizardsupreme/djibon-frontend:v${{ needs.prepare.outputs.version }} \
+            ghcr.io/wizardsupreme/djibon-frontend:amd64-v${{ needs.prepare.outputs.version }} \
+            ghcr.io/wizardsupreme/djibon-frontend:arm64-v${{ needs.prepare.outputs.version }}
