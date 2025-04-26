@@ -5,6 +5,5 @@ compatibility_date = "2025-04-26"
 [build]
 command = "dx build --release"
 
-# Pages specific configuration
-[pages]
-build_output_dir = "target/dx/frontend-dioxus/release/web/public"
+# Pages specific configuration - using the correct field name
+pages_build_output_dir = "target/dx/frontend-dioxus/release/web/public"

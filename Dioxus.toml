@@ -10,11 +10,27 @@ script = ["/assets/bootstrap.bundle.min.js"]
 [web.watcher]
 port = 4200
 
-# Add this to specify the assets directory
 [web.assets]
 assets_dir = "assets"
 
-# Update service worker configuration
 [web.app]
-include_service_worker = true
-service_worker_path = "sw.js"  # Remove the leading slash
+include_service_worker = false
+hydrate = true
+ssr = false
+index_on_404 = true
+template = "index.html"
+
+# Configure hydration for production environments
+[web.app.features]
+hydration = true
+
+# Configure how assets are handled
+[web.app.asset_handling]
+base64_assets = false
+
+# Fix asset paths by using the correct section name
+[web.resource.dev]
+base_path = "/"
+
+[web.resource.release]
+base_path = "/"

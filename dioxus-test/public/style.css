@@ -1,0 +1,68 @@
+/* Custom styles for the application */
+
+/* Add padding to the bottom of the body to account for the fixed bottom navbar */
+body {
+    padding-bottom: 80px;
+}
+
+/* Style the bottom navigation */
+.navbar.fixed-bottom {
+    height: 70px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    padding-bottom: 10px;
+}
+
+/* Style the bottom navigation icons */
+.navbar.fixed-bottom .nav-link {
+    padding: 0.5rem;
+    text-align: center;
+}
+
+/* Style the active link in the bottom navigation */
+.navbar.fixed-bottom .nav-link.active {
+    color: #0d6efd;
+}
+
+/* Style the offcanvas sidebar */
+.offcanvas {
+    width: 60%;
+    max-width: 280px;
+}
+
+/* Make the offcanvas body scrollable with fixed header and footer */
+.offcanvas-body {
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 56px);
+    overflow-y: auto;
+}
+
+/* Style the user profile section at the bottom */
+.offcanvas-body .border-top {
+    margin-top: auto !important;
+}
+
+/* Style the sidebar links */
+.offcanvas .nav-link {
+    border-radius: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+/* Style the active link in the sidebar */
+.offcanvas .nav-link.active {
+    background-color: #0d6efd;
+    color: white !important;
+}
+
+/* Additional styles for active links */
+.nav-link.active {
+    font-weight: bold;
+}
+
+/* Add some spacing for mobile devices */
+@media (max-width: 768px) {
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}

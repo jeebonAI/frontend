@@ -1,0 +1,10 @@
+name = "dioxus-test"
+compatibility_date = "2025-04-26"
+
+# Build configuration
+[build]
+command = "dx build --release"
+
+# Pages specific configuration
+[site]
+output_dir = "target/dx/dioxus-test/release/web/public"

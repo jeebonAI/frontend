@@ -1,0 +1,13 @@
+[application]
+name = "dioxus-test"
+title = "Dioxus Test"
+
+[web.app]
+index_on_404 = true
+template = "index.html"
+
+[web.resource]
+style = ["./public/style.css"]
+
+[web.resource.dev]
+style = ["./public/style.css"]

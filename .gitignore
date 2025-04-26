@@ -64,4 +64,8 @@ yarn-error.log*
 # NPM lock files (use only if you prefer Cargo.lock for versioning)
 package-lock.json
 yarn.lock
+
+# cloud hosting
 .vercel
+.wrangler
+.spin

@@ -12,24 +12,56 @@ const MANIFEST: Asset = asset!("/assets/manifest.json");
 // Removed Cytoscape assets as they're now loaded in the Tree component
 
 fn main() {
-    wasm_logger::init(wasm_logger::Config::default());
+    // Initialize logger for debugging with more verbose output
+    wasm_logger::init(wasm_logger::Config::new(log::Level::Debug));
+
+    // Add global error handler for WebAssembly
+    #[cfg(target_arch = "wasm32")]
+    {
+        use wasm_bindgen::prelude::*;
+
+        // Set up a global error handler to catch and log hydration errors
+        #[wasm_bindgen]
+        extern "C" {
+            #[wasm_bindgen(js_namespace = window)]
+            fn addEventListener(event: &str, handler: &Closure<dyn FnMut(JsValue)>);
+        }
+
+        // Create an error handler closure
+        let error_handler = Closure::wrap(Box::new(move |e: JsValue| {
+            log::error!("Uncaught error: {:?}", e);
+            // The application will continue running despite the error
+        }) as Box<dyn FnMut(JsValue)>);
+
+        // Register the error handler
+        addEventListener("error", &error_handler);
+
+        // Leak the closure so it remains valid for the lifetime of the application
+        error_handler.forget();
+    }
+
+    // Launch the application with standard hydration
     dioxus::launch(App);
 }
 
 #[component]
 fn App() -> Element {
-    // Register service worker on component mount
+    // Add error handling for hydration issues
     use_effect(|| {
-        register_service_worker();
+        #[cfg(target_arch = "wasm32")]
+        {
+            log::info!("App component mounted - setting up hydration error handling");
+        }
+
         // No cleanup needed
         ()
     });
 
     rsx! {
         document::Link { rel: "stylesheet", href: BOOTSTRAP_CSS }
-        document::Link { 
-            rel: "stylesheet", 
-            href: "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" 
+        document::Link {
+            rel: "stylesheet",
+            href: "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
         }
         document::Link { rel: "icon", href: FAVICON }
         document::Link { rel: "manifest", href: MANIFEST }
@@ -39,47 +71,4 @@ fn App() -> Element {
     }
 }
 
-fn register_service_worker() {
-    #[cfg(target_arch = "wasm32")]
-    {
-        use wasm_bindgen::prelude::*;
-        use wasm_bindgen_futures::JsFuture;
-        use js_sys::Promise;
-        
-        let _ = wasm_bindgen_futures::spawn_local(async move {
-            // Updated path without leading slash
-            let js_code = r#"
-                (function() {
-                    if ('serviceWorker' in navigator) {
-                        return navigator.serviceWorker.register('sw.js')
-                            .then(function(reg) {
-                                console.log('Service worker registered successfully', reg);
-                                return reg;
-                            })
-                            .catch(function(err) {
-                                console.error('Service worker registration failed:', err);
-                                throw err;
-                            });
-                    } else {
-                        console.warn('Service workers are not supported');
-                        throw new Error('Service workers not supported');
-                    }
-                })()
-            "#;
-            
-            match js_sys::eval(js_code) {
-                Ok(promise_val) => {
-                    if let Some(promise) = promise_val.dyn_ref::<Promise>() {
-                        match JsFuture::from(promise.clone()).await {
-                            Ok(_) => log::info!("Service worker registered successfully"),
-                            Err(e) => log::error!("Service worker registration failed: {:?}", e),
-                        }
-                    } else {
-                        log::error!("Failed to get Promise from eval result");
-                    }
-                },
-                Err(e) => log::error!("Failed to evaluate JS: {:?}", e),
-            }
-        });
-    }
-}
+

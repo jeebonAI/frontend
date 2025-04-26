@@ -1,0 +1,21 @@
+[package]
+name = "dioxus-test"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+dioxus = { version = "0.6.3", features = ["web", "router", "signals"] }
+log = "0.4.20"
+wasm-logger = "0.2.0"
+
+[profile]
+
+[profile.wasm-dev]
+inherits = "dev"
+opt-level = 1
+
+[profile.server-dev]
+inherits = "dev"
+
+[profile.android-dev]
+inherits = "dev"
