@@ -20,12 +20,10 @@ jobs:
           targets: wasm32-unknown-unknown
       
       - name: Install wasm-bindgen-cli
-        run: |
-          WASM_BINDGEN_VERSION=$(grep -oP 'wasm-bindgen = "\K[^"]+' Cargo.toml)
-          cargo install -f wasm-bindgen-cli --version $WASM_BINDGEN_VERSION --locked
+        run: cargo install -f wasm-bindgen-cli --locked
       
       - name: Install Dioxus CLI
-        run: cargo install dioxus-cli@0.6.0 --locked
+        run: cargo install dioxus-cli --locked
       
       - name: Build Dioxus app
         run: dx build --release
