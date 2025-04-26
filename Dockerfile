@@ -17,12 +17,6 @@ RUN apt-get update && \
 # Copy Cargo.toml to extract wasm-bindgen version
 COPY Cargo.toml .
 
-# Force install the exact wasm-bindgen-cli version that matches the dependency
-RUN WASM_BINDGEN_VERSION=$(grep -oP 'wasm-bindgen = "\K[^"]+' Cargo.toml) && \
-    echo "Installing wasm-bindgen-cli version ${WASM_BINDGEN_VERSION}" && \
-    cargo install -f wasm-bindgen-cli --version ${WASM_BINDGEN_VERSION} --locked && \
-    wasm-bindgen --version
-
 # Install cargo-chef and Dioxus CLI
 RUN cargo install cargo-chef --locked && \
     cargo install dioxus-cli@0.6.0 --locked

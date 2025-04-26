@@ -4,7 +4,7 @@ title = "Djibon"
 
 [web.app]
 index_on_404 = true
-template = "index.html"
+template = "public/error.html"
 
 [web.assets]
 assets_dir = "public"

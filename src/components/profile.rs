@@ -18,10 +18,10 @@ pub fn Profile() -> Element {
         div { class: "profile-container",
             // Profile header with cover photo
             div { class: "profile-header position-relative mb-5",
-                div { class: "cover-photo bg-primary bg-gradient w-100",
-                    style: "height: 180px; border-radius: 0 0 10px 10px;"
+                div { class: "cover-photo bg-primary bg-gradient w-100 rounded-bottom",
+                    style: "height: 110px;"
                 }
-                
+
                 // Profile picture
                 div { class: "profile-picture position-absolute start-50 translate-middle-x",
                     style: "bottom: -60px;",
