@@ -20,10 +20,7 @@ pub fn Tree() -> Element {
     ];
 
     rsx! {
-        div { class: "container mt-4",
-            h1 { "Knowledge Trees" }
-            p { class: "lead", "Explore and create structured knowledge trees" }
-
+        div { class: "container mt-2",
             // Tabs
             ul { class: "nav nav-tabs mb-4",
                 li { class: "nav-item",

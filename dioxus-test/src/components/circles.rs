@@ -20,10 +20,7 @@ pub fn Circles() -> Element {
     ];
 
     rsx! {
-        div { class: "container mt-4",
-            h1 { "Circles" }
-            p { class: "lead", "Connect with communities of like-minded individuals" }
-
+        div { class: "container mt-2",
             // Tabs
             ul { class: "nav nav-tabs mb-4",
                 li { class: "nav-item",

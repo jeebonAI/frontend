@@ -15,9 +15,7 @@ pub fn Comms() -> Element {
     ];
 
     rsx! {
-        div { class: "container-fluid mt-4",
-            h1 { "Communications" }
-
+        div { class: "container-fluid mt-2",
             div { class: "row",
                 // Chat list sidebar
                 div { class: "col-md-4 col-lg-3 mb-4",

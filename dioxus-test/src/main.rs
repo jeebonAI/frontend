@@ -129,10 +129,10 @@ fn MainLayout() -> Element {
 
     rsx! {
         div {
-            class: "d-flex flex-column min-vh-100",
+            class: "d-flex flex-column min-vh-100 pb-5 position-relative",
             "data-bs-theme": theme_attr,
             NavBar {}
-            div { class: "container mt-4 mb-5 flex-grow-1",
+            div { class: "container mb-5 flex-grow-1",
                 Outlet::<Route> {}
             }
             BottomNav {}

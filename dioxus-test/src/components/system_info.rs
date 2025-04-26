@@ -3,9 +3,7 @@ use dioxus::prelude::*;
 #[component]
 pub fn SystemInfo() -> Element {
     rsx! {
-        div { class: "container mt-4",
-            h1 { "System Information" }
-            
+        div { class: "container mt-2",
             div { class: "row",
                 div { class: "col-md-6 mb-4",
                     div { class: "card h-100",
@@ -26,7 +24,7 @@ pub fn SystemInfo() -> Element {
                         }
                     }
                 }
-                
+
                 div { class: "col-md-6 mb-4",
                     div { class: "card h-100",
                         div { class: "card-header", "System Status" }
@@ -45,7 +43,7 @@ pub fn SystemInfo() -> Element {
                             div {
                                 h5 { "Storage Usage" }
                                 div { class: "progress mb-2",
-                                    div { 
+                                    div {
                                         class: "progress-bar",
                                         role: "progressbar",
                                         style: "width: 35%",
@@ -58,7 +56,7 @@ pub fn SystemInfo() -> Element {
                     }
                 }
             }
-            
+
             div { class: "row",
                 div { class: "col-md-12 mb-4",
                     div { class: "card",
@@ -101,7 +99,7 @@ pub fn SystemInfo() -> Element {
                     }
                 }
             }
-            
+
             div { class: "row",
                 div { class: "col-md-12",
                     div { class: "card",
@@ -119,7 +117,7 @@ pub fn SystemInfo() -> Element {
                         div { class: "card-body",
                             div { class: "log-container",
                                 style: "height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.9rem; background-color: #f8f9fa; padding: 10px; border-radius: 4px;",
-                                
+
                                 div { class: "log-entry",
                                     span { class: "text-muted", "[2023-04-26 10:15:32] " }
                                     span { class: "text-success", "INFO " }

@@ -50,7 +50,7 @@ pub fn BottomNav() -> Element {
 
     rsx! {
         nav {
-            class: "navbar fixed-bottom border-top pt-2",
+            class: "navbar fixed-bottom border-top pt-2 bg-white shadow-sm",
             "data-bs-theme": theme_attr,
             div {
                 class: "container-fluid px-0",

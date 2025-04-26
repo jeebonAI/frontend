@@ -15,10 +15,8 @@ pub fn Settings() -> Element {
     };
 
     rsx! {
-        div { class: "container mt-4",
-            h1 { "Settings" }
-
-            div { class: "card mt-3",
+        div { class: "container mt-2",
+            div { class: "card",
                 div { class: "card-body",
                             // Theme settings
                             div { class: "mb-4",

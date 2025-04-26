@@ -3,11 +3,8 @@ use dioxus::prelude::*;
 #[component]
 pub fn Home() -> Element {
     rsx! {
-        div { class: "container mt-4",
-            h1 { "Welcome to DJibon" }
-            p { "Your decentralized social network for connecting with others." }
-            
-            div { class: "row mt-4",
+        div { class: "container mt-2",
+            div { class: "row",
                 div { class: "col-md-6 mb-4",
                     div { class: "card h-100",
                         div { class: "card-body",
@@ -27,7 +24,7 @@ pub fn Home() -> Element {
                     }
                 }
             }
-            
+
             div { class: "row",
                 div { class: "col-md-6 mb-4",
                     div { class: "card h-100",
