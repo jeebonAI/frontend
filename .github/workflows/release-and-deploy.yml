@@ -110,9 +110,9 @@ jobs:
           prerelease: false
           token: ${{ secrets.GITHUB_TOKEN }}
 
-  deploy-web:
+  build-and-deploy-web:
     needs: create-release
-    if: needs.create-release.outputs.web == 'true'
+    if: needs.create-release.outputs.web == 'true' || needs.create-release.outputs.demo == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -147,57 +147,24 @@ jobs:
           path: target/dx/djibon/release/web/public
           retention-days: 30
 
-      - name: Publish to Cloudflare Pages
+      - name: Deploy to web.djibon.com
+        if: needs.create-release.outputs.web == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: pages deploy target/dx/djibon/release/web/public --project-name=djibon-web
 
-  deploy-demo:
-    needs: create-release
-    if: needs.create-release.outputs.demo == 'true'
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: wasm32-unknown-unknown
-
-      - name: Install wasm-bindgen-cli
-        run: cargo install -f wasm-bindgen-cli --locked
-
-      - name: Install Dioxus CLI
-        run: cargo install dioxus-cli@0.6.0 --locked
-
-      - name: Update version in Dioxus.toml and Cargo.toml
-        run: |
-          VERSION=${{ needs.create-release.outputs.version }}
-          # Update only the package version in Cargo.toml
-          sed -i "/^\[package\]/,/^\[/ s/^version = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version = \"$VERSION\"/" Cargo.toml
-          # Update version_name in Dioxus.toml
-          sed -i "s/version_name = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version_name = \"$VERSION\"/g" Dioxus.toml
-
-      - name: Build Dioxus app
-        run: dx build --release
-
-      - name: Upload demo build artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: demo-build
-          path: target/dx/djibon/release/web/public
-          retention-days: 30
-
-      - name: Publish to Cloudflare Pages
+      - name: Deploy to demo.djibon.com
+        if: needs.create-release.outputs.demo == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: pages deploy target/dx/djibon/release/web/public --project-name=djibon-demo
 
+  # Note: iOS builds are now also handled by the ios-build.yml workflow
+  # This job is kept for backward compatibility
   build-ios:
     needs: create-release
     if: needs.create-release.outputs.ios == 'true'

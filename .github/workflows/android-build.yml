@@ -1,4 +1,4 @@
-name: Build iOS App and Deploy
+name: Build Android App and Deploy
 
 on:
   workflow_dispatch:  # Allow manual triggering
@@ -9,28 +9,28 @@ on:
         default: '0.0.1'
   push:
     tags:
-      - 'v*ios*'  # Trigger on any tag containing 'ios'
+      - 'v*android*'  # Trigger on any tag containing 'android'
 
 jobs:
-  build-ios:
-    runs-on: macos-latest
-
+  build-android:
+    runs-on: ubuntu-latest
+    
     steps:
       - uses: actions/checkout@v4
-
+      
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: aarch64-apple-ios, x86_64-apple-ios, aarch64-apple-ios-sim
-
+          targets: armv7-linux-androideabi, aarch64-linux-android
+      
       - name: Install Dioxus CLI
-        run: cargo install dioxus-cli --locked
-
+        run: cargo install dioxus-cli@0.6.0 --locked
+      
       - name: Extract version from tag or input
         id: get-version
         run: |
           if [[ "${{ github.event_name }}" == "push" ]]; then
-            # Extract version from tag (e.g., v0.0.3-ios-web -> 0.0.3)
+            # Extract version from tag (e.g., v0.0.3-android-web -> 0.0.3)
             TAG=${GITHUB_REF#refs/tags/}
             VERSION=$(echo $TAG | sed -E 's/^v([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
           else
@@ -39,54 +39,48 @@ jobs:
           fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Using version: $VERSION"
-
+      
       - name: Update version in Dioxus.toml and Cargo.toml
         run: |
           VERSION=${{ steps.get-version.outputs.version }}
-          # Update only the package version in Cargo.toml (macOS sed syntax)
-          sed -i '' -E '/^\[package\]/,/^\[/ s/^version = "[0-9]+\.[0-9]+\.[0-9]+"/version = "'"$VERSION"'"/' Cargo.toml
+          # Update only the package version in Cargo.toml
+          sed -i "/^\[package\]/,/^\[/ s/^version = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version = \"$VERSION\"/" Cargo.toml
           # Update version_name in Dioxus.toml
-          sed -i '' "s/version_name = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version_name = \"$VERSION\"/g" Dioxus.toml
-
-      - name: Build iOS App
-        run: dx build --platform ios --release
-
-      - name: Prepare iOS App Bundle
+          sed -i "s/version_name = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version_name = \"$VERSION\"/g" Dioxus.toml
+      
+      - name: Build Android App
+        run: dx build --platform android --release
+      
+      - name: Find and prepare APK
         run: |
-          # Find the iOS app bundle
-          IOS_APP_PATH=$(find target/dx/djibon/release/ios -name "*.app" -type d | head -1)
-
-          if [ -z "$IOS_APP_PATH" ]; then
-            echo "iOS app bundle not found"
+          APK_PATH=$(find target/dx/djibon/release/android -name "*.apk" | grep -v "intermediates" | head -1)
+          
+          if [ -z "$APK_PATH" ]; then
+            echo "APK not found"
             exit 1
           fi
-
-          # Create a zip file of the app
-          cd $(dirname "$IOS_APP_PATH")
-          APP_NAME=$(basename "$IOS_APP_PATH" .app)
-          zip -r "$APP_NAME.zip" "$(basename "$IOS_APP_PATH")"
-
+          
           # Copy to download-page
-          mkdir -p $GITHUB_WORKSPACE/download-page
-          cp "$APP_NAME.zip" $GITHUB_WORKSPACE/download-page/djibon-ios.zip
-
-      - name: Upload iOS build artifact
+          mkdir -p download-page
+          cp "$APK_PATH" download-page/djibon-app.apk
+      
+      - name: Upload Android build artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ios-build
-          path: ${{ github.workspace }}/download-page/djibon-ios.zip
+          name: android-build
+          path: download-page/djibon-app.apk
           retention-days: 30
-
-      - name: Upload iOS build to GitHub Release
+      
+      - name: Upload Android build to GitHub Release
         if: github.event_name == 'push'
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref }}
-          files: ${{ github.workspace }}/download-page/djibon-ios.zip
+          files: download-page/djibon-app.apk
           token: ${{ secrets.GITHUB_TOKEN }}
           draft: false
           prerelease: false
-
+      
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
