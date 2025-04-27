@@ -7,83 +7,7 @@ on:
       - '**.md'
    #   - '.github/workflows/**'  # Avoid triggering on workflow file changes
 
-jobs:name: Deploy to Dev Environment
-
-on:
-  push:
-    branches: [ main ]
-    paths-ignore:
-      - '**.md'
-
 jobs:
-  deploy-dev:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: wasm32-unknown-unknown
-
-      - name: Cache Rust dependencies
-        uses: Swatinem/rust-cache@v2
-        with:
-          key: ${{ runner.os }}-rust-${{ hashFiles('**/Cargo.lock') }}
-          shared-key: rust-build
-          cache-targets: true
-          workspaces: . -> target/wasm32-unknown-unknown
-          cache-on-failure: true
-
-      - name: Install cargo-binstall
-        run: cargo install cargo-binstall
-
-      - name: Install dioxus-cli
-        run: |
-          if ! command -v dx &> /dev/null; then
-            cargo binstall dioxus-cli@0.6.3
-          else
-            echo "dioxus-cli already installed"
-          fi
-
-      - name: Add Cargo bin to PATH
-        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-
-      - name: Cargo Build
-        run: cargo build
-
-      - name: Build Dioxus app
-        run: dx build --release
-
-      - name: Prepare SPA routing
-        run: cp ./dist/index.html ./dist/404.html
-
-      - name: Get short SHA
-        id: slug
-        run: echo "sha=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
-
-      - name: Publish to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=djibon-dev
-
-      - name: Comment on commit
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.rest.repos.createCommitComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              commit_sha: context.sha,
-              body: `✅ Dev deployment successful!\n\nPreview: https://dev.djibon.com\nCommit: ${context.sha.substring(0, 7)}`
-            })
   deploy-dev:
     runs-on: ubuntu-latest
     permissions:
@@ -99,19 +23,26 @@ jobs:
 
       - name: Cache Rust dependencies
         uses: Swatinem/rust-cache@v2
-
-      - name: Install dioxus-cli
-        run: cargo install dioxus-cli 
-
-      - name: Add Cargo bin to PATH
-        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+        with:
+          key: ${{ runner.os }}-rust-${{ hashFiles('**/Cargo.lock') }}
+          shared-key: rust-build
+          cache-targets: true
+          workspaces: . -> target/wasm32-unknown-unknown
+          cache-on-failure: true
   
-      - name: Cargo Build
-        run: cargo build
+      - name: Install cargo-binstall
+        run: cargo install cargo-binstall
+  
+      - name: Install dioxus-cli
+        run: |
+          if ! command -v dx &> /dev/null; then
+            cargo binstall dioxus-cli@0.6.1
+          else
+            echo "dioxus-cli already installed"
+          fi
 
       - name: Build Dioxus app
         run: dx build --release
-
 
       - name: Get short SHA
         id: slug
