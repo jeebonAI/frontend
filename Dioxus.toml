@@ -12,7 +12,7 @@ assets_dir = "public"
 [android]
 app_name = "Djibon"
 assets_dir = "public"
-icon = "public/icon.png"
+icon = "public/djibon-icon.png"
 package_name = "com.example.DjibonWeb"
 version_code = 1
 version_name = "0.1.0"

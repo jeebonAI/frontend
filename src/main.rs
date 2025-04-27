@@ -164,11 +164,18 @@ fn MainLayout() -> Element {
 // Main app component
 #[component]
 fn App() -> Element {
+    // Create a variable to hold the stylesheet element
+    let stylesheet;
+
     #[cfg(feature = "web")]
-    let stylesheet: Option<VNode> = Some(rsx!(Stylesheet { href: asset!("./public/style.css") }));
+    {
+        stylesheet = rsx!(Stylesheet { href: asset!("./public/style.css") });
+    }
 
     #[cfg(not(feature = "web"))]
-    let stylesheet: Option<VNode> = None;
+    {
+        stylesheet = rsx!();
+    }
 
     rsx! {
         // Include Bootstrap CSS and JS
