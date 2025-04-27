@@ -99,7 +99,15 @@ cargo test
 
 ### Automated Deployment
 
-This project uses GitHub Actions for automated deployment. To deploy a new version:
+#### Development Environment
+
+Every push to the `main` branch automatically deploys to the development environment:
+
+- **Dev Preview**: [djibon-dev.pages.dev](https://djibon-dev.pages.dev)
+
+#### Release Deployment
+
+This project uses GitHub Actions for automated releases and deployment. To deploy a new version:
 
 1. Create a git tag with the format `vx.x.x-[keywords]` where:
    - `x.x.x` is the version number (e.g., 0.1.0)
@@ -112,10 +120,13 @@ This project uses GitHub Actions for automated deployment. To deploy a new versi
    ```
 
 3. The GitHub Actions workflow will automatically:
+   - Create a GitHub Release with auto-generated release notes
    - Deploy to web.djibon.com if the tag contains `web`
    - Deploy to demo site if the tag contains `demo`
    - Build iOS app if the tag contains `ios`
-   - Build Android app if the tag contains `android` (coming soon)
+   - Build Android app if the tag contains `android`
+   - Upload build artifacts to the GitHub Release
+   - Update the download page with the latest builds
 
 ### Manual Deployment
 
