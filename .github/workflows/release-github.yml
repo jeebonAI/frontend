@@ -25,11 +25,25 @@ jobs:
           TAG=${GITHUB_REF#refs/tags/}
           echo "Processing tag: $TAG"
 
+          # Save tag for other workflows
+          echo "$TAG" > tag-info.txt
+
           # Extract version number
           VERSION=$(echo $TAG | sed -E 's/^v([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-          # Check for deployment targets
+      - name: Upload tag information
+        uses: actions/upload-artifact@v3
+        with:
+          name: tag-info
+          path: tag-info.txt
+          retention-days: 1
+
+      # Check for deployment targets
+      - name: Check for deployment targets
+        id: check-deployments
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
           if [[ $TAG == *"web"* ]]; then
             echo "web=true" >> $GITHUB_OUTPUT
           else
@@ -53,6 +67,13 @@ jobs:
           else
             echo "android=false" >> $GITHUB_OUTPUT
           fi
+
+      - name: Upload tag information
+        uses: actions/upload-artifact@v3
+        with:
+          name: tag-info
+          path: tag-info.txt
+          retention-days: 1
 
       - name: Generate Release Notes
         id: release-notes
@@ -112,6 +133,7 @@ jobs:
     needs: [create-release-version, update-version]
     if: needs.create-release-version.outputs.web == 'true' || needs.create-release-version.outputs.demo == 'true'
     runs-on: ubuntu-latest
+    # Always run the build job to create artifacts, but deployments will be conditional
 
     steps:
       - uses: actions/checkout@v4
@@ -143,8 +165,25 @@ jobs:
           path: target/dx/djibon/release/web/public
           retention-days: 30
 
+      - name: Check tag for deployment targets
+        id: check-tags
+        if: github.event_name == 'push'
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          if [[ $TAG == *"web"* ]]; then
+            echo "deploy_web=true" >> $GITHUB_OUTPUT
+          else
+            echo "deploy_web=false" >> $GITHUB_OUTPUT
+          fi
+
+          if [[ $TAG == *"demo"* ]]; then
+            echo "deploy_demo=true" >> $GITHUB_OUTPUT
+          else
+            echo "deploy_demo=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Deploy to web.djibon.com
-        if: needs.create-release-version.outputs.web == 'true'
+        if: steps.check-tags.outputs.deploy_web == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
@@ -152,15 +191,13 @@ jobs:
           command: pages deploy target/dx/djibon/release/web/public --project-name=djibon-web
 
       - name: Deploy to demo.djibon.com
-        if: needs.create-release-version.outputs.demo == 'true'
+        if: steps.check-tags.outputs.deploy_demo == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: pages deploy target/dx/djibon/release/web/public --project-name=djibon-demo
 
-  # Note: iOS builds are now also handled by the ios-build.yml workflow
-  # This job is kept for backward compatibility
   build-ios:
     needs: [create-release-version, update-version]
     if: needs.create-release-version.outputs.ios == 'true'
@@ -212,16 +249,6 @@ jobs:
           path: ${{ github.workspace }}/download-page/djibon-ios.zip
           retention-days: 30
 
-      # We'll upload to GitHub Release in the final job
-
-      - name: Publish to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          workingDirectory: 'download-page'
-          command: pages deploy . --project-name=djibon-download
-
   build-android:
     needs: [create-release-version, update-version]
     if: needs.create-release-version.outputs.android == 'true'
@@ -266,16 +293,6 @@ jobs:
           name: android-build
           path: download-page/djibon-app.apk
           retention-days: 30
-
-      # We'll upload to GitHub Release in the final job
-
-      - name: Publish to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          workingDirectory: 'download-page'
-          command: pages deploy . --project-name=djibon-download
 
   release-to-github:
     needs: [create-release-version, build-web, build-ios, build-android]
@@ -378,3 +395,42 @@ jobs:
           draft: false
           prerelease: false
           token: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-download:
+    needs: [build-ios, build-android, release-to-github]
+    if: |
+      always() &&
+      (needs.build-ios.result == 'success' || needs.build-android.result == 'success') &&
+      needs.release-to-github.result == 'success'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create download directory
+        run: mkdir -p download-page
+
+      - name: Download iOS artifact
+        if: needs.build-ios.result == 'success'
+        uses: actions/download-artifact@v3
+        with:
+          name: ios-build
+          path: download-page
+
+      - name: Download Android artifact
+        if: needs.build-android.result == 'success'
+        uses: actions/download-artifact@v3
+        with:
+          name: android-build
+          path: download-page
+
+      - name: List download directory contents
+        run: ls -la download-page
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          workingDirectory: 'download-page'
+          command: pages deploy . --project-name=djibon-download
