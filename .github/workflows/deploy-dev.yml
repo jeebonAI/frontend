@@ -41,8 +41,12 @@ jobs:
             echo "dioxus-cli already installed"
           fi
 
+      - name: Add Cargo bin to PATH
+        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
       - name: Build Dioxus app
         run: dx build --release
+
 
       - name: Get short SHA
         id: slug
