@@ -32,13 +32,6 @@ jobs:
           VERSION=$(echo $TAG | sed -E 's/^v([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Upload tag information
-        uses: actions/upload-artifact@v3
-        with:
-          name: tag-info
-          path: tag-info.txt
-          retention-days: 1
-
       # Check for deployment targets
       - name: Check for deployment targets
         id: check-deployments
@@ -125,9 +118,28 @@ jobs:
 
   update-version:
     needs: create-release-version
-    uses: ./.github/workflows/update-version.yml
-    with:
-      version: ${{ needs.create-release-version.outputs.version }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update version in Dioxus.toml and Cargo.toml
+        run: |
+          VERSION=${{ needs.create-release-version.outputs.version }}
+          # Update only the package version in Cargo.toml
+          sed -i "/^\[package\]/,/^\[/ s/^version = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version = \"$VERSION\"/" Cargo.toml
+          # Update version_name in Dioxus.toml
+          sed -i "s/version_name = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version_name = \"$VERSION\"/g" Dioxus.toml
+
+          echo "Updated version to $VERSION in Cargo.toml and Dioxus.toml"
+
+      - name: Upload updated files
+        uses: actions/upload-artifact@v3
+        with:
+          name: version-files
+          path: |
+            Cargo.toml
+            Dioxus.toml
+          retention-days: 1
 
   build-web:
     needs: [create-release-version, update-version]
@@ -138,11 +150,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download version files
-        uses: actions/download-artifact@v3
-        with:
-          name: version-files
-          path: ./
+      - name: Update version in Dioxus.toml and Cargo.toml
+        run: |
+          VERSION=${{ needs.create-release-version.outputs.version }}
+          # Update only the package version in Cargo.toml
+          sed -i "/^\[package\]/,/^\[/ s/^version = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version = \"$VERSION\"/" Cargo.toml
+          # Update version_name in Dioxus.toml
+          sed -i "s/version_name = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version_name = \"$VERSION\"/g" Dioxus.toml
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
