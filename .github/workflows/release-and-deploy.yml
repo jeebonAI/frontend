@@ -100,15 +100,7 @@ jobs:
           echo -e "$NOTES" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      - name: Create GitHub Release
-        id: create_release
-        uses: softprops/action-gh-release@v1
-        with:
-          name: Release ${{ steps.check-tag.outputs.version }}
-          body: ${{ env.RELEASE_NOTES }}
-          draft: false
-          prerelease: false
-          token: ${{ secrets.GITHUB_TOKEN }}
+      # We'll create the release in the final job after all builds are complete
 
   build-and-deploy-web:
     needs: create-release
@@ -218,12 +210,7 @@ jobs:
           path: ${{ github.workspace }}/download-page/djibon-ios.zip
           retention-days: 30
 
-      - name: Upload iOS build to GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.ref }}
-          files: ${{ github.workspace }}/download-page/djibon-ios.zip
-          token: ${{ secrets.GITHUB_TOKEN }}
+      # We'll upload to GitHub Release in the final job
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
@@ -280,12 +267,7 @@ jobs:
           path: download-page/djibon-app.apk
           retention-days: 30
 
-      - name: Upload Android build to GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.ref }}
-          files: download-page/djibon-app.apk
-          token: ${{ secrets.GITHUB_TOKEN }}
+      # We'll upload to GitHub Release in the final job
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
@@ -294,3 +276,105 @@ jobs:
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           workingDirectory: 'download-page'
           command: pages deploy . --project-name=djibon-download
+
+  create-github-release:
+    needs: [create-release, build-and-deploy-web, build-ios, build-android]
+    if: always() && needs.create-release.result == 'success'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Needed for release notes generation
+
+      - name: Download web artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: web-build
+          path: artifacts/web
+
+      - name: Download iOS artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ios-build
+          path: artifacts/ios
+
+      - name: Download Android artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: android-build
+          path: artifacts/android
+
+      - name: Prepare artifacts for release
+        run: |
+          mkdir -p release-artifacts
+
+          # Create a zip of the web build
+          cd artifacts/web
+          zip -r ../../release-artifacts/djibon-web-${{ needs.create-release.outputs.version }}.zip .
+          cd ../..
+
+          # Copy iOS and Android artifacts
+          if [ -f artifacts/ios/djibon-ios.zip ]; then
+            cp artifacts/ios/djibon-ios.zip release-artifacts/djibon-ios-${{ needs.create-release.outputs.version }}.zip
+          fi
+
+          if [ -f artifacts/android/djibon-app.apk ]; then
+            cp artifacts/android/djibon-app.apk release-artifacts/djibon-android-${{ needs.create-release.outputs.version }}.apk
+          fi
+
+          # List all artifacts
+          echo "Prepared artifacts for release:"
+          ls -la release-artifacts/
+
+      - name: Generate release status
+        id: release-status
+        run: |
+          STATUS="## Build Status\n\n"
+
+          if [[ "${{ needs.build-and-deploy-web.result }}" == "success" ]]; then
+            STATUS="$STATUS\n- ✅ Web: Successfully deployed"
+          elif [[ "${{ needs.build-and-deploy-web.result }}" == "skipped" ]]; then
+            STATUS="$STATUS\n- ⏭️ Web: Skipped"
+          else
+            STATUS="$STATUS\n- ❌ Web: Failed"
+          fi
+
+          if [[ "${{ needs.build-ios.result }}" == "success" ]]; then
+            STATUS="$STATUS\n- ✅ iOS: Successfully built"
+          elif [[ "${{ needs.build-ios.result }}" == "skipped" ]]; then
+            STATUS="$STATUS\n- ⏭️ iOS: Skipped"
+          else
+            STATUS="$STATUS\n- ❌ iOS: Failed"
+          fi
+
+          if [[ "${{ needs.build-android.result }}" == "success" ]]; then
+            STATUS="$STATUS\n- ✅ Android: Successfully built"
+          elif [[ "${{ needs.build-android.result }}" == "skipped" ]]; then
+            STATUS="$STATUS\n- ⏭️ Android: Skipped"
+          else
+            STATUS="$STATUS\n- ❌ Android: Failed"
+          fi
+
+          echo "RELEASE_STATUS<<EOF" >> $GITHUB_ENV
+          echo -e "$STATUS" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref }}
+          name: Release ${{ needs.create-release.outputs.version }}
+          body: |
+            ${{ env.RELEASE_NOTES }}
+
+            ${{ env.RELEASE_STATUS }}
+
+            ## Download Links
+
+            - Web App: https://web.djibon.com
+            - Download Page: https://download.djibon.com
+          files: release-artifacts/*
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}

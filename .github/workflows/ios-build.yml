@@ -77,15 +77,7 @@ jobs:
           path: ${{ github.workspace }}/download-page/djibon-ios.zip
           retention-days: 30
 
-      - name: Upload iOS build to GitHub Release
-        if: github.event_name == 'push'
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.ref }}
-          files: ${{ github.workspace }}/download-page/djibon-ios.zip
-          token: ${{ secrets.GITHUB_TOKEN }}
-          draft: false
-          prerelease: false
+      # GitHub Release will be created by the release-and-deploy.yml workflow
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3

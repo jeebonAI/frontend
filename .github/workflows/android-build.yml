@@ -14,18 +14,18 @@ on:
 jobs:
   build-android:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: armv7-linux-androideabi, aarch64-linux-android
-      
+
       - name: Install Dioxus CLI
         run: cargo install dioxus-cli@0.6.0 --locked
-      
+
       - name: Extract version from tag or input
         id: get-version
         run: |
@@ -39,7 +39,7 @@ jobs:
           fi
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Using version: $VERSION"
-      
+
       - name: Update version in Dioxus.toml and Cargo.toml
         run: |
           VERSION=${{ steps.get-version.outputs.version }}
@@ -47,40 +47,32 @@ jobs:
           sed -i "/^\[package\]/,/^\[/ s/^version = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version = \"$VERSION\"/" Cargo.toml
           # Update version_name in Dioxus.toml
           sed -i "s/version_name = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version_name = \"$VERSION\"/g" Dioxus.toml
-      
+
       - name: Build Android App
         run: dx build --platform android --release
-      
+
       - name: Find and prepare APK
         run: |
           APK_PATH=$(find target/dx/djibon/release/android -name "*.apk" | grep -v "intermediates" | head -1)
-          
+
           if [ -z "$APK_PATH" ]; then
             echo "APK not found"
             exit 1
           fi
-          
+
           # Copy to download-page
           mkdir -p download-page
           cp "$APK_PATH" download-page/djibon-app.apk
-      
+
       - name: Upload Android build artifact
         uses: actions/upload-artifact@v3
         with:
           name: android-build
           path: download-page/djibon-app.apk
           retention-days: 30
-      
-      - name: Upload Android build to GitHub Release
-        if: github.event_name == 'push'
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.ref }}
-          files: download-page/djibon-app.apk
-          token: ${{ secrets.GITHUB_TOKEN }}
-          draft: false
-          prerelease: false
-      
+
+      # GitHub Release will be created by the release-and-deploy.yml workflow
+
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
