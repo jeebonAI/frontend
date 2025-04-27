@@ -102,13 +102,25 @@ jobs:
 
       # We'll create the release in the final job after all builds are complete
 
-  build-web:
+  update-version:
     needs: create-release-version
+    uses: ./.github/workflows/update-version.yml
+    with:
+      version: ${{ needs.create-release-version.outputs.version }}
+
+  build-web:
+    needs: [create-release-version, update-version]
     if: needs.create-release-version.outputs.web == 'true' || needs.create-release-version.outputs.demo == 'true'
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Download version files
+        uses: actions/download-artifact@v3
+        with:
+          name: version-files
+          path: ./
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -120,14 +132,6 @@ jobs:
 
       - name: Install Dioxus CLI
         run: cargo install dioxus-cli@0.6.0 --locked
-
-      - name: Update version in Dioxus.toml and Cargo.toml
-        run: |
-          VERSION=${{ needs.create-release-version.outputs.version }}
-          # Update only the package version in Cargo.toml
-          sed -i "/^\[package\]/,/^\[/ s/^version = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version = \"$VERSION\"/" Cargo.toml
-          # Update version_name in Dioxus.toml
-          sed -i "s/version_name = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version_name = \"$VERSION\"/g" Dioxus.toml
 
       - name: Build Dioxus app
         run: dx build --release
@@ -158,12 +162,18 @@ jobs:
   # Note: iOS builds are now also handled by the ios-build.yml workflow
   # This job is kept for backward compatibility
   build-ios:
-    needs: create-release-version
+    needs: [create-release-version, update-version]
     if: needs.create-release-version.outputs.ios == 'true'
     runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Download version files
+        uses: actions/download-artifact@v3
+        with:
+          name: version-files
+          path: ./
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -172,14 +182,6 @@ jobs:
 
       - name: Install Dioxus CLI
         run: cargo install dioxus-cli --locked
-
-      - name: Update version in Dioxus.toml and Cargo.toml
-        run: |
-          VERSION=${{ needs.create-release-version.outputs.version }}
-          # Update only the package version in Cargo.toml (macOS sed syntax)
-          sed -i '' -E '/^\[package\]/,/^\[/ s/^version = "[0-9]+\.[0-9]+\.[0-9]+"/version = "'"$VERSION"'"/' Cargo.toml
-          # Update version_name in Dioxus.toml
-          sed -i '' "s/version_name = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version_name = \"$VERSION\"/g" Dioxus.toml
 
       - name: Build iOS App
         run: dx build --platform ios --release
@@ -221,12 +223,18 @@ jobs:
           command: pages deploy . --project-name=djibon-download
 
   build-android:
-    needs: create-release-version
+    needs: [create-release-version, update-version]
     if: needs.create-release-version.outputs.android == 'true'
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Download version files
+        uses: actions/download-artifact@v3
+        with:
+          name: version-files
+          path: ./
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -235,14 +243,6 @@ jobs:
 
       - name: Install Dioxus CLI
         run: cargo install dioxus-cli@0.6.0 --locked
-
-      - name: Update version in Dioxus.toml and Cargo.toml
-        run: |
-          VERSION=${{ needs.create-release-version.outputs.version }}
-          # Update only the package version in Cargo.toml
-          sed -i "/^\[package\]/,/^\[/ s/^version = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version = \"$VERSION\"/" Cargo.toml
-          # Update version_name in Dioxus.toml
-          sed -i "s/version_name = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version_name = \"$VERSION\"/g" Dioxus.toml
 
       - name: Build Android App
         run: dx build --platform android --release

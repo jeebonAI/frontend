@@ -12,20 +12,11 @@ on:
       - 'v*ios*'  # Trigger on any tag containing 'ios'
 
 jobs:
-  build-ios:
-    runs-on: macos-latest
-
+  extract-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-version.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: aarch64-apple-ios, x86_64-apple-ios, aarch64-apple-ios-sim
-
-      - name: Install Dioxus CLI
-        run: cargo install dioxus-cli --locked
-
       - name: Extract version from tag or input
         id: get-version
         run: |
@@ -40,13 +31,32 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Using version: $VERSION"
 
-      - name: Update version in Dioxus.toml and Cargo.toml
-        run: |
-          VERSION=${{ steps.get-version.outputs.version }}
-          # Update only the package version in Cargo.toml (macOS sed syntax)
-          sed -i '' -E '/^\[package\]/,/^\[/ s/^version = "[0-9]+\.[0-9]+\.[0-9]+"/version = "'"$VERSION"'"/' Cargo.toml
-          # Update version_name in Dioxus.toml
-          sed -i '' "s/version_name = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version_name = \"$VERSION\"/g" Dioxus.toml
+  update-version:
+    needs: extract-version
+    uses: ./.github/workflows/update-version.yml
+    with:
+      version: ${{ needs.extract-version.outputs.version }}
+
+  build-ios:
+    needs: update-version
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download version files
+        uses: actions/download-artifact@v3
+        with:
+          name: version-files
+          path: ./
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios, x86_64-apple-ios, aarch64-apple-ios-sim
+
+      - name: Install Dioxus CLI
+        run: cargo install dioxus-cli --locked
 
       - name: Build iOS App
         run: dx build --platform ios --release
