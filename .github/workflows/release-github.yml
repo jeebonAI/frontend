@@ -15,7 +15,7 @@ jobs:
       android: ${{ steps.check-tag.outputs.android }}
       version: ${{ steps.check-tag.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Fetch all history for release notes
 
@@ -120,7 +120,7 @@ jobs:
     needs: create-release-version
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
       - name: Update version in Dioxus.toml and Cargo.toml
         run: |
@@ -142,13 +142,13 @@ jobs:
           retention-days: 1
 
   build-web:
-    needs: [create-release-version, update-version]
-    if: needs.create-release-version.outputs.web == 'true' || needs.create-release-version.outputs.demo == 'true'
+    needs: [update-version]
+    if: ${{ contains(github.ref, 'web') || contains(github.ref, 'demo') }}
     runs-on: ubuntu-latest
     # Always run the build job to create artifacts, but deployments will be conditional
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
       - name: Download version files
         uses: actions/download-artifact@v3
@@ -211,12 +211,12 @@ jobs:
           command: pages deploy target/dx/djibon/release/web/public --project-name=djibon-demo
 
   build-ios:
-    needs: [create-release-version, update-version]
-    if: needs.create-release-version.outputs.ios == 'true'
+    needs: [update-version]
+    if: ${{ contains(github.ref, 'ios') }}
     runs-on: macos-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
       - name: Download version files
         uses: actions/download-artifact@v3
@@ -262,12 +262,12 @@ jobs:
           retention-days: 30
 
   build-android:
-    needs: [create-release-version, update-version]
-    if: needs.create-release-version.outputs.android == 'true'
+    needs: [update-version]
+    if: ${{ contains(github.ref, 'android') }}
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
       - name: Download version files
         uses: actions/download-artifact@v3
@@ -307,12 +307,12 @@ jobs:
           retention-days: 30
 
   release-to-github:
-    needs: [create-release-version, build-web, build-ios, build-android]
-    if: always() && needs.create-release-version.result == 'success'
+    needs: [build-web, build-ios, build-android]
+    if: always()
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Needed for release notes generation
 
@@ -340,16 +340,19 @@ jobs:
 
           # Create a zip of the web build
           cd artifacts/web
-          zip -r ../../release-artifacts/djibon-web-${{ needs.create-release-version.outputs.version }}.zip .
+          VERSION=$(echo "${{ github.ref_name }}" | sed -E 's/^v([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+          zip -r ../../release-artifacts/djibon-web-${VERSION}.zip .
           cd ../..
 
           # Copy iOS and Android artifacts
           if [ -f artifacts/ios/djibon-ios.zip ]; then
-            cp artifacts/ios/djibon-ios.zip release-artifacts/djibon-ios-${{ needs.create-release-version.outputs.version }}.zip
+            VERSION=$(echo "${{ github.ref_name }}" | sed -E 's/^v([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+            cp artifacts/ios/djibon-ios.zip release-artifacts/djibon-ios-${VERSION}.zip
           fi
 
           if [ -f artifacts/android/djibon-app.apk ]; then
-            cp artifacts/android/djibon-app.apk release-artifacts/djibon-android-${{ needs.create-release-version.outputs.version }}.apk
+            VERSION=$(echo "${{ github.ref_name }}" | sed -E 's/^v([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+            cp artifacts/android/djibon-app.apk release-artifacts/djibon-android-${VERSION}.apk
           fi
 
           # List all artifacts
@@ -393,7 +396,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref }}
-          name: Release ${{ needs.create-release-version.outputs.version }}
+          name: Release ${{ github.ref_name }}
           body: |
             ${{ env.RELEASE_NOTES }}
 
@@ -417,7 +420,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
       - name: Create download directory
         run: mkdir -p download-page
