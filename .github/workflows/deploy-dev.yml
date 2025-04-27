@@ -39,7 +39,7 @@ jobs:
           ls -la $HOME/.cargo/bin
           if ! command -v dx &> /dev/null; then
             echo "dx not found, installing dioxus-cli@0.6.3..."
-            cargo binstall dioxus-cli@0.6.3 --force
+            cargo binstall dioxus-cli@0.6.3 --no-confirm --force
           else
             echo "dx found, verifying version..."
             dx --version
@@ -47,6 +47,14 @@ jobs:
 
       - name: Add Cargo bin to PATH
         run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Cache dioxus-cli
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/bin/dx
+          key: ${{ runner.os }}-dioxus-cli-v0.6.3
+          restore-keys: |
+            ${{ runner.os }}-dioxus-cli-
 
       - name: Build Dioxus app
         run: dx build --release
