@@ -5,6 +5,9 @@
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta charset="UTF-8" />
+    <meta name="theme-color" content="#0d6efd" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="djibon-icon.png" />
 
     <!-- Error handling for hydration issues -->
     <script>
@@ -42,5 +45,17 @@
     <div id="main"></div>
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="assets/bootstrap.bundle.min.js"></script>
+    <script>
+      // Register service worker for PWA support
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js').then(function(registration) {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          }, function(err) {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+        });
+      }
+    </script>
   </body>
 </html>

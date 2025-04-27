@@ -2,10 +2,11 @@ name: Build iOS App and Deploy
 
 on:
   workflow_dispatch:  # Allow manual triggering
-  push:
-    branches: [ main ]
-    paths-ignore:
-      - '**.md'
+    inputs:
+      version:
+        description: 'Version number (x.x.x)'
+        required: true
+        default: '0.0.1'
 
 jobs:
   build-ios:
@@ -21,6 +22,12 @@ jobs:
 
       - name: Install Dioxus CLI
         run: cargo install dioxus-cli --locked
+
+      - name: Update version in Dioxus.toml and Cargo.toml
+        run: |
+          VERSION=${{ github.event.inputs.version }}
+          sed -i '' "s/version = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version = \"$VERSION\"/g" Cargo.toml
+          sed -i '' "s/version_name = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version_name = \"$VERSION\"/g" Dioxus.toml
 
       - name: Build iOS App
         run: dx build --platform ios --release

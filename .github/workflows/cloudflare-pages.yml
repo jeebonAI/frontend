@@ -2,13 +2,57 @@ name: Deploy to Cloudflare Pages
 
 on:
   push:
-    branches: [ demo ]
-    paths:
-      - '**'
-      - '!.github/workflows/frontend-build-push.yml'
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+-*'
 
 jobs:
-  deploy:
+  check-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      web: ${{ steps.check-tag.outputs.web }}
+      demo: ${{ steps.check-tag.outputs.demo }}
+      ios: ${{ steps.check-tag.outputs.ios }}
+      android: ${{ steps.check-tag.outputs.android }}
+      version: ${{ steps.check-tag.outputs.version }}
+    steps:
+      - name: Check tag for deployment targets
+        id: check-tag
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          echo "Processing tag: $TAG"
+
+          # Extract version number
+          VERSION=$(echo $TAG | sed -E 's/^v([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+          # Check for deployment targets - look for words anywhere in the tag
+          if [[ $TAG == *"web"* ]]; then
+            echo "web=true" >> $GITHUB_OUTPUT
+          else
+            echo "web=false" >> $GITHUB_OUTPUT
+          fi
+
+          if [[ $TAG == *"demo"* ]]; then
+            echo "demo=true" >> $GITHUB_OUTPUT
+          else
+            echo "demo=false" >> $GITHUB_OUTPUT
+          fi
+
+          if [[ $TAG == *"ios"* ]]; then
+            echo "ios=true" >> $GITHUB_OUTPUT
+          else
+            echo "ios=false" >> $GITHUB_OUTPUT
+          fi
+
+          if [[ $TAG == *"android"* ]]; then
+            echo "android=true" >> $GITHUB_OUTPUT
+          else
+            echo "android=false" >> $GITHUB_OUTPUT
+          fi
+
+  deploy-web:
+    needs: check-tag
+    if: needs.check-tag.outputs.web == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -23,7 +67,13 @@ jobs:
         run: cargo install -f wasm-bindgen-cli --locked
 
       - name: Install Dioxus CLI
-        run: cargo install dioxus-cli --locked
+        run: cargo install dioxus-cli@0.6.0 --locked
+
+      - name: Update version in Dioxus.toml and Cargo.toml
+        run: |
+          VERSION=${{ needs.check-tag.outputs.version }}
+          sed -i "s/version = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version = \"$VERSION\"/g" Cargo.toml
+          sed -i "s/version_name = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version_name = \"$VERSION\"/g" Dioxus.toml
 
       - name: Build Dioxus app
         run: dx build --release
@@ -33,4 +83,69 @@ jobs:
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=djibon-web
+          command: pages deploy target/dx/djibon/release/web/public --project-name=djibon-web
+
+  deploy-demo:
+    needs: check-tag
+    if: needs.check-tag.outputs.demo == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Install wasm-bindgen-cli
+        run: cargo install -f wasm-bindgen-cli --locked
+
+      - name: Install Dioxus CLI
+        run: cargo install dioxus-cli@0.6.0 --locked
+
+      - name: Update version in Dioxus.toml and Cargo.toml
+        run: |
+          VERSION=${{ needs.check-tag.outputs.version }}
+          sed -i "s/version = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version = \"$VERSION\"/g" Cargo.toml
+          sed -i "s/version_name = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version_name = \"$VERSION\"/g" Dioxus.toml
+
+      - name: Build Dioxus app
+        run: dx build --release
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          command: pages deploy target/dx/djibon/release/web/public --project-name=djibon-demo
+
+  trigger-ios-build:
+    needs: check-tag
+    if: needs.check-tag.outputs.ios == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger iOS build workflow
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'ios-build.yml',
+              ref: 'main',
+              inputs: {
+                version: '${{ needs.check-tag.outputs.version }}'
+              }
+            })
+
+  trigger-android-build:
+    needs: check-tag
+    if: needs.check-tag.outputs.android == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Placeholder for Android build
+        run: echo "Android build workflow will be implemented in the future"
