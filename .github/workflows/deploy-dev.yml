@@ -35,10 +35,14 @@ jobs:
   
       - name: Install dioxus-cli
         run: |
+          echo "Checking for dx binary..."
+          ls -la $HOME/.cargo/bin
           if ! command -v dx &> /dev/null; then
-            cargo binstall dioxus-cli@0.6.1
+            echo "dx not found, installing dioxus-cli@0.6.3..."
+            cargo binstall dioxus-cli@0.6.3 --force
           else
-            echo "dioxus-cli already installed"
+            echo "dx found, verifying version..."
+            dx --version
           fi
 
       - name: Add Cargo bin to PATH
