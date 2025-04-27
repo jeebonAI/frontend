@@ -106,9 +106,8 @@ mkdir -p download-page
 cp target/dx/djibon-web/debug/android/app/app/build/outputs/apk/debug/app-debug.apk download-page/djibon-app.apk
 cp public/djibon-icon.png download-page/
 
-# Create a simple HTML page with a download link (see examples/download-page-example.html)
-# Start a local server (see examples/local-server.js for a Node.js example)
-# Run with: node examples/local-server.js
+# Use the existing download-page directory which contains the HTML page and APK
+# Start a local server to serve the download-page directory
 ```
 
 2. Access the local server from your Android device (ensure both devices are on the same network):
@@ -163,7 +162,7 @@ cp target/dx/djibon-web/release/android/app/app/build/outputs/apk/debug/app-debu
 cp public/djibon-icon.png download-page/
 ```
 
-4. Create an index.html file in the download-page directory with a download button (see example at `examples/download-page-example.html`)
+4. Create an index.html file in the download-page directory with a download button
 
 5. Deploy to Cloudflare Pages using Wrangler:
 ```bash

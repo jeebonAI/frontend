@@ -50,12 +50,12 @@ pub fn BottomNav() -> Element {
 
     rsx! {
         nav {
-            class: "navbar fixed-bottom border-top pt-2 bg-white shadow-lg",
+            class: "navbar fixed-bottom border-top pt-2 bg-white shadow-lg w-100",
             "data-bs-theme": theme_attr,
             div {
                 class: "container-fluid px-0",
-                div { class: "row w-100 text-center g-0",
-                    div { class: "col",
+                div { class: "row w-100 text-center g-0 flex-nowrap",
+                    div { class: "col px-1",
                         Link {
                             to: Route::Profile {},
                             class: if is_profile { "nav-link d-flex flex-column align-items-center active text-primary" } else { "nav-link d-flex flex-column align-items-center" },
@@ -63,7 +63,7 @@ pub fn BottomNav() -> Element {
                             span { class: "small", "Profile" }
                         }
                     }
-                    div { class: "col",
+                    div { class: "col px-1",
                         Link {
                             to: Route::Comms {},
                             class: if is_comms { "nav-link d-flex flex-column align-items-center active text-primary" } else { "nav-link d-flex flex-column align-items-center" },
@@ -71,7 +71,7 @@ pub fn BottomNav() -> Element {
                             span { class: "small", "Comms" }
                         }
                     }
-                    div { class: "col",
+                    div { class: "col px-1",
                         Link {
                             to: Route::Circles {},
                             class: if is_circles { "nav-link d-flex flex-column align-items-center active text-primary" } else { "nav-link d-flex flex-column align-items-center" },
@@ -79,7 +79,7 @@ pub fn BottomNav() -> Element {
                             span { class: "small", "Circles" }
                         }
                     }
-                    div { class: "col",
+                    div { class: "col px-1",
                         Link {
                             to: Route::Tree {},
                             class: if is_trees { "nav-link d-flex flex-column align-items-center active text-primary" } else { "nav-link d-flex flex-column align-items-center" },
@@ -87,7 +87,7 @@ pub fn BottomNav() -> Element {
                             span { class: "small", "Trees" }
                         }
                     }
-                    div { class: "col",
+                    div { class: "col px-1",
                         Link {
                             to: Route::Settings {},
                             class: if is_settings { "nav-link d-flex flex-column align-items-center active text-primary" } else { "nav-link d-flex flex-column align-items-center" },

@@ -1,6 +1,6 @@
 [package]
-name = "djibon-web"
-version = "0.1.0"
+name = "djibon"
+version = "0.0.1"
 authors = ["wizard supreme <smn7818@gmail.com>"]
 edition = "2024"
 

@@ -150,10 +150,10 @@ fn MainLayout() -> Element {
 
     rsx! {
         div {
-            class: "d-flex flex-column min-vh-100 pb-5 position-relative",
+            class: "d-flex flex-column vh-100 pb-5 position-relative overflow-hidden",
             "data-bs-theme": theme_attr,
             NavBar {}
-            div { class: container_class,
+            div { class: "{container_class} overflow-auto",
                 Outlet::<Route> {}
             }
             BottomNav {}
@@ -185,7 +185,7 @@ fn App() -> Element {
         document::Script { src: BOOTSTRAP_JS }
 
         // Add viewport meta tag for mobile responsiveness
-        document::Meta { name: "viewport", content: "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" }
+        document::Meta { name: "viewport", content: "width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" }
         document::Meta { name: "theme-color", content: "#ffffff" }
 
         // Add mobile-specific meta tags
