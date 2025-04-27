@@ -75,11 +75,46 @@ The built APK will be available at `target/dx/djibon-web/debug/android/app/app/b
 
 ### Installing on an Android Device
 
-To install the APK on a connected Android device:
+There are several ways to install the Djibon app on your Android device:
+
+#### Method 1: Direct Download from download.djibon.com
+
+1. Visit [download.djibon.com](https://download.djibon.com) on your Android device
+2. Tap the "Download APK" button
+3. When the download completes, tap on the downloaded file in your notifications or file manager
+4. If prompted, allow installation from unknown sources
+5. Follow the on-screen instructions to complete the installation
+6. Once installed, find and tap the Djibon icon in your app drawer to launch the app
+
+#### Method 2: Using ADB (for developers)
+
+If you have your device connected via USB and ADB set up:
 
 ```bash
 adb install -r target/dx/djibon-web/debug/android/app/app/build/outputs/apk/debug/app-debug.apk
 ```
+
+#### Method 3: Using a Local Web Server (for testing)
+
+1. Create a simple web server to host the APK:
+
+```bash
+# Create a directory for the download page
+mkdir -p download-page
+
+# Copy the APK and icon to the download page directory
+cp target/dx/djibon-web/debug/android/app/app/build/outputs/apk/debug/app-debug.apk download-page/djibon-app.apk
+cp public/djibon-icon.png download-page/
+
+# Create a simple HTML page with a download link (see examples/download-page-example.html)
+# Start a local server (see examples/local-server.js for a Node.js example)
+# Run with: node examples/local-server.js
+```
+
+2. Access the local server from your Android device (ensure both devices are on the same network):
+   - Find your computer's IP address (e.g., using `ip addr show`)
+   - On your Android device, open a browser and navigate to `http://YOUR_COMPUTER_IP:PORT`
+   - Download and install the APK as described in Method 1
 
 ### Building a Release Version
 
@@ -107,6 +142,39 @@ jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore djibon.keystore
 ```bash
 zipalign -v 4 target/dx/djibon-web/release/android/app/app/build/outputs/apk/release/app-release-unsigned.apk djibon.apk
 ```
+
+### Deploying to download.djibon.com
+
+To make the APK available for download on download.djibon.com:
+
+1. Build the release version of the Android app:
+```bash
+dx build --platform android --features mobile --release
+```
+
+2. Create a download page directory:
+```bash
+mkdir -p download-page
+```
+
+3. Copy the APK and icon to the download page directory:
+```bash
+cp target/dx/djibon-web/release/android/app/app/build/outputs/apk/debug/app-debug.apk download-page/djibon-app.apk
+cp public/djibon-icon.png download-page/
+```
+
+4. Create an index.html file in the download-page directory with a download button (see example at `examples/download-page-example.html`)
+
+5. Deploy to Cloudflare Pages using Wrangler:
+```bash
+npx wrangler pages deploy download-page --project-name=djibon-download
+```
+
+6. Configure custom domain in Cloudflare Pages dashboard:
+   - Log in to your Cloudflare account
+   - Go to Pages > djibon-download > Custom domains
+   - Add custom domain: download.djibon.com
+   - Follow the instructions to verify domain ownership and set up DNS records
 
 ## Desktop Version (Coming Soon)
 

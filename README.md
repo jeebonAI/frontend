@@ -41,6 +41,12 @@ dx build --platform android --features mobile
 adb install -r target/dx/djibon-web/debug/android/app/app/build/outputs/apk/debug/app-debug.apk
 ```
 
+Or simply download and install the APK directly on your Android device:
+
+1. Visit [download.djibon.com](https://download.djibon.com) on your Android device
+2. Tap the "Download APK" button
+3. Follow the on-screen instructions to install
+
 ## Development
 
 ### Project Structure
@@ -83,7 +89,19 @@ npx wrangler pages deploy target/dx/djibon-web/release/web/public --project-name
 
 ### Android
 
-See the [Installation Guide](install.md) for instructions on building and signing a release APK.
+See the [Installation Guide](install.md) for detailed instructions on building, signing, and deploying a release APK.
+
+To deploy the Android app to the download site:
+
+```bash
+# Build the release version
+dx build --platform android --features mobile --release
+
+# Deploy to download.djibon.com
+npx wrangler pages deploy download-page --project-name=djibon-download
+```
+
+Users can then download and install the app directly from [download.djibon.com](https://download.djibon.com).
 
 ## Contributing
 
