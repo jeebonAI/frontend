@@ -5,7 +5,7 @@ on:
     branches: [ main ]
     paths-ignore:
       - '**.md'
-      - '.github/workflows/**'  # Avoid triggering on workflow file changes
+   #   - '.github/workflows/**'  # Avoid triggering on workflow file changes
 
 jobs:
   deploy-dev:
