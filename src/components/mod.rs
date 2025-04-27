@@ -12,7 +12,7 @@ mod system_info;
 
 pub use navbar::NavBar;
 pub use bottom_nav::BottomNav;
-pub use error_boundary::ErrorBoundary;
+// pub use error_boundary::ErrorBoundary;
 pub use home::Home;
 pub use profile::Profile;
 pub use comms::Comms;

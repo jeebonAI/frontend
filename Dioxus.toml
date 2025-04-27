@@ -8,3 +8,15 @@ template = "public/error.html"
 
 [web.assets]
 assets_dir = "public"
+
+[android]
+app_name = "Djibon"
+assets_dir = "public"
+icon = "public/icon.png"
+package_name = "com.example.DjibonWeb"
+version_code = 1
+version_name = "0.1.0"
+minimum_sdk_version = 24
+target_sdk_version = 33
+full_screen = false
+screen_orientation = "portrait"
