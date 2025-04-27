@@ -50,4 +50,4 @@ jobs:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           workingDirectory: 'download-page'
-          command: pages publish . --project-name=djibon-download
+          command: pages deploy . --project-name=djibon-download

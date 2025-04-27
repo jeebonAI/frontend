@@ -10,27 +10,27 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
-      
+
       - name: Install wasm-bindgen-cli
         run: cargo install -f wasm-bindgen-cli --locked
-      
+
       - name: Install Dioxus CLI
         run: cargo install dioxus-cli --locked
-      
+
       - name: Build Dioxus app
         run: dx build --release
-      
+
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages publish dist --project-name=djibon-web
+          command: pages deploy dist --project-name=djibon-web
