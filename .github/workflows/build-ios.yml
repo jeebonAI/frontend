@@ -9,7 +9,8 @@ on:
         default: '0.0.1'
   push:
     tags:
-      - 'v*ios*'  # Trigger on any tag containing 'ios'
+      - 'v*ios*'   # Trigger on any tag containing 'ios'
+      - 'v*demo*'  # Also trigger on demo tags since we need to build for all platforms
 
 jobs:
   extract-version:
@@ -87,12 +88,5 @@ jobs:
           path: ${{ github.workspace }}/download-page/djibon-ios.zip
           retention-days: 30
 
-      # GitHub Release will be created by the release-and-deploy.yml workflow
-
-      - name: Publish to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          workingDirectory: 'download-page'
-          command: pages deploy . --project-name=djibon-download
+      # GitHub Release will be created by the release-github.yml workflow
+      # Download page deployment will be handled by deploy-download.yml
