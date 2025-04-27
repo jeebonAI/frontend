@@ -19,14 +19,15 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
 
-      - name: Install wasm-bindgen-cli
-        run: cargo install -f wasm-bindgen-cli --locked
+      - name: Cargo Build
+        run: cargo build
 
-      - name: Install Dioxus CLI
-        run: cargo install dioxus-cli@0.6.0 --locked
+      - name: Add Cargo bin to PATH
+        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - name: Build Dioxus app
         run: dx build --release
+
 
       - name: Get short SHA
         id: slug

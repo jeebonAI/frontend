@@ -164,8 +164,11 @@ jobs:
       # - name: Install wasm-bindgen-cli
       #   run: cargo install -f wasm-bindgen-cli --locked
 
-      - name: Install Dioxus CLI
+      - name: Cargo Build
         run: cargo build
+
+      - name: Add Cargo bin to PATH
+        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
       - name: Build Dioxus app
         run: dx build --release
