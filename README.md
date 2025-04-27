@@ -4,11 +4,16 @@ A modern, secure, and platform-independent Personal Assistance and Communication
 
 ## Features
 
-- **Cross-Platform**: Runs on web browsers and Android devices
+- **Cross-Platform**: Runs on web browsers, Android, and iOS devices (as PWA)
 - **Responsive Design**: Built with Bootstrap for a mobile-first experience
 - **Secure**: Built with Rust for memory safety and security
 - **Fast**: Compiled to WebAssembly for high performance
 - **Offline-Capable**: Works even when offline (coming soon)
+
+## Live Demo
+
+- **Web App**: [web.djibon.com](https://web.djibon.com) - Progressive Web App (PWA) version
+- **Download Page**: [download.djibon.com](https://download.djibon.com) - Download Android APK or install as PWA
 
 ## Getting Started
 
@@ -44,8 +49,22 @@ adb install -r target/dx/djibon-web/debug/android/app/app/build/outputs/apk/debu
 Or simply download and install the APK directly on your Android device:
 
 1. Visit [download.djibon.com](https://download.djibon.com) on your Android device
-2. Tap the "Download APK" button
+2. Tap the "Download for Android" button
 3. Follow the on-screen instructions to install
+
+### Progressive Web App (PWA)
+
+You can also install Djibon as a Progressive Web App on both Android and iOS:
+
+**Android:**
+1. Visit [web.djibon.com](https://web.djibon.com) in Chrome
+2. Tap the prompt to "Add to Home Screen" or select "Install App" from the menu
+
+**iOS:**
+1. Visit [web.djibon.com](https://web.djibon.com) in Safari
+2. Tap the Share button (square with arrow)
+3. Scroll down and tap "Add to Home Screen"
+4. Tap "Add" to confirm
 
 ## Development
 
@@ -78,16 +97,38 @@ cargo test
 
 ## Deployment
 
-### Web
+### Automated Deployment
+
+This project uses GitHub Actions for automated deployment. To deploy a new version:
+
+1. Create a git tag with the format `vx.x.x-[keywords]` where:
+   - `x.x.x` is the version number (e.g., 0.1.0)
+   - `[keywords]` can include any combination of: `web`, `demo`, `ios`, `android`
+
+2. Push the tag to GitHub:
+   ```bash
+   git tag v0.1.0-web-demo-ios-android
+   git push origin v0.1.0-web-demo-ios-android
+   ```
+
+3. The GitHub Actions workflow will automatically:
+   - Deploy to web.djibon.com if the tag contains `web`
+   - Deploy to demo site if the tag contains `demo`
+   - Build iOS app if the tag contains `ios`
+   - Build Android app if the tag contains `android` (coming soon)
+
+### Manual Deployment
+
+#### Web
 
 Deploy to Cloudflare Pages:
 
 ```bash
-dx build --platform web --features web --release
-npx wrangler pages deploy target/dx/djibon-web/release/web/public --project-name=dioxus-test
+dx build --release
+npx wrangler pages deploy target/dx/djibon/release/web/public --project-name=djibon-web
 ```
 
-### Android
+#### Android
 
 See the [Installation Guide](install.md) for detailed instructions on building, signing, and deploying a release APK.
 
@@ -95,10 +136,14 @@ To deploy the Android app to the download site:
 
 ```bash
 # Build the release version
-dx build --platform android --features mobile --release
+dx build --platform android --release
+
+# Copy the APK to the download-page folder
+cp target/dx/djibon/release/android/app/app/build/outputs/apk/debug/app-debug.apk download-page/djibon-app.apk
 
 # Deploy to download.djibon.com
-npx wrangler pages deploy download-page --project-name=djibon-download
+cd download-page
+npx wrangler pages deploy . --project-name=djibon-download
 ```
 
 Users can then download and install the app directly from [download.djibon.com](https://download.djibon.com).
