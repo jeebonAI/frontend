@@ -19,11 +19,17 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
 
-      - name: Cargo Build
-        run: cargo build
+      - name: Cache Rust dependencies
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install dioxus-cli
+        run: cargo install dioxus-cli 
 
       - name: Add Cargo bin to PATH
         run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+  
+      - name: Cargo Build
+        run: cargo build
 
       - name: Build Dioxus app
         run: dx build --release
