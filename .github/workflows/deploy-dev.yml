@@ -10,6 +10,8 @@ on:
 jobs:
   deploy-dev:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Grant write access for contents (includes commit comments)
 
     steps:
       - uses: actions/checkout@v4
