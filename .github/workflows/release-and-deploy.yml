@@ -18,48 +18,48 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Fetch all history for release notes
-      
+
       - name: Check tag for deployment targets
         id: check-tag
         run: |
           TAG=${GITHUB_REF#refs/tags/}
           echo "Processing tag: $TAG"
-          
+
           # Extract version number
           VERSION=$(echo $TAG | sed -E 's/^v([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          
+
           # Check for deployment targets
           if [[ $TAG == *"web"* ]]; then
             echo "web=true" >> $GITHUB_OUTPUT
           else
             echo "web=false" >> $GITHUB_OUTPUT
           fi
-          
+
           if [[ $TAG == *"demo"* ]]; then
             echo "demo=true" >> $GITHUB_OUTPUT
           else
             echo "demo=false" >> $GITHUB_OUTPUT
           fi
-          
+
           if [[ $TAG == *"ios"* ]]; then
             echo "ios=true" >> $GITHUB_OUTPUT
           else
             echo "ios=false" >> $GITHUB_OUTPUT
           fi
-          
+
           if [[ $TAG == *"android"* ]]; then
             echo "android=true" >> $GITHUB_OUTPUT
           else
             echo "android=false" >> $GITHUB_OUTPUT
           fi
-      
+
       - name: Generate Release Notes
         id: release-notes
         run: |
           # Get commits since last tag
           PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
-          
+
           if [ -z "$PREV_TAG" ]; then
             # If no previous tag, get all commits
             COMMITS=$(git log --pretty=format:"- %s (%h)" --no-merges)
@@ -67,7 +67,7 @@ jobs:
             # Get commits between previous tag and current tag
             COMMITS=$(git log --pretty=format:"- %s (%h)" --no-merges $PREV_TAG..HEAD)
           fi
-          
+
           # Create deployment section based on tag
           DEPLOYMENTS=""
           if [[ "${{ steps.check-tag.outputs.web }}" == "true" ]]; then
@@ -75,31 +75,31 @@ jobs:
           else
             DEPLOYMENTS="$DEPLOYMENTS\n- [ ] Web"
           fi
-          
+
           if [[ "${{ steps.check-tag.outputs.demo }}" == "true" ]]; then
             DEPLOYMENTS="$DEPLOYMENTS\n- [x] Demo (https://demo.djibon.com)"
           else
             DEPLOYMENTS="$DEPLOYMENTS\n- [ ] Demo"
           fi
-          
+
           if [[ "${{ steps.check-tag.outputs.ios }}" == "true" ]]; then
             DEPLOYMENTS="$DEPLOYMENTS\n- [x] iOS"
           else
             DEPLOYMENTS="$DEPLOYMENTS\n- [ ] iOS"
           fi
-          
+
           if [[ "${{ steps.check-tag.outputs.android }}" == "true" ]]; then
             DEPLOYMENTS="$DEPLOYMENTS\n- [x] Android"
           else
             DEPLOYMENTS="$DEPLOYMENTS\n- [ ] Android"
           fi
-          
+
           # Create release notes with commit list and deployment info
           NOTES="## Version ${{ steps.check-tag.outputs.version }}\n\n## What's New\n\n$COMMITS\n\n## Deployment Targets$DEPLOYMENTS\n\n## Download Links\n\n- Web App: https://web.djibon.com\n- Download Page: https://download.djibon.com"
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
           echo -e "$NOTES" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-      
+
       - name: Create GitHub Release
         id: create_release
         uses: softprops/action-gh-release@v1
@@ -114,144 +114,150 @@ jobs:
     needs: create-release
     if: needs.create-release.outputs.web == 'true'
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
-      
+
       - name: Install wasm-bindgen-cli
         run: cargo install -f wasm-bindgen-cli --locked
-      
+
       - name: Install Dioxus CLI
         run: cargo install dioxus-cli@0.6.0 --locked
-      
+
       - name: Update version in Dioxus.toml and Cargo.toml
         run: |
           VERSION=${{ needs.create-release.outputs.version }}
-          sed -i "s/version = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version = \"$VERSION\"/g" Cargo.toml
+          # Update only the package version in Cargo.toml
+          sed -i "/^\[package\]/,/^\[/ s/^version = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version = \"$VERSION\"/" Cargo.toml
+          # Update version_name in Dioxus.toml
           sed -i "s/version_name = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version_name = \"$VERSION\"/g" Dioxus.toml
-      
+
       - name: Build Dioxus app
         run: dx build --release
-      
+
       - name: Upload web build artifact
         uses: actions/upload-artifact@v3
         with:
           name: web-build
           path: target/dx/djibon/release/web/public
           retention-days: 30
-      
+
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: pages deploy target/dx/djibon/release/web/public --project-name=djibon-web
-  
+
   deploy-demo:
     needs: create-release
     if: needs.create-release.outputs.demo == 'true'
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
-      
+
       - name: Install wasm-bindgen-cli
         run: cargo install -f wasm-bindgen-cli --locked
-      
+
       - name: Install Dioxus CLI
         run: cargo install dioxus-cli@0.6.0 --locked
-      
+
       - name: Update version in Dioxus.toml and Cargo.toml
         run: |
           VERSION=${{ needs.create-release.outputs.version }}
-          sed -i "s/version = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version = \"$VERSION\"/g" Cargo.toml
+          # Update only the package version in Cargo.toml
+          sed -i "/^\[package\]/,/^\[/ s/^version = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version = \"$VERSION\"/" Cargo.toml
+          # Update version_name in Dioxus.toml
           sed -i "s/version_name = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version_name = \"$VERSION\"/g" Dioxus.toml
-      
+
       - name: Build Dioxus app
         run: dx build --release
-      
+
       - name: Upload demo build artifact
         uses: actions/upload-artifact@v3
         with:
           name: demo-build
           path: target/dx/djibon/release/web/public
           retention-days: 30
-      
+
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: pages deploy target/dx/djibon/release/web/public --project-name=djibon-demo
-  
+
   build-ios:
     needs: create-release
     if: needs.create-release.outputs.ios == 'true'
     runs-on: macos-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-apple-ios, x86_64-apple-ios, aarch64-apple-ios-sim
-      
+
       - name: Install Dioxus CLI
         run: cargo install dioxus-cli --locked
-      
+
       - name: Update version in Dioxus.toml and Cargo.toml
         run: |
           VERSION=${{ needs.create-release.outputs.version }}
-          sed -i '' "s/version = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version = \"$VERSION\"/g" Cargo.toml
+          # Update only the package version in Cargo.toml (macOS sed syntax)
+          sed -i '' -E '/^\[package\]/,/^\[/ s/^version = "[0-9]+\.[0-9]+\.[0-9]+"/version = "'"$VERSION"'"/' Cargo.toml
+          # Update version_name in Dioxus.toml
           sed -i '' "s/version_name = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version_name = \"$VERSION\"/g" Dioxus.toml
-      
+
       - name: Build iOS App
         run: dx build --platform ios --release
-      
+
       - name: Prepare iOS App Bundle
         run: |
           # Find the iOS app bundle
           IOS_APP_PATH=$(find target/dx/djibon/release/ios -name "*.app" -type d | head -1)
-          
+
           if [ -z "$IOS_APP_PATH" ]; then
             echo "iOS app bundle not found"
             exit 1
           fi
-          
+
           # Create a zip file of the app
           cd $(dirname "$IOS_APP_PATH")
           APP_NAME=$(basename "$IOS_APP_PATH" .app)
           zip -r "$APP_NAME.zip" "$(basename "$IOS_APP_PATH")"
-          
+
           # Copy to download-page
           mkdir -p $GITHUB_WORKSPACE/download-page
           cp "$APP_NAME.zip" $GITHUB_WORKSPACE/download-page/djibon-ios.zip
-      
+
       - name: Upload iOS build artifact
         uses: actions/upload-artifact@v3
         with:
           name: ios-build
           path: ${{ github.workspace }}/download-page/djibon-ios.zip
           retention-days: 30
-      
+
       - name: Upload iOS build to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref }}
           files: ${{ github.workspace }}/download-page/djibon-ios.zip
           token: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
@@ -259,59 +265,61 @@ jobs:
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           workingDirectory: 'download-page'
           command: pages deploy . --project-name=djibon-download
-  
+
   build-android:
     needs: create-release
     if: needs.create-release.outputs.android == 'true'
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: armv7-linux-androideabi, aarch64-linux-android
-      
+
       - name: Install Dioxus CLI
         run: cargo install dioxus-cli@0.6.0 --locked
-      
+
       - name: Update version in Dioxus.toml and Cargo.toml
         run: |
           VERSION=${{ needs.create-release.outputs.version }}
-          sed -i "s/version = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version = \"$VERSION\"/g" Cargo.toml
+          # Update only the package version in Cargo.toml
+          sed -i "/^\[package\]/,/^\[/ s/^version = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version = \"$VERSION\"/" Cargo.toml
+          # Update version_name in Dioxus.toml
           sed -i "s/version_name = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version_name = \"$VERSION\"/g" Dioxus.toml
-      
+
       - name: Build Android App
         run: dx build --platform android --release
-      
+
       - name: Find and prepare APK
         run: |
           APK_PATH=$(find target/dx/djibon/release/android -name "*.apk" | grep -v "intermediates" | head -1)
-          
+
           if [ -z "$APK_PATH" ]; then
             echo "APK not found"
             exit 1
           fi
-          
+
           # Copy to download-page
           mkdir -p download-page
           cp "$APK_PATH" download-page/djibon-app.apk
-      
+
       - name: Upload Android build artifact
         uses: actions/upload-artifact@v3
         with:
           name: android-build
           path: download-page/djibon-app.apk
           retention-days: 30
-      
+
       - name: Upload Android build to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref }}
           files: download-page/djibon-app.apk
           token: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:

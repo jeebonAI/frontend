@@ -103,7 +103,7 @@ cargo test
 
 Every push to the `main` branch automatically deploys to the development environment:
 
-- **Dev Preview**: [djibon-dev.pages.dev](https://djibon-dev.pages.dev)
+- **Dev Preview**: [dev.djibon.com](https://dev.djibon.com)
 
 #### Release Deployment
 

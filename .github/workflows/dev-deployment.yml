@@ -10,35 +10,35 @@ on:
 jobs:
   deploy-dev:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: wasm32-unknown-unknown
-      
+
       - name: Install wasm-bindgen-cli
         run: cargo install -f wasm-bindgen-cli --locked
-      
+
       - name: Install Dioxus CLI
         run: cargo install dioxus-cli@0.6.0 --locked
-      
+
       - name: Build Dioxus app
         run: dx build --release
-      
+
       - name: Get short SHA
         id: slug
         run: echo "sha=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
-      
+
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: pages deploy target/dx/djibon/release/web/public --project-name=djibon-dev
-      
+
       - name: Comment on commit
         uses: actions/github-script@v6
         with:
@@ -48,5 +48,5 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               commit_sha: context.sha,
-              body: `✅ Dev deployment successful!\n\nPreview: https://djibon-dev.pages.dev\nCommit: ${context.sha.substring(0, 7)}`
+              body: `✅ Dev deployment successful!\n\nPreview: https://dev.djibon.com\nCommit: ${context.sha.substring(0, 7)}`
             })
