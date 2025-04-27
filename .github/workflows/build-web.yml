@@ -41,6 +41,7 @@ jobs:
   build-web:
     needs: update-version
     runs-on: ubuntu-latest
+    # Always run the build job to create artifacts, but deployments will be conditional
 
     steps:
       - uses: actions/checkout@v4
@@ -72,11 +73,17 @@ jobs:
           path: target/dx/djibon/release/web/public
           retention-days: 30
 
-      - name: Check if tag contains 'demo'
-        id: check-demo
+      - name: Check tag for deployment targets
+        id: check-tags
         if: github.event_name == 'push'
         run: |
           TAG=${GITHUB_REF#refs/tags/}
+          if [[ $TAG == *"web"* ]]; then
+            echo "deploy_web=true" >> $GITHUB_OUTPUT
+          else
+            echo "deploy_web=false" >> $GITHUB_OUTPUT
+          fi
+
           if [[ $TAG == *"demo"* ]]; then
             echo "deploy_demo=true" >> $GITHUB_OUTPUT
           else
@@ -84,6 +91,7 @@ jobs:
           fi
 
       - name: Deploy to web.djibon.com
+        if: steps.check-tags.outputs.deploy_web == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
@@ -91,7 +99,7 @@ jobs:
           command: pages deploy target/dx/djibon/release/web/public --project-name=djibon-web
 
       - name: Deploy to demo.djibon.com
-        if: steps.check-demo.outputs.deploy_demo == 'true'
+        if: steps.check-tags.outputs.deploy_demo == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
