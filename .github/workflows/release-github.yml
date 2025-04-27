@@ -161,11 +161,11 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
 
-      - name: cargo build
-        run: cargo build
+      # - name: Install wasm-bindgen-cli
+      #   run: cargo install -f wasm-bindgen-cli --locked
 
-      # - name: Install Dioxus CLI
-      #   run: cargo install dioxus-cli@0.6.3 --locked
+      - name: Install Dioxus CLI
+        run: cargo build
 
       - name: Build Dioxus app
         run: dx build --release
@@ -281,7 +281,7 @@ jobs:
           targets: armv7-linux-androideabi, aarch64-linux-android
 
       - name: Install Dioxus CLI
-        run: cargo install dioxus-cli@0.6.0 --locked
+        run: cargo install dioxus-cli --locked
 
       - name: Build Android App
         run: dx build --platform android --release
