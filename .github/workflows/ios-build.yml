@@ -1,0 +1,53 @@
+name: Build iOS App and Deploy
+
+on:
+  workflow_dispatch:  # Allow manual triggering
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios, x86_64-apple-ios, aarch64-apple-ios-sim
+
+      - name: Install Dioxus CLI
+        run: cargo install dioxus-cli --locked
+
+      - name: Build iOS App
+        run: dx build --platform ios --release
+
+      - name: Prepare iOS App Bundle
+        run: |
+          # Find the iOS app bundle
+          IOS_APP_PATH=$(find target/dx/djibon/release/ios -name "*.app" -type d | head -1)
+
+          if [ -z "$IOS_APP_PATH" ]; then
+            echo "iOS app bundle not found"
+            exit 1
+          fi
+
+          # Create a zip file of the app
+          cd $(dirname "$IOS_APP_PATH")
+          APP_NAME=$(basename "$IOS_APP_PATH" .app)
+          zip -r "$APP_NAME.zip" "$(basename "$IOS_APP_PATH")"
+
+          # Copy to download-page
+          mkdir -p $GITHUB_WORKSPACE/download-page
+          cp "$APP_NAME.zip" $GITHUB_WORKSPACE/download-page/djibon-ios.zip
+
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          workingDirectory: 'download-page'
+          command: pages publish . --project-name=download-djibon
