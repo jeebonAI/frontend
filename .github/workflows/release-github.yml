@@ -1,4 +1,4 @@
-name: Release and Deploy
+name: Create GitHub Release
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+-*'
 
 jobs:
-  create-release:
+  create-release-version:
     runs-on: ubuntu-latest
     outputs:
       web: ${{ steps.check-tag.outputs.web }}
@@ -102,9 +102,9 @@ jobs:
 
       # We'll create the release in the final job after all builds are complete
 
-  build-and-deploy-web:
-    needs: create-release
-    if: needs.create-release.outputs.web == 'true' || needs.create-release.outputs.demo == 'true'
+  build-web:
+    needs: create-release-version
+    if: needs.create-release-version.outputs.web == 'true' || needs.create-release-version.outputs.demo == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -123,7 +123,7 @@ jobs:
 
       - name: Update version in Dioxus.toml and Cargo.toml
         run: |
-          VERSION=${{ needs.create-release.outputs.version }}
+          VERSION=${{ needs.create-release-version.outputs.version }}
           # Update only the package version in Cargo.toml
           sed -i "/^\[package\]/,/^\[/ s/^version = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version = \"$VERSION\"/" Cargo.toml
           # Update version_name in Dioxus.toml
@@ -140,7 +140,7 @@ jobs:
           retention-days: 30
 
       - name: Deploy to web.djibon.com
-        if: needs.create-release.outputs.web == 'true'
+        if: needs.create-release-version.outputs.web == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
@@ -148,7 +148,7 @@ jobs:
           command: pages deploy target/dx/djibon/release/web/public --project-name=djibon-web
 
       - name: Deploy to demo.djibon.com
-        if: needs.create-release.outputs.demo == 'true'
+        if: needs.create-release-version.outputs.demo == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
@@ -158,8 +158,8 @@ jobs:
   # Note: iOS builds are now also handled by the ios-build.yml workflow
   # This job is kept for backward compatibility
   build-ios:
-    needs: create-release
-    if: needs.create-release.outputs.ios == 'true'
+    needs: create-release-version
+    if: needs.create-release-version.outputs.ios == 'true'
     runs-on: macos-latest
 
     steps:
@@ -175,7 +175,7 @@ jobs:
 
       - name: Update version in Dioxus.toml and Cargo.toml
         run: |
-          VERSION=${{ needs.create-release.outputs.version }}
+          VERSION=${{ needs.create-release-version.outputs.version }}
           # Update only the package version in Cargo.toml (macOS sed syntax)
           sed -i '' -E '/^\[package\]/,/^\[/ s/^version = "[0-9]+\.[0-9]+\.[0-9]+"/version = "'"$VERSION"'"/' Cargo.toml
           # Update version_name in Dioxus.toml
@@ -221,8 +221,8 @@ jobs:
           command: pages deploy . --project-name=djibon-download
 
   build-android:
-    needs: create-release
-    if: needs.create-release.outputs.android == 'true'
+    needs: create-release-version
+    if: needs.create-release-version.outputs.android == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -238,7 +238,7 @@ jobs:
 
       - name: Update version in Dioxus.toml and Cargo.toml
         run: |
-          VERSION=${{ needs.create-release.outputs.version }}
+          VERSION=${{ needs.create-release-version.outputs.version }}
           # Update only the package version in Cargo.toml
           sed -i "/^\[package\]/,/^\[/ s/^version = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version = \"$VERSION\"/" Cargo.toml
           # Update version_name in Dioxus.toml
@@ -277,9 +277,9 @@ jobs:
           workingDirectory: 'download-page'
           command: pages deploy . --project-name=djibon-download
 
-  create-github-release:
-    needs: [create-release, build-and-deploy-web, build-ios, build-android]
-    if: always() && needs.create-release.result == 'success'
+  release-to-github:
+    needs: [create-release-version, build-web, build-ios, build-android]
+    if: always() && needs.create-release-version.result == 'success'
     runs-on: ubuntu-latest
 
     steps:
@@ -311,16 +311,16 @@ jobs:
 
           # Create a zip of the web build
           cd artifacts/web
-          zip -r ../../release-artifacts/djibon-web-${{ needs.create-release.outputs.version }}.zip .
+          zip -r ../../release-artifacts/djibon-web-${{ needs.create-release-version.outputs.version }}.zip .
           cd ../..
 
           # Copy iOS and Android artifacts
           if [ -f artifacts/ios/djibon-ios.zip ]; then
-            cp artifacts/ios/djibon-ios.zip release-artifacts/djibon-ios-${{ needs.create-release.outputs.version }}.zip
+            cp artifacts/ios/djibon-ios.zip release-artifacts/djibon-ios-${{ needs.create-release-version.outputs.version }}.zip
           fi
 
           if [ -f artifacts/android/djibon-app.apk ]; then
-            cp artifacts/android/djibon-app.apk release-artifacts/djibon-android-${{ needs.create-release.outputs.version }}.apk
+            cp artifacts/android/djibon-app.apk release-artifacts/djibon-android-${{ needs.create-release-version.outputs.version }}.apk
           fi
 
           # List all artifacts
@@ -332,9 +332,9 @@ jobs:
         run: |
           STATUS="## Build Status\n\n"
 
-          if [[ "${{ needs.build-and-deploy-web.result }}" == "success" ]]; then
+          if [[ "${{ needs.build-web.result }}" == "success" ]]; then
             STATUS="$STATUS\n- ✅ Web: Successfully deployed"
-          elif [[ "${{ needs.build-and-deploy-web.result }}" == "skipped" ]]; then
+          elif [[ "${{ needs.build-web.result }}" == "skipped" ]]; then
             STATUS="$STATUS\n- ⏭️ Web: Skipped"
           else
             STATUS="$STATUS\n- ❌ Web: Failed"
@@ -364,7 +364,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref }}
-          name: Release ${{ needs.create-release.outputs.version }}
+          name: Release ${{ needs.create-release-version.outputs.version }}
           body: |
             ${{ env.RELEASE_NOTES }}
 

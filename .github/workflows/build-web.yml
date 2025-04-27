@@ -1,0 +1,88 @@
+name: Build Web App
+
+on:
+  workflow_dispatch:  # Allow manual triggering
+    inputs:
+      version:
+        description: 'Version number (x.x.x)'
+        required: true
+        default: '0.0.1'
+  push:
+    tags:
+      - 'v*web*'  # Trigger on any tag containing 'web'
+
+jobs:
+  build-web:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Extract version from tag or input
+        id: get-version
+        run: |
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            # Extract version from tag (e.g., v0.0.3-web-demo -> 0.0.3)
+            TAG=${GITHUB_REF#refs/tags/}
+            VERSION=$(echo $TAG | sed -E 's/^v([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+          else
+            # Use the version from workflow_dispatch input
+            VERSION="${{ github.event.inputs.version }}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Using version: $VERSION"
+      
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      
+      - name: Install wasm-bindgen-cli
+        run: cargo install -f wasm-bindgen-cli --locked
+      
+      - name: Install Dioxus CLI
+        run: cargo install dioxus-cli@0.6.0 --locked
+      
+      - name: Update version in Dioxus.toml and Cargo.toml
+        run: |
+          VERSION=${{ steps.get-version.outputs.version }}
+          # Update only the package version in Cargo.toml
+          sed -i "/^\[package\]/,/^\[/ s/^version = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version = \"$VERSION\"/" Cargo.toml
+          # Update version_name in Dioxus.toml
+          sed -i "s/version_name = \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/version_name = \"$VERSION\"/g" Dioxus.toml
+      
+      - name: Build Dioxus app
+        run: dx build --release
+      
+      - name: Upload web build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: web-build
+          path: target/dx/djibon/release/web/public
+          retention-days: 30
+      
+      - name: Check if tag contains 'demo'
+        id: check-demo
+        if: github.event_name == 'push'
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          if [[ $TAG == *"demo"* ]]; then
+            echo "deploy_demo=true" >> $GITHUB_OUTPUT
+          else
+            echo "deploy_demo=false" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Deploy to web.djibon.com
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          command: pages deploy target/dx/djibon/release/web/public --project-name=djibon-web
+      
+      - name: Deploy to demo.djibon.com
+        if: steps.check-demo.outputs.deploy_demo == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          command: pages deploy target/dx/djibon/release/web/public --project-name=djibon-demo
