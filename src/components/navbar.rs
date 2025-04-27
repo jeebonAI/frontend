@@ -72,7 +72,6 @@ pub fn NavBar() -> Element {
             class: "offcanvas offcanvas-start w-75",
             "data-bs-theme": theme_attr,
             "data-bs-backdrop": "true",
-
             "data-bs-scroll": "false",
             id: "sidebarMenu",
             tabindex: "-1",
@@ -187,56 +186,14 @@ pub fn NavBar() -> Element {
                     }
                 }
 
-                // User profile at bottom - Fixed position
+                // System Info link at bottom - Fixed position
                 div { class: "border-top p-3 mt-auto shadow-sm",
-                    div { class: "dropdown",
-                        a {
-                            class: "d-flex align-items-center text-primary text-decoration-none dropdown-toggle",
-                            href: "#",
-                            "data-bs-toggle": "dropdown",
-                            "data-bs-auto-close": "true",
-                            "aria-expanded": "false",
-                            // Version number instead of user
-                            i {
-                                class: "bi bi-info-circle fs-4 me-2 text-primary"
-                            }
-                            { format!("v{}", state.read().version) }
-                        }
-                        ul { class: "dropdown-menu text-small shadow",
-                            li {
-                                Link {
-                                    to: Route::Settings {},
-                                    class: "dropdown-item",
-
-                                    "Settings"
-                                }
-                            }
-                            li {
-                                Link {
-                                    to: Route::Profile {},
-                                    class: "dropdown-item",
-
-                                    "Profile"
-                                }
-                            }
-                            li {
-                                Link {
-                                    to: Route::SystemInfo {},
-                                    class: "dropdown-item",
-
-                                    "System Info"
-                                }
-                            }
-                            li { hr { class: "dropdown-divider" } }
-                            li {
-                                a {
-                                    class: "dropdown-item",
-                                    href: "#",
-
-                                    "Sign out"
-                                }
-                            }
-                        }
+                    Link {
+                        to: Route::SystemInfo {},
+                        class: "d-flex align-items-center text-primary text-decoration-none",
+                        "data-bs-dismiss": "offcanvas",
+                        i { class: "bi bi-info-circle fs-4 me-2 text-primary" }
+                        { format!("v{}", state.read().version) }
                     }
                 }
             }
