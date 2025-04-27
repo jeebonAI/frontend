@@ -9,7 +9,8 @@ on:
         default: '0.0.1'
   push:
     tags:
-      - 'v*web*'  # Trigger on any tag containing 'web'
+      - 'v*web*'   # Trigger on any tag containing 'web'
+      - 'v*demo*'  # Also trigger on any tag containing 'demo'
 
 jobs:
   extract-version:
