@@ -161,11 +161,11 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
 
-      - name: Install wasm-bindgen-cli
-        run: cargo install -f wasm-bindgen-cli --locked
+      - name: cargo build
+        run: cargo build
 
-      - name: Install Dioxus CLI
-        run: cargo install dioxus-cli@0.6.0 --locked
+      # - name: Install Dioxus CLI
+      #   run: cargo install dioxus-cli@0.6.3 --locked
 
       - name: Build Dioxus app
         run: dx build --release
