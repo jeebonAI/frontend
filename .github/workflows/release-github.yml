@@ -82,6 +82,12 @@ jobs:
             COMMITS=$(git log --pretty=format:"- %s (%h)" --no-merges $PREV_TAG..HEAD)
           fi
 
+          # Categorize commits (basic categorization)
+          FEATURES=$(echo "$COMMITS" | grep -i -E '(feat|feature|add|new):' || echo "")
+          FIXES=$(echo "$COMMITS" | grep -i -E '(fix|bug|issue|resolve):' || echo "")
+          IMPROVEMENTS=$(echo "$COMMITS" | grep -i -E '(improve|enhance|update|refactor|perf):' || echo "")
+          OTHER=$(echo "$COMMITS" | grep -v -i -E '(feat|feature|add|new|fix|bug|issue|resolve|improve|enhance|update|refactor|perf):' || echo "")
+
           # Create deployment section based on tag
           DEPLOYMENTS=""
           if [[ "${{ steps.check-tag.outputs.web }}" == "true" ]]; then
@@ -108,8 +114,35 @@ jobs:
             DEPLOYMENTS="$DEPLOYMENTS\n- [ ] Android"
           fi
 
-          # Create release notes with commit list and deployment info
-          NOTES="## Version ${{ steps.check-tag.outputs.version }}\n\n## What's New\n\n$COMMITS\n\n## Deployment Targets$DEPLOYMENTS\n\n## Download Links\n\n- Web App: https://web.djibon.com\n- Download Page: https://download.djibon.com"
+          # Create structured release notes
+          NOTES="## Version ${{ steps.check-tag.outputs.version }}\n\n"
+          
+          # Add features section if there are any
+          if [ ! -z "$FEATURES" ]; then
+            NOTES="$NOTES### ✨ New Features\n\n$FEATURES\n\n"
+          fi
+          
+          # Add fixes section if there are any
+          if [ ! -z "$FIXES" ]; then
+            NOTES="$NOTES### 🐛 Bug Fixes\n\n$FIXES\n\n"
+          fi
+          
+          # Add improvements section if there are any
+          if [ ! -z "$IMPROVEMENTS" ]; then
+            NOTES="$NOTES### 🚀 Improvements\n\n$IMPROVEMENTS\n\n"
+          fi
+          
+          # Add other changes section if there are any
+          if [ ! -z "$OTHER" ]; then
+            NOTES="$NOTES### 🔄 Other Changes\n\n$OTHER\n\n"
+          fi
+          
+          # Add deployment targets section
+          NOTES="$NOTES## Deployment Targets$DEPLOYMENTS\n\n"
+          
+          # Add download links
+          NOTES="$NOTES## Download Links\n\n- Web App: https://web.djibon.com\n- Download Page: https://download.djibon.com"
+          
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
           echo -e "$NOTES" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
