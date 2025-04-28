@@ -250,16 +250,14 @@ jobs:
           name: version-files
           path: ./
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
+      # Use the custom Dioxus action instead of manual Rust setup
+      - name: Build Dioxus
+        uses: wizardsupreme/dioxus-action@v0
         with:
-          targets: aarch64-apple-ios, x86_64-apple-ios, aarch64-apple-ios-sim
-
-      - name: Install Dioxus CLI
-        run: cargo install dioxus-cli --locked
-
-      - name: Build iOS App
-        run: dx build --platform ios --release
+          repo: 'wizardsupreme/dioxus'
+          version: 'main'
+          platform: 'ios'
+          features: 'mobile'
 
       - name: Prepare iOS App Bundle
         run: |
