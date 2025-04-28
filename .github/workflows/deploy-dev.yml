@@ -61,16 +61,7 @@ jobs:
         id: slug
         run: echo "sha=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
 
-      # Simplified Wrangler cache
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-          cache: 'npm'
-      
-      - name: Install Wrangler
-        run: npm install -g wrangler
-
+      # Use Cloudflare Wrangler action directly (includes Node.js and Wrangler)
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
