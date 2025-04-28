@@ -43,12 +43,12 @@ Quick start for Android:
 dx build --platform android --features mobile
 
 # Install on a connected Android device
-adb install -r target/dx/djibon-web/debug/android/app/app/build/outputs/apk/debug/app-debug.apk
+adb install -r target/dx/jiboni-web/debug/android/app/app/build/outputs/apk/debug/app-debug.apk
 ```
 
 Or simply download and install the APK directly on your Android device:
 
-1. Visit [download.djibon.com](https://download.djibon.com) on your Android device
+1. Visit [download.jiboni.com](https://download.jiboni.com) on your Android device
 2. Select your preferred version from the dropdown menu
 3. Tap the "Download for Android" button
 4. Follow the on-screen instructions to install
@@ -58,11 +58,11 @@ Or simply download and install the APK directly on your Android device:
 You can also install Djibon as a Progressive Web App on both Android and iOS:
 
 **Android:**
-1. Visit [web.djibon.com](https://web.djibon.com) in Chrome
+1. Visit [web.jiboni.com](https://web.jiboni.com) in Chrome
 2. Tap the prompt to "Add to Home Screen" or select "Install App" from the menu
 
 **iOS:**
-1. Visit [web.djibon.com](https://web.djibon.com) in Safari
+1. Visit [web.jiboni.com](https://web.jiboni.com) in Safari
 2. Tap the Share button (square with arrow)
 3. Scroll down and tap "Add to Home Screen"
 4. Tap "Add" to confirm
@@ -104,7 +104,7 @@ cargo test
 
 Every push to the `main` branch automatically deploys to the development environment:
 
-- **Dev Preview**: [dev.djibon.com](https://dev.djibon.com)
+- **Dev Preview**: [dev.jiboni.com](https://dev.jiboni.com)
 
 #### Release Deployment
 
@@ -122,7 +122,7 @@ This project uses GitHub Actions for automated releases and deployment. To deplo
 
 3. The GitHub Actions workflow will automatically:
    - Create a GitHub Release with auto-generated release notes
-   - Deploy to web.djibon.com if the tag contains `web`
+   - Deploy to web.jiboni.com if the tag contains `web`
    - Deploy to demo site if the tag contains `demo`
    - Build iOS app if the tag contains `ios`
    - Build Android app if the tag contains `android`
@@ -137,7 +137,7 @@ Deploy to Cloudflare Pages:
 
 ```bash
 dx build --release
-npx wrangler pages deploy target/dx/djibon/release/web/public --project-name=djibon-web
+npx wrangler pages deploy target/dx/jiboni/release/web/public --project-name=jiboni-web
 ```
 
 #### Android
@@ -151,13 +151,13 @@ To deploy the Android app to the download site:
 dx build --platform android --release
 
 # Copy the APK to the download-page folder
-cp target/dx/djibon/release/android/app/app/build/outputs/apk/debug/app-debug.apk download-page/djibon-app.apk
+cp target/dx/jiboni/release/android/app/app/build/outputs/apk/debug/app-debug.apk download-page/jiboni-app.apk
 
-# Deploy to download.djibon.com
-npx wrangler pages deploy ./download-page --project-name=djibon-download
+# Deploy to download.jiboni.com
+npx wrangler pages deploy ./download-page --project-name=jiboni-download
 ```
 
-Users can then download and install the app directly from [download.djibon.com](https://download.djibon.com). The download page provides a dropdown menu of all available releases, allowing users to select and download specific versions.
+Users can then download and install the app directly from [download.jiboni.com](https://download.jiboni.com). The download page provides a dropdown menu of all available releases, allowing users to select and download specific versions.
 
 ## Contributing
 
