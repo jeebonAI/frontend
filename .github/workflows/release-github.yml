@@ -189,7 +189,7 @@ jobs:
 
       - name: Deploy to web.djibon.com
         if: steps.check-tags.outputs.deploy_web == 'true'
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4.13.2
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
@@ -197,7 +197,7 @@ jobs:
 
       - name: Deploy to demo.djibon.com
         if: steps.check-tags.outputs.deploy_demo == 'true'
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4.13.2
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
@@ -394,11 +394,24 @@ jobs:
           echo -e "$STATUS" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
+      - name: Download tag info
+        uses: actions/download-artifact@v4
+        with:
+          name: tag-info
+          path: ./
+
+      - name: Extract version from tag
+        id: extract-version
+        run: |
+          TAG=$(cat tag-info.txt)
+          VERSION=$(echo $TAG | sed -E 's/^v([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref }}
-          name: Release ${{ github.ref_name }}
+          name: Release ${{ steps.extract-version.outputs.version }}
           body: |
             ${{ env.RELEASE_NOTES }}
 
