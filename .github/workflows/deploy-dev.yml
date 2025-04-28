@@ -16,52 +16,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
+      # Use the custom Dioxus action
+      - name: Build Dioxus
+        uses: wizardsupreme/dioxus-action@feature/wasm-action
         with:
-          targets: wasm32-unknown-unknown
-
-      # Cache Rust dependencies - this is the main build cache
-      - name: Cache Rust dependencies
-        uses: Swatinem/rust-cache@v2
-        with:
-          cache-targets: true
-          shared-key: "djibon-build"
-          cache-on-failure: true
-
-      # Cache binary tools separately
-      - name: Cache binary tools
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/bin/wasm-bindgen
-            ~/.cargo/bin/cargo-binstall
-            ~/.cargo/bin/dx
-          key: ${{ runner.os }}-rust-tools-${{ hashFiles('**/Cargo.lock') }}
-      
-      - name: Install cargo-binstall
-        run: |
-          if ! command -v cargo-binstall &> /dev/null; then
-            cargo install cargo-binstall
-          fi
-
-      - name: Install dioxus-cli
-        run: |
-          if ! command -v dx &> /dev/null; then
-            cargo binstall dioxus-cli@0.6.3 --no-confirm --force
-          fi
-
-      - name: Add Cargo bin to PATH
-        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-
-      - name: Build Dioxus app
-        run: dx build --release
+          repo: 'wizardsupreme/dioxus'
+          version: 'main'
 
       - name: Get short SHA
         id: slug
         run: echo "sha=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
 
-      # Use Cloudflare Wrangler action directly (includes Node.js and Wrangler)
+      # Use Cloudflare Wrangler action directly
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
