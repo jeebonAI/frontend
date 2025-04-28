@@ -31,7 +31,15 @@ jobs:
             . -> target/wasm32-unknown-unknown
             . -> target/dx
           cache-on-failure: true
-  
+
+      - name: Cache wasm-bindgen-cli
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/bin/wasm-bindgen
+          key: ${{ runner.os }}-wasm-bindgen-cli-0.2.100
+          restore-keys: |
+            ${{ runner.os }}-wasm-bindgen-cli-
+
       - name: Cache cargo-binstall
         uses: actions/cache@v4
         with:
@@ -75,6 +83,13 @@ jobs:
       - name: Build Dioxus app
         run: dx build --release
 
+      - name: Cache build output
+        uses: actions/cache@v4
+        with:
+          path: target/dx/djibon/release/web/public
+          key: ${{ runner.os }}-dioxus-build-${{ hashFiles('src/**/*.rs', 'Cargo.lock', 'Cargo.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-dioxus-build-
 
       - name: Get short SHA
         id: slug
