@@ -16,31 +16,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Diagnostic step to check public folder contents
-      - name: Check public folder contents
-        run: |
-          echo "Contents of public folder:"
-          ls -la public/
-          echo "Checking Dioxus.toml configuration:"
-          cat Dioxus.toml | grep -A 10 "assets"
-
       # Use the custom Dioxus action
       - name: Build Dioxus
-        uses: wizardsupreme/dioxus-action@feature/wasm-action
+        uses: wizardsupreme/dioxus-action@v0
         with:
           repo: 'wizardsupreme/dioxus'
           version: 'main'
-          build-command: 'dx build --release --verbose'
-
-
-      # Diagnostic step to check build output
-      - name: Check build output
-        run: |
-          echo "Contents of build output directory:"
-          ls -la target/dx/djibon/release/web/public/
-          echo "Checking for WASM files:"
-          ls -la target/dx/djibon/release/web/public/wasm/ || echo "wasm directory not found"
-
 
       - name: Get short SHA
         id: slug

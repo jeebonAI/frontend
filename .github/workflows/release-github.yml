@@ -156,22 +156,12 @@ jobs:
           name: version-files
           path: ./
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
+      # Use the custom Dioxus action instead of manual Rust setup
+      - name: Build Dioxus
+        uses: wizardsupreme/dioxus-action@v0
         with:
-          targets: wasm32-unknown-unknown
-
-      # - name: Install wasm-bindgen-cli
-      #   run: cargo install -f wasm-bindgen-cli --locked
-
-      - name: Cargo Build
-        run: cargo build
-
-      - name: Add Cargo bin to PATH
-        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-
-      - name: Build Dioxus app
-        run: dx build --release
+          repo: 'wizardsupreme/dioxus'
+          version: 'main'
 
       - name: Upload web build artifact
         uses: actions/upload-artifact@v4
