@@ -80,10 +80,22 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-dioxus-cli-
 
+      - name: Check for cached build
+        id: check-cache
+        uses: actions/cache@v4
+        with:
+          path: target/dx/djibon/release/web/public
+          key: ${{ runner.os }}-dioxus-build-${{ hashFiles('src/**/*.rs', 'Cargo.lock', 'Cargo.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-dioxus-build-
+
       - name: Build Dioxus app
+        if: steps.check-cache.outputs.cache-hit != 'true'
         run: dx build --release
 
+      # This step is now only for saving the cache if we had to build
       - name: Cache build output
+        if: steps.check-cache.outputs.cache-hit != 'true'
         uses: actions/cache@v4
         with:
           path: target/dx/djibon/release/web/public
