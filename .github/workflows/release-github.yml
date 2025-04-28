@@ -222,7 +222,7 @@ jobs:
 
       - name: Deploy to web.djibon.com
         if: steps.check-tags.outputs.deploy_web == 'true'
-        uses: cloudflare/wrangler-action@v4.13.2
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
@@ -230,7 +230,7 @@ jobs:
 
       - name: Deploy to demo.djibon.com
         if: steps.check-tags.outputs.deploy_demo == 'true'
-        uses: cloudflare/wrangler-action@v4.13.2
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
