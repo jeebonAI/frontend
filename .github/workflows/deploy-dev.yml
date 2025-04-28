@@ -27,7 +27,9 @@ jobs:
           key: ${{ runner.os }}-rust-${{ hashFiles('**/Cargo.lock') }}
           shared-key: rust-build
           cache-targets: true
-          workspaces: . -> target/wasm32-unknown-unknown
+          workspaces: |
+            . -> target/wasm32-unknown-unknown
+            . -> target/dx
           cache-on-failure: true
   
       - name: Install cargo-binstall
