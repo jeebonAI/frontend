@@ -303,6 +303,8 @@ jobs:
     needs: [build-web, build-ios, build-android]
     if: always()
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Add explicit permission to create releases
 
     steps:
       - uses: actions/checkout@v4
