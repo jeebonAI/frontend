@@ -80,11 +80,12 @@ There are several ways to install the Djibon app on your Android device:
 #### Method 1: Direct Download from download.djibon.com
 
 1. Visit [download.djibon.com](https://download.djibon.com) on your Android device
-2. Tap the "Download APK" button
-3. When the download completes, tap on the downloaded file in your notifications or file manager
-4. If prompted, allow installation from unknown sources
-5. Follow the on-screen instructions to complete the installation
-6. Once installed, find and tap the Djibon icon in your app drawer to launch the app
+2. Select your preferred version from the Android versions dropdown
+3. Tap the "Download for Android" button
+4. When the download completes, tap on the downloaded file in your notifications or file manager
+5. If prompted, allow installation from unknown sources
+6. Follow the on-screen instructions to complete the installation
+7. Once installed, find and tap the Djibon icon in your app drawer to launch the app
 
 #### Method 2: Using ADB (for developers)
 
@@ -144,36 +145,38 @@ zipalign -v 4 target/dx/djibon-web/release/android/app/app/build/outputs/apk/rel
 
 ### Deploying to download.djibon.com
 
-To make the APK available for download on download.djibon.com:
+The download page at download.djibon.com now features a dynamic dropdown of all available releases from the GitHub repository. Here's how it works:
 
-1. Build the release version of the Android app:
+1. The page uses JavaScript to fetch releases from the GitHub API
+2. It displays all available Android and iOS builds in separate dropdowns
+3. Users can select their preferred version and download it directly
+
+To update the download page:
+
+1. Make changes to the files in the `download-page` directory
+2. Commit and push your changes to the main branch
+3. The GitHub Actions workflow will automatically deploy the updated page to Cloudflare Pages
+
 ```bash
-dx build --platform android --features mobile --release
+# After making changes to the download page files
+git add download-page/
+git commit -m "Update download page"
+git push origin main
 ```
 
-2. Create a download page directory:
+To manually deploy the download page:
+
 ```bash
-mkdir -p download-page
+npx wrangler pages deploy ./download-page --project-name=djibon-download
 ```
 
-3. Copy the APK and icon to the download page directory:
-```bash
-cp target/dx/djibon-web/release/android/app/app/build/outputs/apk/debug/app-debug.apk download-page/djibon-app.apk
-cp public/djibon-icon.png download-page/
-```
+When new releases are created with the appropriate tags (containing `ios` or `android`), the GitHub Actions workflow will:
 
-4. Create an index.html file in the download-page directory with a download button
+1. Build the iOS and/or Android apps
+2. Upload the builds as assets to the GitHub release
+3. Create a PR to update the download page with links to the new builds
 
-5. Deploy to Cloudflare Pages using Wrangler:
-```bash
-npx wrangler pages deploy download-page --project-name=djibon-download
-```
-
-6. Configure custom domain in Cloudflare Pages dashboard:
-   - Log in to your Cloudflare account
-   - Go to Pages > djibon-download > Custom domains
-   - Add custom domain: download.djibon.com
-   - Follow the instructions to verify domain ownership and set up DNS records
+Once the PR is merged, the download page will automatically be updated with the new versions.
 
 ## Desktop Version (Coming Soon)
 

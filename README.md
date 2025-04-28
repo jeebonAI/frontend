@@ -13,7 +13,7 @@ A modern, secure, and platform-independent Personal Assistance and Communication
 ## Live Demo
 
 - **Web App**: [web.djibon.com](https://web.djibon.com) - Progressive Web App (PWA) version
-- **Download Page**: [download.djibon.com](https://download.djibon.com) - Download Android APK or install as PWA
+- **Download Page**: [download.djibon.com](https://download.djibon.com) - Download Android APK or iOS builds with version selection
 
 ## Getting Started
 
@@ -49,8 +49,9 @@ adb install -r target/dx/djibon-web/debug/android/app/app/build/outputs/apk/debu
 Or simply download and install the APK directly on your Android device:
 
 1. Visit [download.djibon.com](https://download.djibon.com) on your Android device
-2. Tap the "Download for Android" button
-3. Follow the on-screen instructions to install
+2. Select your preferred version from the dropdown menu
+3. Tap the "Download for Android" button
+4. Follow the on-screen instructions to install
 
 ### Progressive Web App (PWA)
 
@@ -126,7 +127,7 @@ This project uses GitHub Actions for automated releases and deployment. To deplo
    - Build iOS app if the tag contains `ios`
    - Build Android app if the tag contains `android`
    - Upload build artifacts to the GitHub Release
-   - Update the download page with the latest builds
+   - Create a PR to update the download page with the latest builds
 
 ### Manual Deployment
 
@@ -153,11 +154,10 @@ dx build --platform android --release
 cp target/dx/djibon/release/android/app/app/build/outputs/apk/debug/app-debug.apk download-page/djibon-app.apk
 
 # Deploy to download.djibon.com
-cd download-page
-npx wrangler pages deploy . --project-name=djibon-download
+npx wrangler pages deploy ./download-page --project-name=djibon-download
 ```
 
-Users can then download and install the app directly from [download.djibon.com](https://download.djibon.com).
+Users can then download and install the app directly from [download.djibon.com](https://download.djibon.com). The download page provides a dropdown menu of all available releases, allowing users to select and download specific versions.
 
 ## Contributing
 

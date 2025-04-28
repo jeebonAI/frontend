@@ -116,33 +116,33 @@ jobs:
 
           # Create structured release notes
           NOTES="## Version ${{ steps.check-tag.outputs.version }}\n\n"
-          
+
           # Add features section if there are any
           if [ ! -z "$FEATURES" ]; then
             NOTES="$NOTES### ✨ New Features\n\n$FEATURES\n\n"
           fi
-          
+
           # Add fixes section if there are any
           if [ ! -z "$FIXES" ]; then
             NOTES="$NOTES### 🐛 Bug Fixes\n\n$FIXES\n\n"
           fi
-          
+
           # Add improvements section if there are any
           if [ ! -z "$IMPROVEMENTS" ]; then
             NOTES="$NOTES### 🚀 Improvements\n\n$IMPROVEMENTS\n\n"
           fi
-          
+
           # Add other changes section if there are any
           if [ ! -z "$OTHER" ]; then
             NOTES="$NOTES### 🔄 Other Changes\n\n$OTHER\n\n"
           fi
-          
+
           # Add deployment targets section
           NOTES="$NOTES## Deployment Targets$DEPLOYMENTS\n\n"
-          
+
           # Add download links
           NOTES="$NOTES## Download Links\n\n- Web App: https://web.djibon.com\n- Download Page: https://download.djibon.com"
-          
+
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
           echo -e "$NOTES" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
@@ -334,6 +334,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write  # Add explicit permission to create releases
+      pull-requests: write  # Permission to create PRs
 
     steps:
       - uses: actions/checkout@v4
@@ -455,41 +456,48 @@ jobs:
           prerelease: false
           token: ${{ secrets.GITHUB_TOKEN }}
 
-  deploy-download:
-    needs: [build-ios, build-android, release-to-github]
-    if: |
-      always() &&
-      (needs.build-ios.result == 'success' || needs.build-android.result == 'success') &&
-      needs.release-to-github.result == 'success'
-    runs-on: ubuntu-latest
+      # Copy artifacts to download-page directory and create a PR
+      - name: Copy artifacts to download-page
+        if: |
+          (needs.build-ios.result == 'success' || needs.build-android.result == 'success')
+        run: |
+          # Create download directory if it doesn't exist
+          mkdir -p download-page
 
-    steps:
-      - uses: actions/checkout@v4
+          # Copy iOS artifact if it exists
+          if [[ "${{ needs.build-ios.result }}" == "success" && -f "artifacts/ios/djibon-ios.zip" ]]; then
+            cp artifacts/ios/djibon-ios.zip download-page/djibon-ios.zip
+            echo "Copied iOS artifact to download-page"
+          fi
 
-      - name: Create download directory
-        run: mkdir -p download-page
+          # Copy Android artifact if it exists
+          if [[ "${{ needs.build-android.result }}" == "success" && -f "artifacts/android/djibon-app.apk" ]]; then
+            cp artifacts/android/djibon-app.apk download-page/djibon-app.apk
+            echo "Copied Android artifact to download-page"
+          fi
 
-      - name: Download iOS artifact
-        if: needs.build-ios.result == 'success'
-        uses: actions/download-artifact@v4
+          # List all files in download-page
+          echo "Files in download-page directory:"
+          ls -la download-page/
+
+      - name: Create Pull Request for download page update
+        if: |
+          (needs.build-ios.result == 'success' || needs.build-android.result == 'success')
+        uses: peter-evans/create-pull-request@v5
         with:
-          name: ios-build
-          path: download-page
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Update download page with latest builds"
+          title: "Update download page with latest builds"
+          body: |
+            This PR updates the download page with the latest builds from release ${{ steps.extract-version.outputs.version }}.
 
-      - name: Download Android artifact
-        if: needs.build-android.result == 'success'
-        uses: actions/download-artifact@v4
-        with:
-          name: android-build
-          path: download-page
+            ## Build Status
+            ${{ env.RELEASE_STATUS }}
 
-      - name: List download directory contents
-        run: ls -la download-page
+            ## Automated PR
+            This PR was automatically created by the release workflow.
+          branch: update-download-page-${{ steps.extract-version.outputs.version }}
+          base: main
+          delete-branch: true
 
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          workingDirectory: 'download-page'
-          command: pages deploy . --project-name=djibon-download
+
