@@ -1,6 +1,6 @@
-# DJibon Frontend (Dioxus)
+# Jiboni Frontend (Dioxus)
 
-This directory contains the Dioxus-based frontend implementation for the DJibon Personal Assistance and Communication Tool (PACT).
+This directory contains the Dioxus-based frontend implementation for the Jiboni Personal Assistance and Communication Tool (PACT).
 
 ## Why Dioxus over Flutter?
 
@@ -129,7 +129,7 @@ pub struct DbService {
 
 impl DbService {
     pub fn new() -> Result<Self> {
-        let conn = Connection::open("djibon.db")?;
+        let conn = Connection::open("Jiboni.db")?;
         
         // Create tables if they don't exist
         conn.execute(
@@ -281,6 +281,6 @@ pub fn WebRTCComponent() -> Element {
 
 ## Conclusion
 
-Dioxus offers a compelling alternative to Flutter for the DJibon PACT application, particularly for rapid prototyping and development. Its Rust-native approach, excellent hot-reloading capabilities, and seamless integration with SQLite make it an ideal choice for our project requirements.
+Dioxus offers a compelling alternative to Flutter for the Jiboni PACT application, particularly for rapid prototyping and development. Its Rust-native approach, excellent hot-reloading capabilities, and seamless integration with SQLite make it an ideal choice for our project requirements.
 
 By leveraging Dioxus, we can achieve faster development cycles, easier testing, and a more unified codebase across platforms, while still maintaining the ability to create beautiful, responsive user interfaces.

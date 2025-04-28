@@ -33,7 +33,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy target/dx/djibon/release/web/public --project-name=jiboni-dev
+          command: pages deploy target/dx/jiboni/release/web/public --project-name=jiboni-dev
 
       - name: Comment on commit
         uses: actions/github-script@v6
