@@ -1,20 +1,21 @@
 [application]
 name = "djibon-web"
 title = "Djibon"
+asset_dir = "public"  # This is needed on the dioxus 6.3+
 
 [web.app]
 index_on_404 = true
 template = "public/error.html"
 
 [web.assets]
-assets_dir = "public"
+assets_dir = "public" # this will not work past dioxus 6.3
 
 [bundle]
 identifier = "com.djibon.app"
 
 [android]
 app_name = "Djibon"
-assets_dir = "public"
+assets_dir = "public" # this will not work past dioxus 6.3
 icon = "public/djibon-icon.png"
 version_code = 1
 version_name = "0.0.2"

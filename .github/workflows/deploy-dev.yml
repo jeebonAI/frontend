@@ -28,8 +28,8 @@ jobs:
       - name: Build Dioxus
         uses: wizardsupreme/dioxus-action@feature/wasm-action
         with:
-      #    repo: 'wizardsupreme/dioxus'
-      #    version: 'main'
+          repo: 'wizardsupreme/dioxus'
+          version: 'main'
           build-command: 'dx build --release --verbose'
 
 
