@@ -299,16 +299,14 @@ jobs:
           name: version-files
           path: ./
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
+      # Use the custom Dioxus action instead of manual Rust setup
+      - name: Build Dioxus
+        uses: wizardsupreme/dioxus-action@v0
         with:
-          targets: armv7-linux-androideabi, aarch64-linux-android
-
-      - name: Install Dioxus CLI
-        run: cargo install dioxus-cli --locked
-
-      - name: Build Android App
-        run: dx build --platform android --release
+          repo: 'wizardsupreme/dioxus'
+          version: 'main'
+          platform: 'android'
+          features: 'mobile'
 
       - name: Find and prepare APK
         run: |
