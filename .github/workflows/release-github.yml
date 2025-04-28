@@ -310,18 +310,21 @@ jobs:
           fetch-depth: 0  # Needed for release notes generation
 
       - name: Download web artifact
+        if: ${{ contains(github.ref, 'web') || contains(github.ref, 'demo') }}
         uses: actions/download-artifact@v4
         with:
           name: web-build
           path: artifacts/web
 
       - name: Download iOS artifact
+        if: ${{ contains(github.ref, 'ios') }}
         uses: actions/download-artifact@v4
         with:
           name: ios-build
           path: artifacts/ios
 
       - name: Download Android artifact
+        if: ${{ contains(github.ref, 'android') }}
         uses: actions/download-artifact@v4
         with:
           name: android-build
@@ -330,22 +333,26 @@ jobs:
       - name: Prepare artifacts for release
         run: |
           mkdir -p release-artifacts
-
-          # Create a zip of the web build
-          cd artifacts/web
           VERSION=$(echo "${{ github.ref_name }}" | sed -E 's/^v([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
-          zip -r ../../release-artifacts/djibon-web-${VERSION}.zip .
-          cd ../..
 
-          # Copy iOS and Android artifacts
-          if [ -f artifacts/ios/djibon-ios.zip ]; then
-            VERSION=$(echo "${{ github.ref_name }}" | sed -E 's/^v([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
-            cp artifacts/ios/djibon-ios.zip release-artifacts/djibon-ios-${VERSION}.zip
+          # Create a zip of the web build if it exists
+          if [[ "${{ contains(github.ref, 'web') || contains(github.ref, 'demo') }}" == "true" && -d "artifacts/web" ]]; then
+            cd artifacts/web
+            zip -r ../../release-artifacts/djibon-web-${VERSION}.zip .
+            cd ../..
+            echo "Prepared web artifact"
           fi
 
-          if [ -f artifacts/android/djibon-app.apk ]; then
-            VERSION=$(echo "${{ github.ref_name }}" | sed -E 's/^v([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+          # Copy iOS artifact if it exists
+          if [[ "${{ contains(github.ref, 'ios') }}" == "true" && -f "artifacts/ios/djibon-ios.zip" ]]; then
+            cp artifacts/ios/djibon-ios.zip release-artifacts/djibon-ios-${VERSION}.zip
+            echo "Prepared iOS artifact"
+          fi
+
+          # Copy Android artifact if it exists
+          if [[ "${{ contains(github.ref, 'android') }}" == "true" && -f "artifacts/android/djibon-app.apk" ]]; then
             cp artifacts/android/djibon-app.apk release-artifacts/djibon-android-${VERSION}.apk
+            echo "Prepared Android artifact"
           fi
 
           # List all artifacts
