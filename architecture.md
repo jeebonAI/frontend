@@ -1,6 +1,6 @@
-# DJibon Frontend (Dioxus)
+# Jiboni Frontend (Dioxus)
 
-The frontend application for DJibon - a modern, secure, and platform-independent Personal Assistance and Communication Tool (PACT) built with Dioxus and Rust.
+The frontend application for Jiboni - a modern, secure, and platform-independent Personal Assistance and Communication Tool (PACT) built with Dioxus and Rust.
 
 ## Project Structure
 
@@ -89,7 +89,7 @@ frontend/
 
 ## Architecture Overview
 
-The DJibon frontend follows a domain-driven architecture with a focus on:
+The Jiboni frontend follows a domain-driven architecture with a focus on:
 
 - **Separation of concerns**: Each domain is isolated and self-contained
 - **Reusability**: Common components and hooks are shared across domains
@@ -993,7 +993,7 @@ The communication architecture handles offline scenarios gracefully:
 
 ### Media Types and Use Cases
 
-DJibon supports various media types across different domains:
+Jiboni supports various media types across different domains:
 
 | Media Type | Use Cases |
 |------------|-----------|
@@ -1094,7 +1094,7 @@ The application implements several strategies for offline media access:
 
 ### Models and Data Flow
 
-The DJibon frontend uses a simplified model architecture that aligns with our backend approach:
+The Jiboni frontend uses a simplified model architecture that aligns with our backend approach:
 
 #### Direct Model Usage (No DTOs)
 
@@ -1391,13 +1391,13 @@ For web platforms, we use `sqlite-wasm` which compiles SQLite to WebAssembly:
 #[cfg(target_arch = "wasm32")]
 fn initialize_database() -> impl DatabaseConnection {
     // Use sqlite-wasm which stores data in IndexedDB
-    WebSqliteConnection::new("djibon.db")
+    WebSqliteConnection::new("Jiboni.db")
 }
 
 #[cfg(not(target_arch = "wasm32"))]
 fn initialize_database() -> impl DatabaseConnection {
     // Use native SQLite for desktop/mobile
-    NativeSqliteConnection::new("djibon.db")
+    NativeSqliteConnection::new("Jiboni.db")
 }
 ```
 

@@ -1,6 +1,6 @@
 # Frontend Implementation Roadmap
 
-This document outlines the step-by-step implementation plan for the DJibon frontend application, breaking down the development into manageable stages with clear deliverables.
+This document outlines the step-by-step implementation plan for the Jiboni frontend application, breaking down the development into manageable stages with clear deliverables.
 
 ## Stage 1: Project Initialization
 

@@ -1,6 +1,6 @@
 [package]
-name = "djibon"
-version = "0.0.3"
+name = "jiboni"
+version = "0.0.4"
 authors = ["wizard supreme <smn7818@gmail.com>"]
 edition = "2024"
 

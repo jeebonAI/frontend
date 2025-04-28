@@ -1,10 +1,10 @@
-const CACHE_NAME = 'djibon-cache-v1';
+const CACHE_NAME = 'jiboni-cache-v1';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/wasm/djibon.js',
-  '/wasm/djibon_bg.wasm',
-  '/djibon-icon.png',
+  '/wasm/jiboni.js',
+  '/wasm/jiboni_bg.wasm',
+  '/jiboni-icon.png',
   '/manifest.json'
 ];
 

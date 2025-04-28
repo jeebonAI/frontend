@@ -1,6 +1,6 @@
 [application]
-name = "djibon-web"
-title = "Djibon"
+name = "jiboni"
+title = "Jiboni"
 asset_dir = "public"  # This is needed on the dioxus 6.3+
 
 [web.app]
@@ -11,12 +11,12 @@ template = "public/error.html"
 assets_dir = "public" # this will not work past dioxus 6.3
 
 [bundle]
-identifier = "com.djibon.app"
+identifier = "com.jiboni.app"
 
 [android]
-app_name = "Djibon"
+app_name = "Jiboni"
 assets_dir = "public" # this will not work past dioxus 6.3
-icon = "public/djibon-icon.png"
+icon = "public/jiboni-icon.png"
 version_code = 1
 version_name = "0.0.2"
 minimum_sdk_version = 30 

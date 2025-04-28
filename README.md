@@ -1,4 +1,4 @@
-# Djibon Frontend
+# Jiboni Frontend
 
 A modern, secure, and platform-independent Personal Assistance and Communication Tool (PACT) built with Dioxus and Rust.
 
@@ -12,8 +12,8 @@ A modern, secure, and platform-independent Personal Assistance and Communication
 
 ## Live Demo
 
-- **Web App**: [web.djibon.com](https://web.djibon.com) - Progressive Web App (PWA) version
-- **Download Page**: [download.djibon.com](https://download.djibon.com) - Download Android APK or iOS builds with version selection
+- **Web App**: [web.jiboni.com](https://web.jiboni.com) - Progressive Web App (PWA) version
+- **Download Page**: [download.jiboni.com](https://download.jiboni.com) - Download Android APK or iOS builds with version selection
 
 ## Getting Started
 
@@ -24,7 +24,7 @@ A modern, secure, and platform-independent Personal Assistance and Communication
 
 ### Installation
 
-See the [Installation Guide](install.md) for detailed instructions on how to install and run Djibon on different platforms.
+See the [Installation Guide](install.md) for detailed instructions on how to install and run jiboni on different platforms.
 
 Quick start for web:
 
@@ -55,7 +55,7 @@ Or simply download and install the APK directly on your Android device:
 
 ### Progressive Web App (PWA)
 
-You can also install Djibon as a Progressive Web App on both Android and iOS:
+You can also install jiboni as a Progressive Web App on both Android and iOS:
 
 **Android:**
 1. Visit [web.jiboni.com](https://web.jiboni.com) in Chrome
