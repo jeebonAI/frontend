@@ -33,7 +33,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy target/dx/djibon/release/web/public --project-name=djibon-dev
+          command: pages deploy target/dx/djibon/release/web/public --project-name=jiboni-dev
 
       - name: Comment on commit
         uses: actions/github-script@v6
@@ -44,5 +44,5 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               commit_sha: context.sha,
-              body: `✅ Dev deployment successful!\n\nPreview: https://dev.djibon.com\nCommit: ${context.sha.substring(0, 7)}`
+              body: `✅ Dev deployment successful!\n\nPreview: https://dev.jiboni.com\nCommit: ${context.sha.substring(0, 7)}`
             })
