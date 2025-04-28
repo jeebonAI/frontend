@@ -21,101 +21,55 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
 
+      # Cache Rust dependencies - this is the main build cache
       - name: Cache Rust dependencies
         uses: Swatinem/rust-cache@v2
         with:
-          key: ${{ runner.os }}-rust-${{ hashFiles('**/Cargo.lock') }}
-          shared-key: rust-build
           cache-targets: true
-          workspaces: |
-            . -> target/wasm32-unknown-unknown
-            . -> target/dx
+          shared-key: "djibon-build"
           cache-on-failure: true
 
-      - name: Cache wasm-bindgen-cli
+      # Cache binary tools separately
+      - name: Cache binary tools
         uses: actions/cache@v4
         with:
-          path: ~/.cargo/bin/wasm-bindgen
-          key: ${{ runner.os }}-wasm-bindgen-cli-0.2.100
-          restore-keys: |
-            ${{ runner.os }}-wasm-bindgen-cli-
-
-      - name: Cache cargo-binstall
-        uses: actions/cache@v4
-        with:
-          path: ~/.cargo/bin/cargo-binstall
-          key: ${{ runner.os }}-cargo-binstall-latest
-          restore-keys: |
-            ${{ runner.os }}-cargo-binstall-
+          path: |
+            ~/.cargo/bin/wasm-bindgen
+            ~/.cargo/bin/cargo-binstall
+            ~/.cargo/bin/dx
+          key: ${{ runner.os }}-rust-tools-${{ hashFiles('**/Cargo.lock') }}
       
       - name: Install cargo-binstall
         run: |
           if ! command -v cargo-binstall &> /dev/null; then
-            echo "cargo-binstall not found, installing..."
             cargo install cargo-binstall
-          else
-            echo "cargo-binstall already installed"
           fi
 
       - name: Install dioxus-cli
         run: |
-          echo "Checking for dx binary..."
-          ls -la $HOME/.cargo/bin
           if ! command -v dx &> /dev/null; then
-            echo "dx not found, installing dioxus-cli@0.6.3..."
             cargo binstall dioxus-cli@0.6.3 --no-confirm --force
-          else
-            echo "dx found, verifying version..."
-            dx --version
           fi
 
       - name: Add Cargo bin to PATH
         run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
 
-      - name: Cache dioxus-cli
-        uses: actions/cache@v4
-        with:
-          path: ~/.cargo/bin/dx
-          key: ${{ runner.os }}-dioxus-cli-v0.6.3
-          restore-keys: |
-            ${{ runner.os }}-dioxus-cli-
-
-      - name: Check for cached build
-        id: check-cache
-        uses: actions/cache@v4
-        with:
-          path: target/dx/djibon/release/web/public
-          key: ${{ runner.os }}-dioxus-build-${{ hashFiles('src/**/*.rs', 'Cargo.lock', 'Cargo.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-dioxus-build-
-
       - name: Build Dioxus app
-        if: steps.check-cache.outputs.cache-hit != 'true'
         run: dx build --release
-
-      # This step is now only for saving the cache if we had to build
-      - name: Cache build output
-        if: steps.check-cache.outputs.cache-hit != 'true'
-        uses: actions/cache@v4
-        with:
-          path: target/dx/djibon/release/web/public
-          key: ${{ runner.os }}-dioxus-build-${{ hashFiles('src/**/*.rs', 'Cargo.lock', 'Cargo.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-dioxus-build-
 
       - name: Get short SHA
         id: slug
         run: echo "sha=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
 
-      - name: Cache Wrangler
-        uses: actions/cache@v4
+      # Simplified Wrangler cache
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          path: |
-            ~/.npm
-            /usr/local/lib/node_modules
-          key: ${{ runner.os }}-wrangler-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-wrangler-
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install Wrangler
+        run: npm install -g wrangler
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
