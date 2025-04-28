@@ -32,9 +32,23 @@ jobs:
             . -> target/dx
           cache-on-failure: true
   
+      - name: Cache cargo-binstall
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/bin/cargo-binstall
+          key: ${{ runner.os }}-cargo-binstall-latest
+          restore-keys: |
+            ${{ runner.os }}-cargo-binstall-
+      
       - name: Install cargo-binstall
-        run: cargo install cargo-binstall
-  
+        run: |
+          if ! command -v cargo-binstall &> /dev/null; then
+            echo "cargo-binstall not found, installing..."
+            cargo install cargo-binstall
+          else
+            echo "cargo-binstall already installed"
+          fi
+
       - name: Install dioxus-cli
         run: |
           echo "Checking for dx binary..."
