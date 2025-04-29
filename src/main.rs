@@ -49,7 +49,7 @@ const BOOTSTRAP_ICONS: &str = "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11
 
 // const STYLE: Asset = asset!("/public/style.css");
 // Include the CSS file directly as a string to avoid MIME type issues
-// static STYLE: &str = include_str!("./public/style.css");
+static STYLE: &str = include_str!("./public/style.css");
 
 // Application with routing
 fn main() {
@@ -167,10 +167,10 @@ fn App() -> Element {
     // Create a variable to hold the stylesheet element
     let stylesheet;
 
-    #[cfg(feature = "web")]
-    {
-        stylesheet = rsx!(Stylesheet { href: asset!("./public/style.css") });
-    }
+    // #[cfg(feature = "web")]
+    // {
+    //     stylesheet = rsx!(Stylesheet { href: asset!("./public/style.css") });
+    // }
 
     #[cfg(not(feature = "web"))]
     {

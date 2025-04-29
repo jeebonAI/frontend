@@ -20,8 +20,8 @@ jobs:
       - name: Build Dioxus
         uses: wizardsupreme/dioxus-action@v0
         with:
-          # repo: 'wizardsupreme/dioxus'
-          # version: 'main'
+          repo: 'wizardsupreme/dioxus'
+          version: 'main'
           verbose: true
 
       # Add this step to inspect build output
