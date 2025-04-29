@@ -147,8 +147,6 @@ jobs:
           echo -e "$NOTES" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
-      # We'll create the release in the final job after all builds are complete
-
   update-version:
     needs: create-release-version
     runs-on: ubuntu-latest
@@ -178,10 +176,13 @@ jobs:
     needs: [update-version]
     if: ${{ contains(github.ref, 'web') || contains(github.ref, 'demo') }}
     runs-on: ubuntu-latest
-    # Always run the build job to create artifacts, but deployments will be conditional
-
+    permissions:
+      contents: write  # Required for Git operations (push to branches)
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}  # Use GITHUB_TOKEN for write access
+          fetch-depth: 0  # Fetch full history for merging
 
       - name: Download version files
         uses: actions/download-artifact@v4
@@ -221,6 +222,17 @@ jobs:
             echo "deploy_demo=false" >> $GITHUB_OUTPUT
           fi
 
+      # Merge into main branch for web.jiboni.com deployment
+      - name: Merge tag into main branch for web deployment
+        if: steps.check-tags.outputs.deploy_web == 'true'
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git checkout main
+          git merge --no-ff ${GITHUB_REF#refs/tags/} -m "Merge tag ${GITHUB_REF#refs/tags/} into main for web deployment"
+          git push origin main
+
+      # Deploy to web.jiboni.com from main branch
       - name: Deploy to web.jiboni.com
         if: steps.check-tags.outputs.deploy_web == 'true'
         uses: cloudflare/wrangler-action@v3
@@ -228,8 +240,19 @@ jobs:
           wranglerVersion: '4.13.2'
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy target/dx/jiboni/release/web/public --project-name=jiboni-web
+          command: pages deploy target/dx/jiboni/release/web/public --project-name=jiboni-web --branch=main
 
+      # Merge into demo branch for demo.jiboni.com deployment
+      - name: Merge tag into demo branch for demo deployment
+        if: steps.check-tags.outputs.deploy_demo == 'true'
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git checkout demo || git checkout -b demo
+          git merge --no-ff ${GITHUB_REF#refs/tags/} -m "Merge tag ${GITHUB_REF#refs/tags/} into demo for demo deployment"
+          git push origin demo
+
+      # Deploy to demo.jiboni.com from demo branch
       - name: Deploy to demo.jiboni.com
         if: steps.check-tags.outputs.deploy_demo == 'true'
         uses: cloudflare/wrangler-action@v3
@@ -237,13 +260,12 @@ jobs:
           wranglerVersion: '4.13.2'
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy target/dx/jiboni/release/web/public --project-name=jiboni-demo
+          command: pages deploy target/dx/jiboni/release/web/public --project-name=jiboni-demo --branch=demo
 
   build-ios:
     needs: [update-version]
     if: ${{ contains(github.ref, 'ios') }}
     runs-on: macos-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -292,7 +314,6 @@ jobs:
     needs: [update-version]
     if: ${{ contains(github.ref, 'android') }}
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -338,7 +359,6 @@ jobs:
     permissions:
       contents: write  # Add explicit permission to create releases
       pull-requests: write  # Permission to create PRs
-
     steps:
       - uses: actions/checkout@v4
         with:
