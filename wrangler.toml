@@ -1,3 +1,3 @@
-name = "jiboni-web"
+name = "jiboni-dev"
 compatibility_date = "2025-04-26"
 pages_build_output_dir = "./target/dx/jiboni/release/web/public"
