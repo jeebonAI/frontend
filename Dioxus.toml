@@ -10,6 +10,9 @@ template = "public/error.html"
 [web.assets]
 assets_dir = "public" # this will not work past dioxus 6.3
 
+[web.watcher]
+compress = true
+
 [bundle]
 identifier = "com.jiboni.app"
 

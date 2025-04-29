@@ -22,6 +22,7 @@ jobs:
         with:
           repo: 'wizardsupreme/dioxus'
           version: 'main'
+          verbose: true
 
       # Add this step to inspect build output
       - name: List build output files

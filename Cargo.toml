@@ -24,9 +24,9 @@ desktop = ["dioxus/desktop", "dep:tracing", "dep:tracing-subscriber"]
 
 [profile]
 
-[profile.release]
-lto = true
-opt-level = 'z'
+# [profile.release]
+# lto = true
+# opt-level = 'z'
 
 [profile.wasm-dev]
 inherits = "dev"
