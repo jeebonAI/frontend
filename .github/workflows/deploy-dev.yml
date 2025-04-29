@@ -2,7 +2,8 @@ name: Deploy to Dev Environment
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - dev
     paths-ignore:
       - '**.md'
    #   - '.github/workflows/**'  # Avoid triggering on workflow file changes
@@ -20,8 +21,8 @@ jobs:
       - name: Build Dioxus
         uses: wizardsupreme/dioxus-action@v0
         with:
-          # repo: 'wizardsupreme/dioxus'
-          # version: 'main'
+          repo: 'wizardsupreme/dioxus'
+          version: 'main'
           verbose: true
 
       # Add this step to inspect build output

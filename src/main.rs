@@ -7,9 +7,6 @@ use components::{NavBar, BottomNav, Home, Profile, Comms, Circles, Tree, Setting
 use state::{use_app_state, Theme};
 use dioxus::prelude::{ErrorBoundary, VNode};
 
-#[cfg(feature = "web")]
-use crate::document::Stylesheet;
-
 // Define our routes
 #[derive(Clone, Debug, PartialEq, Routable)]
 enum Route {
@@ -46,10 +43,7 @@ enum Route {
 const BOOTSTRAP_CSS: &str = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css";
 const BOOTSTRAP_JS: &str = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js";
 const BOOTSTRAP_ICONS: &str = "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css";
-
-// const STYLE: Asset = asset!("/public/style.css");
-// Include the CSS file directly as a string to avoid MIME type issues
-// static STYLE: &str = include_str!("./public/style.css");
+const STYLE: &str = "/assets/style.css";
 
 // Application with routing
 fn main() {
@@ -164,22 +158,10 @@ fn MainLayout() -> Element {
 // Main app component
 #[component]
 fn App() -> Element {
-    // Create a variable to hold the stylesheet element
-    let stylesheet;
-
-    #[cfg(feature = "web")]
-    {
-        stylesheet = rsx!(Stylesheet { href: asset!("./public/style.css") });
-    }
-
-    #[cfg(not(feature = "web"))]
-    {
-        stylesheet = rsx!();
-    }
 
     rsx! {
-        // Include Bootstrap CSS and JS
-        {stylesheet}
+
+        document::Link { rel: "stylesheet", href: STYLE }
         document::Link { rel: "stylesheet", href: BOOTSTRAP_CSS }
         document::Link { rel: "stylesheet", href: BOOTSTRAP_ICONS }
         document::Script { src: BOOTSTRAP_JS }

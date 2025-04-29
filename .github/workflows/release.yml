@@ -1,4 +1,4 @@
-name: Create GitHub Release
+name: Create Release
 
 on:
   push:
@@ -195,6 +195,7 @@ jobs:
         with:
           repo: 'wizardsupreme/dioxus'
           version: 'main'
+          verbose: true
 
       - name: Upload web build artifact
         uses: actions/upload-artifact@v4
@@ -224,6 +225,7 @@ jobs:
         if: steps.check-tags.outputs.deploy_web == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
+          wranglerVersion: '4.13.2'
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: pages deploy target/dx/jiboni/release/web/public --project-name=jiboni-web
@@ -232,6 +234,7 @@ jobs:
         if: steps.check-tags.outputs.deploy_demo == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
+          wranglerVersion: '4.13.2'
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: pages deploy target/dx/jiboni/release/web/public --project-name=jiboni-demo
