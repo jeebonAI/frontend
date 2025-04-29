@@ -18,7 +18,7 @@ jobs:
 
       # Use the custom Dioxus action
       - name: Build Dioxus
-        uses: wizardsupreme/dioxus-action@v0
+        uses: wizardsupreme/dioxus-action@dev
         with:
           repo: 'wizardsupreme/dioxus'
           version: 'main'
