@@ -23,6 +23,17 @@ jobs:
           repo: 'wizardsupreme/dioxus'
           version: 'main'
 
+      # Add this step to inspect build output
+      - name: List build output files
+        run: |
+          echo "=== Build directory structure ==="
+          find target/dx/jiboni/release/web/public -type f | sort
+          echo "=== File types summary ==="
+          find target/dx/jiboni/release/web/public -type f -exec file --mime-type {} \; | sort
+          echo "=== Total files count ==="
+          find target/dx/jiboni/release/web/public -type f | wc -l
+
+
       - name: Get short SHA
         id: slug
         run: echo "sha=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
