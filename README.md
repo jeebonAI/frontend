@@ -1,6 +1,6 @@
-# Jiboni Frontend
+# Jeebon Frontend
 
-A modern, secure, and platform-independent Personal Assistance and Communication Tool (PACT) built with Dioxus and Rust.
+A modern, secure, and platform-independent Personal AI Agent built with Dioxus and Rust.
 
 ## Features
 
@@ -12,8 +12,8 @@ A modern, secure, and platform-independent Personal Assistance and Communication
 
 ## Live Demo
 
-- **Web App**: [web.jiboni.com](https://web.jiboni.com) - Progressive Web App (PWA) version
-- **Download Page**: [download.jiboni.com](https://download.jiboni.com) - Download Android APK or iOS builds with version selection
+- **Web App**: [web.jeebon.ai](https://web.jeebon.ai) - Progressive Web App (PWA) version
+- **Download Page**: [download.jeebon.ai](https://download.jeebon.ai) - Download Android APK or iOS builds with version selection
 
 ## Getting Started
 
@@ -48,7 +48,7 @@ adb install -r target/dx/jiboni-web/debug/android/app/app/build/outputs/apk/debu
 
 Or simply download and install the APK directly on your Android device:
 
-1. Visit [download.jiboni.com](https://download.jiboni.com) on your Android device
+1. Visit [download.jeebon.ai](https://download.jeebon.ai) on your Android device
 2. Select your preferred version from the dropdown menu
 3. Tap the "Download for Android" button
 4. Follow the on-screen instructions to install
@@ -58,11 +58,11 @@ Or simply download and install the APK directly on your Android device:
 You can also install jiboni as a Progressive Web App on both Android and iOS:
 
 **Android:**
-1. Visit [web.jiboni.com](https://web.jiboni.com) in Chrome
+1. Visit [web.jeebon.ai](https://web.jeebon.ai) in Chrome
 2. Tap the prompt to "Add to Home Screen" or select "Install App" from the menu
 
 **iOS:**
-1. Visit [web.jiboni.com](https://web.jiboni.com) in Safari
+1. Visit [web.jeebon.ai](https://web.jeebon.ai) in Safari
 2. Tap the Share button (square with arrow)
 3. Scroll down and tap "Add to Home Screen"
 4. Tap "Add" to confirm
@@ -104,7 +104,7 @@ cargo test
 
 Every push to the `main` branch automatically deploys to the development environment:
 
-- **Dev Preview**: [dev.jiboni.com](https://dev.jiboni.com)
+- **Dev Preview**: [dev.jeebon.ai](https://dev.jeebon.ai)
 
 #### Release Deployment
 
@@ -122,7 +122,7 @@ This project uses GitHub Actions for automated releases and deployment. To deplo
 
 3. The GitHub Actions workflow will automatically:
    - Create a GitHub Release with auto-generated release notes
-   - Deploy to web.jiboni.com if the tag contains `web`
+   - Deploy to web.jeebon.ai if the tag contains `web`
    - Deploy to demo site if the tag contains `demo`
    - Build iOS app if the tag contains `ios`
    - Build Android app if the tag contains `android`
@@ -153,11 +153,11 @@ dx build --platform android --release
 # Copy the APK to the download-page folder
 cp target/dx/jiboni/release/android/app/app/build/outputs/apk/debug/app-debug.apk download-page/jiboni-app.apk
 
-# Deploy to download.jiboni.com
+# Deploy to download.jeebon.ai
 npx wrangler pages deploy ./download-page --project-name=jiboni-download
 ```
 
-Users can then download and install the app directly from [download.jiboni.com](https://download.jiboni.com). The download page provides a dropdown menu of all available releases, allowing users to select and download specific versions.
+Users can then download and install the app directly from [download.jeebon.ai](https://download.jeebon.ai). The download page provides a dropdown menu of all available releases, allowing users to select and download specific versions.
 
 ## Contributing
 

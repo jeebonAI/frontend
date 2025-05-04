@@ -1,6 +1,6 @@
 [application]
-name = "jiboni"
-title = "Jiboni"
+name = "Jeebon"
+title = "Jeebon"
 asset_dir = "public"  # This is needed on the dioxus 6.3+
 
 [web.app]
@@ -14,14 +14,14 @@ assets_dir = "public" # this will not work past dioxus 6.3
 compress = true
 
 [bundle]
-identifier = "com.jiboni.app"
+identifier = "ai.jeebon.app"
 
 [android]
-app_name = "Jiboni"
+app_name = "jeebon"
 assets_dir = "public" # this will not work past dioxus 6.3
-icon = "public/jiboni-icon.png"
+icon = "public/jeebon-icon.png"
 version_code = 1
-version_name = "0.0.5"
+version_name = "0.0.6"
 minimum_sdk_version = 30 
 target_sdk_version = 33
 full_screen = false

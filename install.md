@@ -1,6 +1,6 @@
-# Installing jiboni
+# Installing jeebon
 
-jiboni is a modern, secure, and platform-independent Personal Assistance and Communication Tool (PACT) built with Dioxus and Rust. This guide will help you install and run jiboni on different platforms.
+jeebon is a Personal AI Agent built with Dioxus and Rust. This guide will help you install and run jeebon on different platforms.
 
 ## Prerequisites
 
@@ -15,13 +15,13 @@ cargo install dioxus-cli@0.6.3 --locked
 
 ### Building for Web
 
-To build the web version of jiboni:
+To build the web version of jeebon:
 
 ```bash
 dx build --platform web --features web
 ```
 
-The built files will be available in `target/dx/jiboni-web/release/web/public`.
+The built files will be available in `target/dx/jeebon-web/release/web/public`.
 
 ### Running Locally
 
@@ -42,12 +42,12 @@ To deploy the web version to Cloudflare Pages:
 dx build --platform web --features web --release
 ```
 
-2. Deploy to Cloudflare Pages (dev.jiboni.com):
+2. Deploy to Cloudflare Pages (dev.jeebon.ai):
 ```bash
 wrangler pages deploy
 ```
 
-3. Deploy to Cloudflare Pages (demo.jiboni.com):
+3. Deploy to Cloudflare Pages (demo.jeebon.ai):
 ```bash
 wrangler pages deploy --project-name=dioxus-demo
 ```
@@ -65,34 +65,34 @@ rustup target add aarch64-linux-android
 
 ### Building for Android
 
-To build the Android version of jiboni:
+To build the Android version of jeebon:
 
 ```bash
 dx build --platform android --features mobile
 ```
 
-The built APK will be available at `target/dx/jiboni-web/debug/android/app/app/build/outputs/apk/debug/app-debug.apk`.
+The built APK will be available at `target/dx/jeebon-web/debug/android/app/app/build/outputs/apk/debug/app-debug.apk`.
 
 ### Installing on an Android Device
 
-There are several ways to install the jiboni app on your Android device:
+There are several ways to install the jeebon app on your Android device:
 
-#### Method 1: Direct Download from download.jiboni.com
+#### Method 1: Direct Download from download.jeebon.ai
 
-1. Visit [download.jiboni.com](https://download.jiboni.com) on your Android device
+1. Visit [download.jeebon.ai](https://download.jeebon.ai) on your Android device
 2. Select your preferred version from the Android versions dropdown
 3. Tap the "Download for Android" button
 4. When the download completes, tap on the downloaded file in your notifications or file manager
 5. If prompted, allow installation from unknown sources
 6. Follow the on-screen instructions to complete the installation
-7. Once installed, find and tap the jiboni icon in your app drawer to launch the app
+7. Once installed, find and tap the jeebon icon in your app drawer to launch the app
 
 #### Method 2: Using ADB (for developers)
 
 If you have your device connected via USB and ADB set up:
 
 ```bash
-adb install -r target/dx/jiboni-web/debug/android/app/app/build/outputs/apk/debug/app-debug.apk
+adb install -r target/dx/jeebon-web/debug/android/app/app/build/outputs/apk/debug/app-debug.apk
 ```
 
 #### Method 3: Using a Local Web Server (for testing)
@@ -104,8 +104,8 @@ adb install -r target/dx/jiboni-web/debug/android/app/app/build/outputs/apk/debu
 mkdir -p download-page
 
 # Copy the APK and icon to the download page directory
-cp target/dx/jiboni-web/debug/android/app/app/build/outputs/apk/debug/app-debug.apk download-page/jiboni-app.apk
-cp public/jiboni-icon.png download-page/
+cp target/dx/jeebon-web/debug/android/app/app/build/outputs/apk/debug/app-debug.apk download-page/jeebon-app.apk
+cp public/jeebon-icon.png download-page/
 
 # Use the existing download-page directory which contains the HTML page and APK
 # Start a local server to serve the download-page directory
@@ -130,22 +130,22 @@ For a proper release, you need to sign the APK:
 
 1. Create a keystore (if you don't have one):
 ```bash
-keytool -genkey -v -keystore jiboni.keystore -alias jiboni -keyalg RSA -keysize 2048 -validity 10000
+keytool -genkey -v -keystore jeebon.keystore -alias jeebon -keyalg RSA -keysize 2048 -validity 10000
 ```
 
 2. Sign the APK:
 ```bash
-jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore jiboni.keystore target/dx/jiboni-web/release/android/app/app/build/outputs/apk/release/app-release-unsigned.apk jiboni
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore jeebon.keystore target/dx/jeebon-web/release/android/app/app/build/outputs/apk/release/app-release-unsigned.apk jeebon
 ```
 
 3. Optimize the APK:
 ```bash
-zipalign -v 4 target/dx/jiboni-web/release/android/app/app/build/outputs/apk/release/app-release-unsigned.apk jiboni.apk
+zipalign -v 4 target/dx/jeebon-web/release/android/app/app/build/outputs/apk/release/app-release-unsigned.apk jeebon.apk
 ```
 
-### Deploying to download.jiboni.com
+### Deploying to download.jeebon.ai
 
-The download page at download.jiboni.com now features a dynamic dropdown of all available releases from the GitHub repository. Here's how it works:
+The download page at download.jeebon.ai now features a dynamic dropdown of all available releases from the GitHub repository. Here's how it works:
 
 1. The page uses JavaScript to fetch releases from the GitHub API
 2. It displays all available Android and iOS builds in separate dropdowns
@@ -167,7 +167,7 @@ git push origin main
 To manually deploy the download page:
 
 ```bash
-npx wrangler pages deploy ./download-page --project-name=jiboni-download
+npx wrangler pages deploy ./download-page --project-name=jeebon-download
 ```
 
 When new releases are created with the appropriate tags (containing `ios` or `android`), the GitHub Actions workflow will:
@@ -184,7 +184,7 @@ Support for desktop platforms (Windows, macOS, Linux) is planned for future rele
 
 ## Troubleshooting
 
-If you encounter any issues during installation or running jiboni, please check the following:
+If you encounter any issues during installation or running jeebon, please check the following:
 
 1. Make sure you have the latest version of Rust and Dioxus CLI installed.
 2. For Android builds, ensure that the Android SDK and NDK are properly configured.
