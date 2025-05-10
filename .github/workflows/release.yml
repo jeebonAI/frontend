@@ -91,13 +91,13 @@ jobs:
           # Create deployment section based on tag
           DEPLOYMENTS=""
           if [[ "${{ steps.check-tag.outputs.web }}" == "true" ]]; then
-            DEPLOYMENTS="$DEPLOYMENTS\n- [x] Web (https://web.jeebon.com)"
+            DEPLOYMENTS="$DEPLOYMENTS\n- [x] Web (https://web.jeebon.ai)"
           else
             DEPLOYMENTS="$DEPLOYMENTS\n- [ ] Web"
           fi
 
           if [[ "${{ steps.check-tag.outputs.demo }}" == "true" ]]; then
-            DEPLOYMENTS="$DEPLOYMENTS\n- [x] Demo (https://demo.jeebon.com)"
+            DEPLOYMENTS="$DEPLOYMENTS\n- [x] Demo (https://demo.jeebon.ai)"
           else
             DEPLOYMENTS="$DEPLOYMENTS\n- [ ] Demo"
           fi
@@ -141,7 +141,7 @@ jobs:
           NOTES="$NOTES## Deployment Targets$DEPLOYMENTS\n\n"
 
           # Add download links
-          NOTES="$NOTES## Download Links\n\n- Web App: https://web.jeebon.com\n- Download Page: https://download.jeebon.com"
+          NOTES="$NOTES## Download Links\n\n- Web App: https://web.jeebon.ai\n- Download Page: https://download.jeebon.ai"
 
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
           echo -e "$NOTES" >> $GITHUB_ENV
@@ -221,7 +221,7 @@ jobs:
             echo "deploy_demo=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Deploy to web.jeebon.com
+      - name: Deploy to web.jeebon.ai
         if: steps.check-tags.outputs.deploy_web == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
@@ -230,7 +230,7 @@ jobs:
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
           command: pages deploy target/dx/jeebon/release/web/public --project-name=jeebon-web --branch=main
 
-      - name: Deploy to demo.jeebon.com
+      - name: Deploy to demo.jeebon.ai
         if: steps.check-tags.outputs.deploy_demo == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
@@ -452,8 +452,8 @@ jobs:
 
             ## Download Links
 
-            - Web App: https://web.jeebon.com
-            - Download Page: https://download.jeebon.com
+            - Web App: https://web.jeebon.ai
+            - Download Page: https://download.jeebon.ai
           files: release-artifacts/*
           draft: false
           prerelease: false

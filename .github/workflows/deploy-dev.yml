@@ -58,5 +58,5 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               commit_sha: context.sha,
-              body: `✅ Dev deployment successful!\n\nPreview: https://dev.jeebon.com\nCommit: ${context.sha.substring(0, 7)}`
+              body: `✅ Dev deployment successful!\n\nPreview: https://dev.jeebon.ai\nCommit: ${context.sha.substring(0, 7)}`
             })
