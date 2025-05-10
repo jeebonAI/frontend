@@ -161,40 +161,28 @@ fn App() -> Element {
 
 
     // React to theme changes and update the <html> element's data-bs-theme attribute
-    #[cfg(feature = "web")]
+    // This will work for web and mobile (WebView)
+    #[cfg(any(feature = "web", feature = "mobile"))]
     use_effect({
+        let state = state.clone(); // Clone state for the effect
         move || {
-
+            let current_theme_attr = match state.read().theme {
+                Theme::Light => "light",
+                Theme::Dark => "dark",
+            };
+            tracing::info!("Applying theme: {}", current_theme_attr);
             if let Some(window) = web_sys::window() {
                 if let Some(document) = window.document() {
                     if let Some(html) = document.document_element() {
-                        let _ = html.set_attribute("data-bs-theme", theme_attr);
+                        let _ = html.set_attribute("data-bs-theme", current_theme_attr);
                     }
                 }
             }
         }
     });
 
-    // Mobile platform: Log theme change (replace with native theming if needed)
-    #[cfg(feature = "mobile")]
-    {
-        tracing::info!("Theme changed to: {}", theme_attr);
-        // If using a WebView with Bootstrap, the data-bs-theme attribute can still be applied
-        // to a root element in your mobile app's WebView.
-        // If rendering native components, integrate with native theming APIs here.
-        // Example for Android (pseudo-code):
-        // use capacitor::AppCompatDelegate;
-        // AppCompatDelegate::setDefaultNightMode(
-        //     if theme_attr == "dark" {
-        //         AppCompatDelegate::MODE_NIGHT_YES
-        //     } else {
-        //         AppCompatDelegate::MODE_NIGHT_NO
-        //     }
-        // );
-    }
-
-    // Set the theme on the document element (web only)
-    #[cfg(feature = "web")]
+    // Set the theme on the document element (web and mobile WebView)
+    #[cfg(any(feature = "web", feature = "mobile"))]
     {
         if let Some(window) = web_sys::window() {
             if let Some(document) = window.document() {
