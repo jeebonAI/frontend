@@ -1,10 +1,10 @@
-const CACHE_NAME = 'jiboni-cache-v1';
+const CACHE_NAME = 'jeebon-cache-v1';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/wasm/jiboni.js',
+  '/wasm/jeebon.js',
   '/wasm/jiboni_bg.wasm',
-  '/jiboni-icon.png',
+  '/jeebon-icon.png',
   '/manifest.json'
 ];
 

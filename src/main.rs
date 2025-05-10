@@ -58,7 +58,7 @@ fn main() {
     #[cfg(all(feature = "mobile", target_os = "android"))]
     {
         // Android-specific initialization if needed
-        tracing::info!("Starting Jiboni on Android");
+        tracing::info!("Starting Jeebon on Android");
     }
 
     // Launch the application

@@ -24,7 +24,7 @@ A modern, secure, and platform-independent Personal AI Agent built with Dioxus a
 
 ### Installation
 
-See the [Installation Guide](install.md) for detailed instructions on how to install and run jiboni on different platforms.
+See the [Installation Guide](install.md) for detailed instructions on how to install and run jeebon on different platforms.
 
 Quick start for web:
 
@@ -43,7 +43,7 @@ Quick start for Android:
 dx build --platform android --features mobile
 
 # Install on a connected Android device
-adb install -r target/dx/jiboni-web/debug/android/app/app/build/outputs/apk/debug/app-debug.apk
+adb install -r target/dx/jeebon-web/debug/android/app/app/build/outputs/apk/debug/app-debug.apk
 ```
 
 Or simply download and install the APK directly on your Android device:
@@ -55,7 +55,7 @@ Or simply download and install the APK directly on your Android device:
 
 ### Progressive Web App (PWA)
 
-You can also install jiboni as a Progressive Web App on both Android and iOS:
+You can also install jeebon as a Progressive Web App on both Android and iOS:
 
 **Android:**
 1. Visit [web.jeebon.ai](https://web.jeebon.ai) in Chrome
@@ -137,7 +137,7 @@ Deploy to Cloudflare Pages:
 
 ```bash
 dx build --release
-npx wrangler pages deploy target/dx/jiboni/release/web/public --project-name=jiboni-web
+npx wrangler pages deploy target/dx/jeebon/release/web/public --project-name=jeebon-web
 ```
 
 #### Android
@@ -151,10 +151,10 @@ To deploy the Android app to the download site:
 dx build --platform android --release
 
 # Copy the APK to the download-page folder
-cp target/dx/jiboni/release/android/app/app/build/outputs/apk/debug/app-debug.apk download-page/jiboni-app.apk
+cp target/dx/jeebon/release/android/app/app/build/outputs/apk/debug/app-debug.apk download-page/jeebon-app.apk
 
 # Deploy to download.jeebon.ai
-npx wrangler pages deploy ./download-page --project-name=jiboni-download
+npx wrangler pages deploy ./download-page --project-name=jeebon-download
 ```
 
 Users can then download and install the app directly from [download.jeebon.ai](https://download.jeebon.ai). The download page provides a dropdown menu of all available releases, allowing users to select and download specific versions.

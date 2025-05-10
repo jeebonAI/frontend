@@ -52,7 +52,7 @@ pub fn NavBar() -> Element {
                             r: "1.5"
                         }
                     }
-                    "Jiboni"
+                    "Jeebon"
                 }
                 button {
                     class: "navbar-toggler",
@@ -100,7 +100,7 @@ pub fn NavBar() -> Element {
                             r: "1.5"
                         }
                     }
-                    h5 { class: "offcanvas-title mb-0", id: "sidebarMenuLabel", "Jiboni" }
+                    h5 { class: "offcanvas-title mb-0", id: "sidebarMenuLabel", "Jeebon" }
                 }
                 button {
                     r#type: "button",

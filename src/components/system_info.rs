@@ -11,7 +11,7 @@ pub fn SystemInfo() -> Element {
                         div { class: "card-body",
                             div { class: "mb-3",
                                 h5 { "Version" }
-                                p { "Jiboni v0.0.4 (Demo)" }
+                                p { "Jeebon v0.0.4 (Demo)" }
                             }
                             div { class: "mb-3",
                                 h5 { "Build Date" }

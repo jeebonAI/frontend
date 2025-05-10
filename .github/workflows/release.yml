@@ -91,13 +91,13 @@ jobs:
           # Create deployment section based on tag
           DEPLOYMENTS=""
           if [[ "${{ steps.check-tag.outputs.web }}" == "true" ]]; then
-            DEPLOYMENTS="$DEPLOYMENTS\n- [x] Web (https://web.jiboni.com)"
+            DEPLOYMENTS="$DEPLOYMENTS\n- [x] Web (https://web.jeebon.com)"
           else
             DEPLOYMENTS="$DEPLOYMENTS\n- [ ] Web"
           fi
 
           if [[ "${{ steps.check-tag.outputs.demo }}" == "true" ]]; then
-            DEPLOYMENTS="$DEPLOYMENTS\n- [x] Demo (https://demo.jiboni.com)"
+            DEPLOYMENTS="$DEPLOYMENTS\n- [x] Demo (https://demo.jeebon.com)"
           else
             DEPLOYMENTS="$DEPLOYMENTS\n- [ ] Demo"
           fi
@@ -141,7 +141,7 @@ jobs:
           NOTES="$NOTES## Deployment Targets$DEPLOYMENTS\n\n"
 
           # Add download links
-          NOTES="$NOTES## Download Links\n\n- Web App: https://web.jiboni.com\n- Download Page: https://download.jiboni.com"
+          NOTES="$NOTES## Download Links\n\n- Web App: https://web.jeebon.com\n- Download Page: https://download.jeebon.com"
 
           echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV
           echo -e "$NOTES" >> $GITHUB_ENV
@@ -201,7 +201,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: web-build
-          path: target/dx/jiboni/release/web/public
+          path: target/dx/jeebon/release/web/public
           retention-days: 30
 
       - name: Check tag for deployment targets
@@ -221,23 +221,23 @@ jobs:
             echo "deploy_demo=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Deploy to web.jiboni.com
+      - name: Deploy to web.jeebon.com
         if: steps.check-tags.outputs.deploy_web == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
           wranglerVersion: '4.13.2'
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy target/dx/jiboni/release/web/public --project-name=jiboni-web --branch=main
+          command: pages deploy target/dx/jeebon/release/web/public --project-name=jeebon-web --branch=main
 
-      - name: Deploy to demo.jiboni.com
+      - name: Deploy to demo.jeebon.com
         if: steps.check-tags.outputs.deploy_demo == 'true'
         uses: cloudflare/wrangler-action@v3
         with:
           wranglerVersion: '4.13.2'
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy target/dx/jiboni/release/web/public --project-name=jiboni-demo --branch=demo
+          command: pages deploy target/dx/jeebon/release/web/public --project-name=jeebon-demo --branch=demo
 
   build-ios:
     needs: [update-version]
@@ -265,7 +265,7 @@ jobs:
       - name: Prepare iOS App Bundle
         run: |
           # Find the iOS app bundle
-          IOS_APP_PATH=$(find target/dx/jiboni/release/ios -name "*.app" -type d | head -1)
+          IOS_APP_PATH=$(find target/dx/jeebon/release/ios -name "*.app" -type d | head -1)
 
           if [ -z "$IOS_APP_PATH" ]; then
             echo "iOS app bundle not found"
@@ -279,13 +279,13 @@ jobs:
 
           # Copy to download-page
           mkdir -p $GITHUB_WORKSPACE/download-page
-          cp "$APP_NAME.zip" $GITHUB_WORKSPACE/download-page/jiboni-ios.zip
+          cp "$APP_NAME.zip" $GITHUB_WORKSPACE/download-page/jeebon-ios.zip
 
       - name: Upload iOS build artifact
         uses: actions/upload-artifact@v4
         with:
           name: ios-build
-          path: ${{ github.workspace }}/download-page/jiboni-ios.zip
+          path: ${{ github.workspace }}/download-page/jeebon-ios.zip
           retention-days: 30
 
   build-android:
@@ -313,7 +313,7 @@ jobs:
 
       - name: Find and prepare APK
         run: |
-          APK_PATH=$(find target/dx/jiboni/release/android -name "*.apk" | grep -v "intermediates" | head -1)
+          APK_PATH=$(find target/dx/jeebon/release/android -name "*.apk" | grep -v "intermediates" | head -1)
 
           if [ -z "$APK_PATH" ]; then
             echo "APK not found"
@@ -322,13 +322,13 @@ jobs:
 
           # Copy to download-page
           mkdir -p download-page
-          cp "$APK_PATH" download-page/jiboni-app.apk
+          cp "$APK_PATH" download-page/jeebon-app.apk
 
       - name: Upload Android build artifact
         uses: actions/upload-artifact@v4
         with:
           name: android-build
-          path: download-page/jiboni-app.apk
+          path: download-page/jeebon-app.apk
           retention-days: 30
 
   release-to-github:
@@ -373,20 +373,20 @@ jobs:
           # Create a zip of the web build if it exists
           if [[ "${{ contains(github.ref, 'web') || contains(github.ref, 'demo') }}" == "true" && -d "artifacts/web" ]]; then
             cd artifacts/web
-            zip -r ../../release-artifacts/jiboni-web-${VERSION}.zip .
+            zip -r ../../release-artifacts/jeebon-web-${VERSION}.zip .
             cd ../..
             echo "Prepared web artifact"
           fi
 
           # Copy iOS artifact if it exists
-          if [[ "${{ contains(github.ref, 'ios') }}" == "true" && -f "artifacts/ios/jiboni-ios.zip" ]]; then
-            cp artifacts/ios/jiboni-ios.zip release-artifacts/jiboni-ios-${VERSION}.zip
+          if [[ "${{ contains(github.ref, 'ios') }}" == "true" && -f "artifacts/ios/jeebon-ios.zip" ]]; then
+            cp artifacts/ios/jeebon-ios.zip release-artifacts/jeebon-ios-${VERSION}.zip
             echo "Prepared iOS artifact"
           fi
 
           # Copy Android artifact if it exists
-          if [[ "${{ contains(github.ref, 'android') }}" == "true" && -f "artifacts/android/jiboni-app.apk" ]]; then
-            cp artifacts/android/jiboni-app.apk release-artifacts/jiboni-android-${VERSION}.apk
+          if [[ "${{ contains(github.ref, 'android') }}" == "true" && -f "artifacts/android/jeebon-app.apk" ]]; then
+            cp artifacts/android/jeebon-app.apk release-artifacts/jeebon-android-${VERSION}.apk
             echo "Prepared Android artifact"
           fi
 
@@ -452,8 +452,8 @@ jobs:
 
             ## Download Links
 
-            - Web App: https://web.jiboni.com
-            - Download Page: https://download.jiboni.com
+            - Web App: https://web.jeebon.com
+            - Download Page: https://download.jeebon.com
           files: release-artifacts/*
           draft: false
           prerelease: false

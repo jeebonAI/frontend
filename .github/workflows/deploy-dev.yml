@@ -29,11 +29,11 @@ jobs:
       - name: List build output files
         run: |
           echo "=== Build directory structure ==="
-          find target/dx/jiboni/release/web/public -type f | sort
+          find target/dx/jeebon/release/web/public -type f | sort
           echo "=== File types summary ==="
-          find target/dx/jiboni/release/web/public -type f -exec file --mime-type {} \; | sort
+          find target/dx/jeebon/release/web/public -type f -exec file --mime-type {} \; | sort
           echo "=== Total files count ==="
-          find target/dx/jiboni/release/web/public -type f | wc -l
+          find target/dx/jeebon/release/web/public -type f | wc -l
 
 
       - name: Get short SHA
@@ -47,7 +47,7 @@ jobs:
           wranglerVersion: '4.13.2'
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy target/dx/jiboni/release/web/public --project-name=jiboni-dev --branch=dev
+          command: pages deploy target/dx/jeebon/release/web/public --project-name=jeebon-dev --branch=dev
 
       - name: Comment on commit
         uses: actions/github-script@v6
@@ -58,5 +58,5 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               commit_sha: context.sha,
-              body: `✅ Dev deployment successful!\n\nPreview: https://dev.jiboni.com\nCommit: ${context.sha.substring(0, 7)}`
+              body: `✅ Dev deployment successful!\n\nPreview: https://dev.jeebon.com\nCommit: ${context.sha.substring(0, 7)}`
             })
