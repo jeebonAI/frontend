@@ -170,7 +170,7 @@ fn App() -> Element {
                 Theme::Light => "light",
                 Theme::Dark => "dark",
             };
-            tracing::info!("Applying theme: {}", current_theme_attr);
+            log::info!("Applying theme: {}", current_theme_attr);
             if let Some(window) = web_sys::window() {
                 if let Some(document) = window.document() {
                     if let Some(html) = document.document_element() {
