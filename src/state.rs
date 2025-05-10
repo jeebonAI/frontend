@@ -34,8 +34,7 @@ fn get_initial_theme() -> Theme {
     // For web platform, try to get theme from local storage or system preference
     #[cfg(feature = "web")]
     {
-        use wasm_bindgen::prelude::*;
-        use web_sys::{window, Storage};
+        use web_sys::{window};
 
         // Try to get theme from local storage
         if let Some(window) = window() {
@@ -76,8 +75,6 @@ fn save_theme_preference(theme: &Theme) {
     // For web platform, save to local storage
     #[cfg(feature = "web")]
     {
-        use wasm_bindgen::prelude::*;
-
         if let Some(window) = web_sys::window() {
             if let Ok(Some(storage)) = window.local_storage() {
                 let _ = storage.set_item(
@@ -117,8 +114,6 @@ pub fn toggle_theme(mut state: Signal<AppState>) {
     // For web platform, update the HTML document theme attribute for immediate effect
     #[cfg(feature = "web")]
     {
-        use wasm_bindgen::prelude::*;
-
         if let Some(document) = web_sys::window().and_then(|w| w.document()) {
             if let Some(html) = document.document_element() {
                 let theme_value = match app_state.theme {

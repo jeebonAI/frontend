@@ -23,19 +23,13 @@ pub fn NavBar() -> Element {
         toggle_theme(state);
     };
 
-    // Determine data-bs-theme attribute based on theme
-    let theme_attr = match state.read().theme {
-        Theme::Light => "light",
-        Theme::Dark => "dark",
-    };
-
     rsx! {
         // Top navbar with toggle button
         nav {
             class: "navbar navbar-expand-lg border-bottom py-2 shadow-sm",
-            "data-bs-theme": theme_attr,
             div {
                 class: "container-fluid",
+                // Left side - Brand logo
                 Link {
                     to: Route::Home {},
                     class: "navbar-brand d-flex align-items-center",
@@ -63,9 +57,12 @@ pub fn NavBar() -> Element {
                     "Jeebon"
                 }
 
-                // Theme toggle button
+                // Center spacer to push elements to the right
+                div { class: "flex-grow-1" }
+
+                // Right side - Theme toggle button
                 button {
-                    class: "btn btn-link text-decoration-none me-2",
+                    class: "btn btn-link text-decoration-none me-3",
                     onclick: handle_toggle,
                     i {
                         class: if is_dark {
@@ -76,6 +73,7 @@ pub fn NavBar() -> Element {
                     }
                 }
 
+                // Right side - Menu toggle button
                 button {
                     class: "navbar-toggler",
                     r#type: "button",
@@ -92,7 +90,6 @@ pub fn NavBar() -> Element {
         // Sidebar offcanvas menu
         div {
             class: "offcanvas offcanvas-start w-75",
-            "data-bs-theme": theme_attr,
             "data-bs-backdrop": "true",
             "data-bs-scroll": "false",
             id: "sidebarMenu",
@@ -143,10 +140,10 @@ pub fn NavBar() -> Element {
                             class: "nav-item mb-2",
                             Link {
                                 to: Route::Home {},
-                                class: "nav-link text-primary d-flex align-items-center rounded py-2 px-3 mb-1",
+                                class: "nav-link d-flex align-items-center rounded py-2 px-3 mb-1",
                                 active_class: "bg-primary text-white fw-bold",
                                 "data-bs-dismiss": "offcanvas",
-                                i { class: "bi bi-house-door me-2 text-primary fs-5" }
+                                i { class: "bi bi-house-door me-2 fs-5" }
                                 "Home"
                             }
                         }
@@ -154,10 +151,10 @@ pub fn NavBar() -> Element {
                             class: "nav-item mb-2",
                             Link {
                                 to: Route::Profile {},
-                                class: "nav-link text-primary d-flex align-items-center rounded py-2 px-3 mb-1",
+                                class: "nav-link d-flex align-items-center rounded py-2 px-3 mb-1",
                                 active_class: "bg-primary text-white fw-bold",
                                 "data-bs-dismiss": "offcanvas",
-                                i { class: "bi bi-person me-2 text-primary fs-5" }
+                                i { class: "bi bi-person me-2 fs-5" }
                                 "Profile"
                             }
                         }
@@ -165,10 +162,10 @@ pub fn NavBar() -> Element {
                             class: "nav-item mb-2",
                             Link {
                                 to: Route::Comms {},
-                                class: "nav-link text-primary d-flex align-items-center rounded py-2 px-3 mb-1",
+                                class: "nav-link d-flex align-items-center rounded py-2 px-3 mb-1",
                                 active_class: "bg-primary text-white fw-bold",
                                 "data-bs-dismiss": "offcanvas",
-                                i { class: "bi bi-chat-dots me-2 text-primary fs-5" }
+                                i { class: "bi bi-chat-dots me-2 fs-5" }
                                 "Comms"
                             }
                         }
@@ -176,10 +173,10 @@ pub fn NavBar() -> Element {
                             class: "nav-item mb-2",
                             Link {
                                 to: Route::Circles {},
-                                class: "nav-link text-primary d-flex align-items-center rounded py-2 px-3 mb-1",
+                                class: "nav-link d-flex align-items-center rounded py-2 px-3 mb-1",
                                 active_class: "bg-primary text-white fw-bold",
                                 "data-bs-dismiss": "offcanvas",
-                                i { class: "bi bi-people me-2 text-primary fs-5" }
+                                i { class: "bi bi-people me-2 fs-5" }
                                 "Circles"
                             }
                         }
@@ -187,10 +184,10 @@ pub fn NavBar() -> Element {
                             class: "nav-item mb-2",
                             Link {
                                 to: Route::Tree {},
-                                class: "nav-link text-primary d-flex align-items-center rounded py-2 px-3 mb-1",
+                                class: "nav-link d-flex align-items-center rounded py-2 px-3 mb-1",
                                 active_class: "bg-primary text-white fw-bold",
                                 "data-bs-dismiss": "offcanvas",
-                                i { class: "bi bi-diagram-3 me-2 text-primary fs-5" }
+                                i { class: "bi bi-diagram-3 me-2 fs-5" }
                                 "Trees"
                             }
                         }
@@ -198,10 +195,10 @@ pub fn NavBar() -> Element {
                             class: "nav-item mb-2",
                             Link {
                                 to: Route::Settings {},
-                                class: "nav-link text-primary d-flex align-items-center rounded py-2 px-3 mb-1",
+                                class: "nav-link d-flex align-items-center rounded py-2 px-3 mb-1",
                                 active_class: "bg-primary text-white fw-bold",
                                 "data-bs-dismiss": "offcanvas",
-                                i { class: "bi bi-gear me-2 text-primary fs-5" }
+                                i { class: "bi bi-gear me-2 fs-5" }
                                 "Settings"
                             }
                         }
@@ -212,9 +209,9 @@ pub fn NavBar() -> Element {
                 div { class: "border-top p-3 mt-auto shadow-sm",
                     Link {
                         to: Route::SystemInfo {},
-                        class: "d-flex align-items-center text-primary text-decoration-none",
+                        class: "d-flex align-items-center text-decoration-none",
                         "data-bs-dismiss": "offcanvas",
-                        i { class: "bi bi-info-circle fs-4 me-2 text-primary" }
+                        i { class: "bi bi-info-circle fs-4 me-2" }
                         { format!("v{}", state.read().version) }
                     }
                 }

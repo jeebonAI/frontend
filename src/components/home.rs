@@ -3,16 +3,20 @@ use crate::Route;
 
 #[component]
 pub fn Home() -> Element {
+
     rsx! {
-        div { class: "container mt-2",
-            div { class: "row row-cols-2 g-3",
+        div { 
+            class: "container mt-2",
+            div { 
+                class: "row row-cols-2 g-3",
                 // Profile Box
-                div { class: "col",
+                div {
+                    class: "col",
                     Link {
                         to: Route::Profile {},
                         div {
                             class: "card text-center h-100",
-                            div {
+                                    div {
                                 class: "card-body d-flex flex-column justify-content-center align-items-center",
                                 style: "min-height: 150px;",
                                 i { class: "bi bi-person fs-1 mb-2" }
@@ -28,7 +32,7 @@ pub fn Home() -> Element {
                         to: Route::Comms {},
                         div {
                             class: "card text-center h-100",
-                            div {
+                                    div {
                                 class: "card-body d-flex flex-column justify-content-center align-items-center",
                                 style: "min-height: 150px;",
                                 i { class: "bi bi-chat-dots fs-1 mb-2" }
@@ -44,7 +48,7 @@ pub fn Home() -> Element {
                         to: Route::Circles {},
                         div {
                             class: "card text-center h-100",
-                            div {
+                                    div {
                                 class: "card-body d-flex flex-column justify-content-center align-items-center",
                                 style: "min-height: 150px;",
                                 i { class: "bi bi-people fs-1 mb-2" }
@@ -60,9 +64,9 @@ pub fn Home() -> Element {
                         to: Route::Tree {},
                         div {
                             class: "card text-center h-100",
-                            div {
+                                    div {
                                 class: "card-body d-flex flex-column justify-content-center align-items-center",
-                                style: "min-height: 150px;",
+                                            style: "min-height: 150px;",
                                 i { class: "bi bi-diagram-3 fs-1 mb-2" }
                                 span { "Trees" }
                             }

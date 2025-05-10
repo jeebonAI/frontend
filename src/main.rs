@@ -126,14 +126,6 @@ fn NotFound(route: Vec<String>) -> Element {
 // Main layout component
 #[component]
 fn MainLayout() -> Element {
-    // Get the app state
-    let state = use_app_state();
-
-    // Determine data-bs-theme attribute based on theme
-    let theme_attr = match state.read().theme {
-        Theme::Light => "light",
-        Theme::Dark => "dark",
-    };
 
     // Platform-specific classes
     #[cfg(feature = "mobile")]
@@ -145,9 +137,9 @@ fn MainLayout() -> Element {
     rsx! {
         div {
             class: "d-flex flex-column vh-100 pb-5 position-relative overflow-hidden",
-            "data-bs-theme": theme_attr,
             NavBar {}
-            div { class: "{container_class} overflow-auto",
+            div {
+                class: "{container_class} overflow-auto",
                 Outlet::<Route> {}
             }
             BottomNav {}
@@ -161,6 +153,45 @@ fn App() -> Element {
     // Get the app state to determine initial theme
     let state = use_app_state();
 
+
+    // React to theme changes and update the <html> element's data-bs-theme attribute
+    #[cfg(feature = "web")]
+    use_effect({
+        let state = state.clone();
+        move || {
+            let theme_attr = match state.read().theme {
+                Theme::Light => "light",
+                Theme::Dark => "dark",
+            };
+
+            if let Some(window) = web_sys::window() {
+                if let Some(document) = window.document() {
+                    if let Some(html) = document.document_element() {
+                        let _ = html.set_attribute("data-bs-theme", theme_attr);
+                    }
+                }
+            }
+        }
+    });
+
+    // Mobile platform: Log theme change (replace with native theming if needed)
+    #[cfg(feature = "mobile")]
+    {
+        tracing::info!("Theme changed to: {}", theme_attr);
+        // If using a WebView with Bootstrap, the data-bs-theme attribute can still be applied
+        // to a root element in your mobile app's WebView.
+        // If rendering native components, integrate with native theming APIs here.
+        // Example for Android (pseudo-code):
+        // use capacitor::AppCompatDelegate;
+        // AppCompatDelegate::setDefaultNightMode(
+        //     if theme_attr == "dark" {
+        //         AppCompatDelegate::MODE_NIGHT_YES
+        //     } else {
+        //         AppCompatDelegate::MODE_NIGHT_NO
+        //     }
+        // );
+    }
+
     // Determine initial theme attribute
     let theme_attr = match state.read().theme {
         Theme::Light => "light",
@@ -170,8 +201,6 @@ fn App() -> Element {
     // Set the theme on the document element (web only)
     #[cfg(feature = "web")]
     {
-        use wasm_bindgen::prelude::*;
-
         if let Some(window) = web_sys::window() {
             if let Some(document) = window.document() {
                 if let Some(html) = document.document_element() {
@@ -208,8 +237,8 @@ fn App() -> Element {
             rsx!()
         }}
 
-        // Include our custom CSS inline to avoid MIME type issues
-       // document::Style { { STYLE } }
+        // Custom CSS can be added here if needed
+        // document::Style { {"custom CSS here"} }
 
         // Error boundary to catch and display errors
         ErrorBoundary {

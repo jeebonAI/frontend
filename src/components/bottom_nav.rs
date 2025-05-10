@@ -1,24 +1,15 @@
 use dioxus::prelude::*;
 use crate::Route;
-use crate::state::{use_app_state, Theme};
 
 #[component]
 pub fn BottomNav() -> Element {
-    // Get the app state
-    let state = use_app_state();
-
+    
     // Get the current route
     let route = use_route::<Route>();
 
     // Helper function to determine if a link is active
     let _is_active = |r: &Route| -> bool {
         std::mem::discriminant(r) == std::mem::discriminant(&route)
-    };
-
-    // Determine data-bs-theme attribute based on theme
-    let theme_attr = match state.read().theme {
-        Theme::Light => "light",
-        Theme::Dark => "dark",
     };
 
     // Define a custom enum to represent the bottom nav items
@@ -50,15 +41,14 @@ pub fn BottomNav() -> Element {
 
     rsx! {
         nav {
-            class: "navbar fixed-bottom border-top pt-2 bg-white shadow-lg w-100",
-            "data-bs-theme": theme_attr,
+            class: "navbar fixed-bottom border-top pt-2 shadow-lg w-100",
             div {
                 class: "container-fluid px-0",
                 div { class: "row w-100 text-center g-0 flex-nowrap",
                     div { class: "col px-1",
                         Link {
                             to: Route::Profile {},
-                            class: if is_profile { "nav-link d-flex flex-column align-items-center active text-primary" } else { "nav-link d-flex flex-column align-items-center" },
+                            class: if is_profile { "nav-link d-flex flex-column align-items-center active" } else { "nav-link d-flex flex-column align-items-center" },
                             i { class: "bi bi-person fs-4" }
                             span { class: "small", "Profile" }
                         }
@@ -66,7 +56,7 @@ pub fn BottomNav() -> Element {
                     div { class: "col px-1",
                         Link {
                             to: Route::Comms {},
-                            class: if is_comms { "nav-link d-flex flex-column align-items-center active text-primary" } else { "nav-link d-flex flex-column align-items-center" },
+                            class: if is_comms { "nav-link d-flex flex-column align-items-center active" } else { "nav-link d-flex flex-column align-items-center" },
                             i { class: "bi bi-chat-dots fs-4" }
                             span { class: "small", "Comms" }
                         }
@@ -74,7 +64,7 @@ pub fn BottomNav() -> Element {
                     div { class: "col px-1",
                         Link {
                             to: Route::Circles {},
-                            class: if is_circles { "nav-link d-flex flex-column align-items-center active text-primary" } else { "nav-link d-flex flex-column align-items-center" },
+                            class: if is_circles { "nav-link d-flex flex-column align-items-center active" } else { "nav-link d-flex flex-column align-items-center" },
                             i { class: "bi bi-people fs-4" }
                             span { class: "small", "Circles" }
                         }
@@ -82,7 +72,7 @@ pub fn BottomNav() -> Element {
                     div { class: "col px-1",
                         Link {
                             to: Route::Tree {},
-                            class: if is_trees { "nav-link d-flex flex-column align-items-center active text-primary" } else { "nav-link d-flex flex-column align-items-center" },
+                            class: if is_trees { "nav-link d-flex flex-column align-items-center active" } else { "nav-link d-flex flex-column align-items-center" },
                             i { class: "bi bi-diagram-3 fs-4" }
                             span { class: "small", "Trees" }
                         }
@@ -90,7 +80,7 @@ pub fn BottomNav() -> Element {
                     div { class: "col px-1",
                         Link {
                             to: Route::Settings {},
-                            class: if is_settings { "nav-link d-flex flex-column align-items-center active text-primary" } else { "nav-link d-flex flex-column align-items-center" },
+                            class: if is_settings { "nav-link d-flex flex-column align-items-center active" } else { "nav-link d-flex flex-column align-items-center" },
                             i { class: "bi bi-gear fs-4" }
                             span { class: "small", "Settings" }
                         }
