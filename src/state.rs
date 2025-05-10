@@ -88,7 +88,7 @@ fn save_theme_preference(theme: &Theme) {
         }
     }
 
-    For mobile platforms, we could add platform-specific code here
+    // For mobile platforms, we could add platform-specific code here
     #[cfg(feature = "mobile")]
     {
         // Mobile-specific theme persistence could be added here
