@@ -88,11 +88,12 @@ fn save_theme_preference(theme: &Theme) {
         }
     }
 
-    // For mobile platforms, we could add platform-specific code here
-    // #[cfg(feature = "mobile")]
-    // {
-    //     // Mobile-specific theme persistence could be added here
-    // }
+    For mobile platforms, we could add platform-specific code here
+    #[cfg(feature = "mobile")]
+    {
+        // Mobile-specific theme persistence could be added here
+        tracing::info!("Mobile Specific Theme persistence code placeholder.");
+    }
 }
 
 // Create a hook to use the app state
