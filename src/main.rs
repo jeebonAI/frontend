@@ -153,16 +153,17 @@ fn App() -> Element {
     // Get the app state to determine initial theme
     let state = use_app_state();
 
+    // Determine initial theme attribute
+    let theme_attr = match state.read().theme {
+        Theme::Light => "light",
+        Theme::Dark => "dark",
+    };
+
 
     // React to theme changes and update the <html> element's data-bs-theme attribute
     #[cfg(feature = "web")]
     use_effect({
-        let state = state.clone();
         move || {
-            let theme_attr = match state.read().theme {
-                Theme::Light => "light",
-                Theme::Dark => "dark",
-            };
 
             if let Some(window) = web_sys::window() {
                 if let Some(document) = window.document() {
@@ -177,11 +178,6 @@ fn App() -> Element {
     // Mobile platform: Log theme change (replace with native theming if needed)
     #[cfg(feature = "mobile")]
     {
-        let state = state.clone();
-        let theme_attr = match state.read().theme {
-            Theme::Light => "light",
-            Theme::Dark => "dark",
-        };
         tracing::info!("Theme changed to: {}", theme_attr);
         // If using a WebView with Bootstrap, the data-bs-theme attribute can still be applied
         // to a root element in your mobile app's WebView.
@@ -196,12 +192,6 @@ fn App() -> Element {
         //     }
         // );
     }
-
-    // Determine initial theme attribute
-    let theme_attr = match state.read().theme {
-        Theme::Light => "light",
-        Theme::Dark => "dark",
-    };
 
     // Set the theme on the document element (web only)
     #[cfg(feature = "web")]
