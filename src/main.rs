@@ -158,9 +158,36 @@ fn MainLayout() -> Element {
 // Main app component
 #[component]
 fn App() -> Element {
+    // Get the app state to determine initial theme
+    let state = use_app_state();
+
+    // Determine initial theme attribute
+    let theme_attr = match state.read().theme {
+        Theme::Light => "light",
+        Theme::Dark => "dark",
+    };
+
+    // Set the theme on the document element (web only)
+    #[cfg(feature = "web")]
+    {
+        use wasm_bindgen::prelude::*;
+
+        if let Some(window) = web_sys::window() {
+            if let Some(document) = window.document() {
+                if let Some(html) = document.document_element() {
+                    let _ = html.set_attribute("data-bs-theme", theme_attr);
+                }
+            }
+        }
+    }
+
+    // For mobile platforms, we could add platform-specific initialization here
+    // #[cfg(feature = "mobile")]
+    // {
+    //     // Mobile-specific theme initialization could be added here
+    // }
 
     rsx! {
-
         document::Link { rel: "stylesheet", href: STYLE }
         document::Link { rel: "stylesheet", href: BOOTSTRAP_CSS }
         document::Link { rel: "stylesheet", href: BOOTSTRAP_ICONS }

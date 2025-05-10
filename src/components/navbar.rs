@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 use crate::Route;
-use crate::state::{use_app_state, Theme};
+use crate::state::{use_app_state, Theme, toggle_theme};
 
 #[component]
 pub fn NavBar() -> Element {
@@ -13,6 +13,14 @@ pub fn NavBar() -> Element {
     // Helper function to determine if a link is active
     let _is_active = |r: &Route| -> bool {
         std::mem::discriminant(r) == std::mem::discriminant(&route)
+    };
+
+    // Check if the theme is dark
+    let is_dark = matches!(state.read().theme, Theme::Dark);
+
+    // Create an event handler for the theme toggle
+    let handle_toggle = move |_| {
+        toggle_theme(state);
     };
 
     // Determine data-bs-theme attribute based on theme
@@ -54,6 +62,20 @@ pub fn NavBar() -> Element {
                     }
                     "Jeebon"
                 }
+
+                // Theme toggle button
+                button {
+                    class: "btn btn-link text-decoration-none me-2",
+                    onclick: handle_toggle,
+                    i {
+                        class: if is_dark {
+                            "bi bi-sun fs-5"
+                        } else {
+                            "bi bi-moon fs-5"
+                        }
+                    }
+                }
+
                 button {
                     class: "navbar-toggler",
                     r#type: "button",
