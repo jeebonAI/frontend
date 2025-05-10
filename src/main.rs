@@ -177,6 +177,11 @@ fn App() -> Element {
     // Mobile platform: Log theme change (replace with native theming if needed)
     #[cfg(feature = "mobile")]
     {
+        let state = state.clone();
+        let theme_attr = match state.read().theme {
+            Theme::Light => "light",
+            Theme::Dark => "dark",
+        };
         tracing::info!("Theme changed to: {}", theme_attr);
         // If using a WebView with Bootstrap, the data-bs-theme attribute can still be applied
         // to a root element in your mobile app's WebView.

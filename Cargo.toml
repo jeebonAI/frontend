@@ -1,6 +1,6 @@
 [package]
 name = "jeebon"
-version = "0.0.5"
+version = "0.0.23"
 authors = ["wizard supreme <smn7818@gmail.com>"]
 edition = "2024"
 
