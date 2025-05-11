@@ -18,7 +18,7 @@ identifier = "ai.jeebon.app"
 
 [android]
 app_name = "jeebon"
-assets_dir = "public" # this will not work past dioxus 6.3
+assets_dir = "public" # this is still needed on dioxus 6.3+. Rely on [application].asset_dir for web only
 icon = "public/jeebon-icon.png"
 version_code = 1
 version_name = "0.0.23"

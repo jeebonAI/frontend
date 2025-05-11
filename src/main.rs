@@ -47,6 +47,22 @@ const STYLE: &str = "/assets/style.css";
 
 // Application with routing
 fn main() {
+    // Set a custom panic hook to log panic messages
+    std::panic::set_hook(Box::new(|panic_info| {
+        let msg = panic_info.to_string();
+        let location = panic_info.location().map_or_else(
+            || "unknown location".to_string(),
+            |loc| format!("{}:{}:{}", loc.file(), loc.line(), loc.column()),
+        );
+        let full_panic_msg = format!("PANIC occurred at {}: {}", location, msg);
+        log::error!("{}", full_panic_msg);
+
+        // The primary goal is to log the panic via the Rust `log` facade.
+        // Attempting to use web-sys console here can be problematic if web-sys
+        // is involved in the panic or not yet initialized.
+        // The log::error! above should be captured by platform-specific loggers.
+    }));
+
     // Initialize platform-specific logger
     #[cfg(feature = "web")]
     wasm_logger::init(wasm_logger::Config::default());
@@ -153,45 +169,33 @@ fn App() -> Element {
     // Get the app state to determine initial theme
     let state = use_app_state();
 
-    // Determine initial theme attribute
-    let theme_attr = match state.read().theme {
-        Theme::Light => "light",
-        Theme::Dark => "dark",
-    };
-
-
     // React to theme changes and update the <html> element's data-bs-theme attribute
     // This will work for web and mobile (WebView)
-    #[cfg(any(feature = "web", feature = "mobile"))]
-    use_effect({
-        let state = state.clone(); // Clone state for the effect
-        move || {
-            let current_theme_attr = match state.read().theme {
-                Theme::Light => "light",
-                Theme::Dark => "dark",
-            };
-            log::info!("Applying theme: {}", current_theme_attr);
-            if let Some(window) = web_sys::window() {
-                if let Some(document) = window.document() {
-                    if let Some(html) = document.document_element() {
-                        let _ = html.set_attribute("data-bs-theme", current_theme_attr);
-                    }
-                }
-            }
-        }
-    });
-
-    // Set the theme on the document element (web and mobile WebView)
-    #[cfg(any(feature = "web", feature = "mobile"))]
-    {
+    #[cfg(feature = "web")]
+    use_effect(move || {
+        let app_state = state.clone(); // Clone the signal for use in the effect
+        let current_theme_attr = match app_state.read().theme {
+            Theme::Light => "light",
+            Theme::Dark => "dark",
+        };
+        log::info!("(Theme Update Effect) Attempting to apply theme: {}", current_theme_attr);
         if let Some(window) = web_sys::window() {
             if let Some(document) = window.document() {
                 if let Some(html) = document.document_element() {
-                    let _ = html.set_attribute("data-bs-theme", theme_attr);
+                    match html.set_attribute("data-bs-theme", current_theme_attr) {
+                        Ok(_) => log::info!("(Theme Update Effect) Successfully applied theme: {}", current_theme_attr),
+                        Err(e) => log::error!("(Theme Update Effect) Failed to set theme attribute: {:?}", e),
+                    }
+                } else {
+                    log::error!("(Theme Update Effect) Failed to get document_element.");
                 }
+            } else {
+                log::error!("(Theme Update Effect) Failed to get document.");
             }
+        } else {
+            log::error!("(Theme Update Effect) Failed to get window.");
         }
-    }
+    });
 
     // For mobile platforms, we could add platform-specific initialization here
     // #[cfg(feature = "mobile")]

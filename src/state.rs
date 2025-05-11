@@ -29,72 +29,88 @@ impl AppState {
     }
 }
 
-// Get the initial theme based on local storage or system preference
+// Determine theme from local storage or system preference
 fn get_initial_theme() -> Theme {
-    // For web platform, try to get theme from local storage or system preference
     #[cfg(feature = "web")]
     {
-        use web_sys::{window};
-
-        // Try to get theme from local storage
-        if let Some(window) = window() {
-            if let Ok(Some(storage)) = window.local_storage() {
-                if let Ok(Some(theme)) = storage.get_item("theme") {
-                    return match theme.as_str() {
-                        "dark" => Theme::Dark,
-                        _ => Theme::Light,
-                    };
+        use web_sys::window;
+        if let Some(win) = window() {
+            // Try local storage first
+            match win.local_storage() {
+                Ok(Some(storage)) => {
+                    log::info!("Accessed local storage successfully.");
+                    match storage.get_item("theme") {
+                        Ok(Some(theme_str)) => {
+                            log::info!("Found theme in local storage: {}", theme_str);
+                            return match theme_str.as_str() {
+                                "dark" => Theme::Dark,
+                                _ => Theme::Light,
+                            };
+                        }
+                        Ok(None) => {
+                            log::info!("No theme found in local storage.");
+                        }
+                        Err(e) => {
+                            log::error!("Error getting item from local storage: {:?}", e);
+                        }
+                    }
                 }
+                Ok(None) => log::warn!("Local storage is disabled or not available (returned None)."),
+                Err(e) => log::error!("Error accessing local storage (e.g., permission denied): {:?}", e),
             }
 
             // If no theme in local storage, check system preference
-            if let Some(media_query) = window
+            if let Some(media_query) = win
                 .match_media("(prefers-color-scheme: dark)")
                 .ok()
                 .flatten()
             {
                 if media_query.matches() {
+                    log::info!("System preference is dark theme.");
                     return Theme::Dark;
                 }
             }
+            log::info!("No theme in local storage, and system preference is not dark (or not detectable).");
+        } else {
+            log::warn!("web_sys::window() returned None, cannot get initial theme from storage/system.");
         }
     }
-
-    // For mobile platforms, we could add platform-specific code here
-    // #[cfg(feature = "mobile")]
-    // {
-    //     // Mobile-specific theme detection could be added here
-    // }
-
     // Default to light theme if not on web or if preferences can't be determined
+    log::info!("Defaulting to light theme for get_initial_theme.");
     Theme::Light
 }
 
 // Save theme to local storage
-fn save_theme_preference(theme: &Theme) {
-    // For web platform, save to local storage
+fn save_theme_preference(
+  theme: &Theme,
+) {
     #[cfg(feature = "web")]
     {
-        if let Some(window) = web_sys::window() {
-            if let Ok(Some(storage)) = window.local_storage() {
-                let _ = storage.set_item(
-                    "theme",
-                    match theme {
+        use web_sys::window;
+        if let Some(win) = window() {
+            match win.local_storage() {
+                Ok(Some(storage)) => {
+                    let theme_str = match theme { // Use `theme` here as it's under cfg(web)
                         Theme::Dark => "dark",
                         Theme::Light => "light",
-                    },
-                );
+                    };
+                    match storage.set_item("theme", theme_str) {
+                        Ok(_) => log::info!("Saved theme preference to local storage: {}", theme_str),
+                        Err(e) => log::error!("Failed to save theme to local storage: {:?}", e),
+                    }
+                }
+                Ok(None) => log::warn!("Local storage is disabled or not available, cannot save theme."),
+                Err(e) => log::error!("Error accessing local storage for saving: {:?}", e),
             }
+        } else {
+            log::warn!("web_sys::window() returned None, cannot save theme preference.");
         }
     }
-
-    // For mobile platforms, we could add platform-specific code here
-    #[cfg(feature = "mobile")]
-    {
-        // Mobile-specific theme persistence could be added here
-        tracing::info!("Mobile Specific Theme persistence code placeholder.");
-    }
+    // For non-web (e.g., mobile), _theme is unused, and no action is taken.
 }
+
+// REMOVE apply_dynamic_theme as it was part of the problematic unified approach
+// pub fn apply_dynamic_theme(mut state: Signal<AppState>) { ... }
 
 // Create a hook to use the app state
 pub fn use_app_state() -> Signal<AppState> {
@@ -109,10 +125,11 @@ pub fn toggle_theme(mut state: Signal<AppState>) {
         Theme::Dark => Theme::Light,
     };
 
-    // Save the theme preference
+    // Save the new theme preference
     save_theme_preference(&app_state.theme);
 
     // For web platform, update the HTML document theme attribute for immediate effect
+    // This was likely how it worked before for the web.
     #[cfg(feature = "web")]
     {
         if let Some(document) = web_sys::window().and_then(|w| w.document()) {
@@ -121,14 +138,11 @@ pub fn toggle_theme(mut state: Signal<AppState>) {
                     Theme::Dark => "dark",
                     Theme::Light => "light",
                 };
-                html.set_attribute("data-bs-theme", theme_value).ok();
+                match html.set_attribute("data-bs-theme", theme_value) {
+                    Ok(_) => log::info!("toggle_theme: Applied data-bs-theme: {}", theme_value),
+                    Err(e) => log::error!("toggle_theme: Failed to set data-bs-theme: {:?}", e),
+                }
             }
         }
     }
-
-    // For mobile platforms, we could add platform-specific code here
-    // #[cfg(feature = "mobile")]
-    // {
-    //     // Mobile-specific theme application could be added here
-    // }
 }
