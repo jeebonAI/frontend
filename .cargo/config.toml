@@ -1,0 +1,5 @@
+[target.wasm32-unknown-unknown]
+rustflags = ["--cfg", "getrandom_backend=\"wasm_js\""]
+
+[target.aarch64-linux-android]
+rustflags = ["--cfg", "tokio_tungstenite_no_openssl", "--cfg", "reqwest_no_default_features"]

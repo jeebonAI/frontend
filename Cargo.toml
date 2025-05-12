@@ -1,41 +1,66 @@
 [package]
 name = "jeebon"
-version = "0.0.23"
+version = "0.0.29"
 authors = ["wizard supreme <smn7818@gmail.com>"]
 edition = "2024"
 
 [dependencies]
 dioxus = { version = "0.6.3", features = ["router", "signals"] }
+sqlx = { version = "0.8.5", features = ["runtime-tokio", "sqlite"], optional = true }
+tokio = { version = "1.45.0", features = ["rt"], optional = true }
+tokio-tungstenite = { version = "0.24.0", default-features = false, features = ["rustls-tls-native-roots"], optional = true }
 log = "0.4.27"
-
-# Platform-specific dependencies
-# Web dependencies
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.140"
+dirs = { version = "5.0.1", optional = true }
+getrandom = { version = "0.3.3", features = ["wasm_js"], optional = true }
+mio = { version = "1.0.3", optional = true }
+reqwest = { version = "0.12.15", default-features = false, features = ["json", "rustls-tls"], optional = true }
 wasm-logger = { version = "0.2.0", optional = true }
 wasm-bindgen = { version = "0.2.92", optional = true }
-web-sys = { version = "0.3.69", features = ["Window", "Document", "Element", "Storage", "MediaQueryList"], optional = true }
-
-# Mobile and desktop dependencies
+js-sys = { version = "0.3.69", optional = true }
+web-sys = { version = "0.3.69", features = ["Window", "Document", "Element", "Storage", "MediaQueryList", "WebSocket", "MessageEvent"], optional = true }
 tracing = { version = "0.1.40", optional = true }
 tracing-subscriber = { version = "0.3.18", optional = true }
 
 [features]
 default = ["web"]
-web = ["dioxus/web", "dep:wasm-logger", "dep:wasm-bindgen", "dep:web-sys"]
-mobile = ["dioxus/mobile", "dep:tracing", "dep:tracing-subscriber"]
-desktop = ["dioxus/desktop", "dep:tracing", "dep:tracing-subscriber"]
+web = ["dioxus/web", "wasm-logger", "wasm-bindgen", "js-sys", "web-sys", "getrandom", "reqwest"]
+mobile = ["dioxus/mobile", "sqlx", "tokio", "dirs", "mio", "tracing", "tracing-subscriber", "reqwest", "tokio-tungstenite"]
+desktop = ["dioxus/desktop", "sqlx", "tokio", "dirs", "mio", "tracing", "tracing-subscriber", "reqwest", "tokio-tungstenite"]
 
-[profile]
+[profile.dev]
+opt-level = 0
+debug = true
+debug-assertions = true
+overflow-checks = true
+lto = false
+panic = 'unwind'
+incremental = true
+codegen-units = 256
+rpath = false
 
-# [profile.release]
-# lto = true
-# opt-level = 'z'
+
+[profile.release]
+opt-level = 3
+debug = false
+debug-assertions = false
+overflow-checks = false
+lto = true
+panic = 'abort'
+incremental = false
+codegen-units = 1
+rpath = false
 
 [profile.wasm-dev]
 inherits = "dev"
 opt-level = 1
 
-[profile.server-dev]
-inherits = "dev"
+[profile.wasm-release]
+inherits = "release"
+opt-level = 's'
+lto = true
+codegen-units = 1
 
 [profile.android-dev]
 inherits = "dev"
@@ -45,7 +70,7 @@ debug-assertions = true
 overflow-checks = true
 lto = false
 panic = 'unwind'
-incrementals = true
+incremental = true
 codegen-units = 256
 rpath = false
 
@@ -57,6 +82,33 @@ debug-assertions = false
 overflow-checks = false
 lto = true
 panic = 'abort'
-incrementals = false
+incremental = false
 codegen-units = 16
 rpath = false
+
+[profile.ios-dev]
+inherits = "dev"
+opt-level = 0
+debug = true
+debug-assertions = true
+overflow-checks = true
+lto = false
+panic = 'unwind'
+incremental = true
+codegen-units = 256
+rpath = false
+
+[profile.ios-release]
+inherits = "release"
+opt-level = 3
+debug = false
+debug-assertions = false
+overflow-checks = false
+lto = true
+panic = 'abort'
+incremental = false
+codegen-units = 16
+rpath = false
+
+[profile.server-dev]
+inherits = "dev"
